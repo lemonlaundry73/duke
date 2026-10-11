@@ -1293,12 +1293,20 @@ def main():
     duke = Duke(args.server, args.token)
     hello = {'host': socket.gethostname(), 'os': platform.platform(), 'engines': [e['version'] for e in engines], 'visualStudio': vs,
              'python': platform.python_version(), 'version': VERSION}
-    try:
-        engines = report(duke, hello, args.engine)
-    except urllib.error.HTTPError as e:
-        print('Duke rejected this agent (%s). Download a fresh DukeForger.py from step 9 in Duke.' % e.code); sys.exit(2)
-    except urllib.error.URLError as e:
-        print('Cannot reach %s (%s). Is the address right?' % (args.server, e.reason)); sys.exit(2)
+    for attempt in range(60):
+        try:
+            engines = report(duke, hello, args.engine)
+            break
+        except urllib.error.HTTPError as e:
+            if e.code in (401, 403):
+                print('Duke does not recognise this PC key. Download a fresh DukeForger.py from step 9 in Duke.'); sys.exit(2)
+            print('Duke is busy or restarting (%s). Trying again in 10 seconds...' % e.code)
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+            print('Cannot reach %s yet (%s). Check your internet. Trying again in 10 seconds...' % (duke.server, getattr(e, 'reason', e)))
+        time.sleep(10)
+    else:
+        print('Could not connect for 10 minutes. Check your internet and run Duke again.'); sys.exit(2)
+    args.server = duke.server
     print('Connected to %s. Waiting for builds... (Ctrl+C to stop)' % args.server)
     if not args.no_link and not args.once:
         Link(duke, args).start()
