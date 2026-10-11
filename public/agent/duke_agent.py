@@ -241,7 +241,18 @@ class Duke:
             data = json.dumps(body).encode('utf-8')
             headers['content-type'] = 'application/json'
         req = urllib.request.Request(self.server + path, data=data, method=method, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as r:
+        try:
+            r = urllib.request.urlopen(req, timeout=timeout)
+        except urllib.error.HTTPError as e:
+            # The site moved (for example dukeforger.com -> www.dukeforger.com): follow it once and remember it.
+            loc = e.headers.get('location') if e.code in (301, 302, 303, 307, 308) else None
+            if not loc:
+                raise
+            u = urllib.parse.urlparse(urllib.parse.urljoin(self.server + path, loc))
+            self.server = '%s://%s' % (u.scheme, u.netloc)
+            req = urllib.request.Request(self.server + path, data=data, method=method, headers=headers)
+            r = urllib.request.urlopen(req, timeout=timeout)
+        with r:
             payload = r.read()
             if 'application/json' in (r.headers.get('content-type') or ''):
                 return json.loads(payload.decode('utf-8') or '{}')
@@ -1267,13 +1278,19 @@ def main():
     if platform.system() != 'Windows':
         print('Warning: Duke packages Windows builds; this agent is meant to run on Windows.')
 
+    try:  # settle on the site's final address before connecting (follows www and https redirects)
+        with urllib.request.urlopen(args.server.rstrip('/') + '/api/health', timeout=20) as r:
+            u = urllib.parse.urlparse(r.geturl())
+            args.server = '%s://%s' % (u.scheme, u.netloc)
+    except Exception:
+        pass
     duke = Duke(args.server, args.token)
     hello = {'host': socket.gethostname(), 'os': platform.platform(), 'engines': [e['version'] for e in engines], 'visualStudio': vs,
              'python': platform.python_version(), 'version': VERSION}
     try:
         engines = report(duke, hello, args.engine)
     except urllib.error.HTTPError as e:
-        print('Duke rejected this agent (%s). Copy a fresh command or DukeSetup.cmd from the Build stage.' % e.code); sys.exit(2)
+        print('Duke rejected this agent (%s). Download a fresh DukeForger.py from step 9 in Duke.' % e.code); sys.exit(2)
     except urllib.error.URLError as e:
         print('Cannot reach %s (%s). Is the address right?' % (args.server, e.reason)); sys.exit(2)
     print('Connected to %s. Waiting for builds... (Ctrl+C to stop)' % args.server)
@@ -1294,7 +1311,7 @@ def main():
                 engines = report(duke, hello, args.engine); last_hello = time.time()
         except urllib.error.HTTPError as e:
             if e.code == 401:
-                print('Duke rejected the token. Copy a fresh command from the Build stage.'); sys.exit(2)
+                print('Duke rejected the token. Download a fresh DukeForger.py from step 9 in Duke.'); sys.exit(2)
             print('Server error %s, retrying...' % e.code)
         except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
             print('Cannot reach Duke (%s), retrying...' % e)

@@ -208,7 +208,8 @@ export function registerProduction(r){
   });
 
   // ---- PC build agent ----
-  const serverUrl=req=>process.env.SITE_URL?.replace(/\/$/,'')||`${req.headers['x-forwarded-proto']||'http'}://${req.headers['x-forwarded-host']||req.headers.host}`;
+  // The address the creator's browser actually reached (after any www redirect), so the PC app talks to it directly.
+  const serverUrl=req=>{const h=req.headers['x-forwarded-host']||req.headers.host;return h?`${String(req.headers['x-forwarded-proto']||'http').split(',')[0]}://${h}`:(process.env.SITE_URL||'').replace(/\/$/,'');};
   const myAgent=async user=>mutate(db=>{db.agents ||= {};let a=agentFor(db,user.id);
     if(!a){const tok=randomBytes(18).toString('base64url');a=db.agents[tok]={token:tok,userId:user.id,createdAt:now(),inspect:{}};}return a;});
   r.get('/api/agent/setup',async({req})=>{
