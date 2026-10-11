@@ -543,12 +543,18 @@ class Link:
             self.pil = (ImageGrab, Image)
         except Exception:
             print('Duke Link: installing Pillow for the live view...')
-            subprocess.run([sys.executable, '-m', 'pip', 'install', '--user', '--quiet', 'pillow'], timeout=300)
+            subprocess.run([sys.executable, '-m', 'pip', 'install', '--user', '--quiet', '--disable-pip-version-check', 'pillow'], timeout=300)
             try:
+                # A fresh install lands in a folder Python only looks at from its next start: add it now.
+                import importlib, site
+                for d in [site.getusersitepackages()] + (site.getsitepackages() if hasattr(site, 'getsitepackages') else []):
+                    if os.path.isdir(d) and d not in sys.path:
+                        site.addsitedir(d)
+                importlib.invalidate_caches()
                 from PIL import ImageGrab, Image  # noqa
                 self.pil = (ImageGrab, Image)
             except Exception:
-                print('Duke Link: live view unavailable (Pillow could not be installed).')
+                print('Duke Link: live view is starting next time. Press Ctrl+C and run Duke again once.')
 
     def start(self):
         self.exports, self.pixel = [], None
