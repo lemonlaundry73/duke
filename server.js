@@ -7,7 +7,7 @@ import { Router, HttpError, id as nanoid, readJson, send, serveStatic } from './
 import { registerProduction } from './src/routes-production.js';
 import { registerRoadmap, roadmapView } from './src/routes-roadmap.js';
 import { registerAuth, userFromRequest, requireUser } from './src/auth.js';
-import { registerBilling, PLANS, planOf } from './src/billing.js';
+import { registerBilling, PLANS, planOf, stripeAutoSetup } from './src/billing.js';
 import { emptyDesign, ensureDesign } from './src/pipeline.js';
 import { settle } from './src/ctx.js';
 import { runArt } from './src/art.js';
@@ -131,6 +131,6 @@ const server=http.createServer(async(req,res)=>{
   }
 });
 
-server.listen(port,()=>console.log(`Duke Forge v${VERSION} running on http://localhost:${port}`));
+server.listen(port,()=>{console.log(`Duke Forge v${VERSION} running on http://localhost:${port}`);void stripeAutoSetup();});
 const shutdown=()=>server.close(()=>process.exit(0));
 process.on('SIGTERM',shutdown); process.on('SIGINT',shutdown);

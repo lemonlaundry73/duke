@@ -4,6 +4,15 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import { load, mutate } from './store.js';
 import { HttpError, readBody } from './http.js';
 import { requireUser, isAdminEmail } from './auth.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { DATA_DIR } from './paths.js';
+
+// Prices and the webhook secret Duke created for itself in Stripe (see stripeAutoSetup).
+const AUTO_FILE=path.join(DATA_DIR,'stripe.json');
+let AUTO={};try{AUTO=JSON.parse(fs.readFileSync(AUTO_FILE,'utf8'));}catch{}
+const saveAuto=()=>{fs.mkdirSync(DATA_DIR,{recursive:true});fs.writeFileSync(AUTO_FILE,JSON.stringify(AUTO,null,2));};
+const webhookSecret=()=>process.env.STRIPE_WEBHOOK_SECRET||AUTO.webhookSecret||'';
 
 export const PLANS={
   free:   {id:'free',   name:'Free',   month:0,  credits:0,   projects:1, features:{build:false,course:false,expansion:false,cloud:false},
@@ -61,7 +70,7 @@ export function billingStatus(user){
 // ---------------------------------------------------------------- Stripe
 const stripeKey=()=>process.env.STRIPE_SECRET_KEY||'';
 export const billingMode=()=>stripeKey()?(stripeKey().startsWith('sk_live')?'live':'stripe-test'):process.env.BILLING_TEST_MODE==='1'?'test':'off';
-const priceEnv=(plan,interval)=>process.env[`STRIPE_PRICE_${plan.toUpperCase()}_${interval==='year'?'YEAR':'MONTH'}`]||'';
+const priceEnv=(plan,interval)=>process.env[`STRIPE_PRICE_${plan.toUpperCase()}_${interval==='year'?'YEAR':'MONTH'}`]||AUTO.prices?.[`${plan}_${interval}`]||'';
 function priceToPlan(priceId){
   for(const p of PLAN_ORDER)for(const i of ['month','year'])if(priceId&&priceEnv(p,i)===priceId)return {plan:p,interval:i};
   return null;
@@ -72,7 +81,7 @@ function form(obj,prefix='',out=[]){
   return out.join('&');
 }
 async function stripe(method,path,params){
-  const r=await fetch(`https://api.stripe.com/v1/${path}`,{method,signal:AbortSignal.timeout(30000),
+  const r=await fetch(`${process.env.STRIPE_API_BASE||"https://api.stripe.com/v1"}/${path}`,{method,signal:AbortSignal.timeout(30000),
     headers:{authorization:`Bearer ${stripeKey()}`,'content-type':'application/x-www-form-urlencoded'},body:method==='GET'?undefined:form(params||{})});
   const d=await r.json().catch(()=>({}));
   if(!r.ok)throw new HttpError(502,`Payment provider error: ${d.error?.message||r.status}`);
@@ -140,8 +149,8 @@ export function registerBilling(r){
   });
 
   r.post('/api/billing/webhook',async({req})=>{
-    const secret=process.env.STRIPE_WEBHOOK_SECRET;
-    if(!secret)throw new HttpError(503,'STRIPE_WEBHOOK_SECRET is not set');
+    const secret=webhookSecret();
+    if(!secret)throw new HttpError(503,'Stripe webhook secret is not set yet');
     const raw=(await readBody(req,1024*1024)).toString('utf8');
     if(!verifyStripeSignature(raw,req.headers['stripe-signature'],secret))throw new HttpError(400,'Invalid signature');
     const ev=JSON.parse(raw);
@@ -163,4 +172,46 @@ export function registerBilling(r){
     });
     return {received:true};
   });
+}
+
+// One-time Stripe setup, run at server start when STRIPE_SECRET_KEY and SITE_URL are set:
+// creates the Duke Forge products and monthly/yearly prices (found again later by lookup key),
+// the webhook endpoint (its secret is stored in DATA_DIR/stripe.json), and a Customer Portal
+// configuration if the account has none. Safe to run on every start; it only fills what is missing.
+export async function stripeAutoSetup(){
+  const site=(process.env.SITE_URL||'').replace(/\/$/,'');
+  if(!stripeKey())return;
+  if(!site){console.warn('[stripe] Set SITE_URL so Duke can create its Stripe webhook.');return;}
+  const q=o=>new URLSearchParams(o).toString();
+  try{
+    AUTO.prices ||= {};AUTO.products ||= {};
+    for(const plan of ['creator','academy','studio'])for(const interval of ['month','year']){
+      const k=`${plan}_${interval}`,lookup=`duke_forge_${k}`;
+      if(process.env[`STRIPE_PRICE_${plan.toUpperCase()}_${interval.toUpperCase()}`])continue;
+      const found=await stripe('GET',`prices?${q({'lookup_keys[]':lookup,active:'true',limit:'1'})}`);
+      if(found.data?.[0]){AUTO.prices[k]=found.data[0].id;continue;}
+      if(!AUTO.products[plan]){const prod=await stripe('POST','products',{name:`Duke Forge ${PLANS[plan].name}`,description:PLANS[plan].blurb,metadata:{app:'duke-forge',plan}});AUTO.products[plan]=prod.id;}
+      const amount=(interval==='year'?yearPrice(plan):PLANS[plan].month)*100;
+      const price=await stripe('POST','prices',{product:AUTO.products[plan],currency:'usd',unit_amount:amount,recurring:{interval},lookup_key:lookup,nickname:`Duke Forge ${PLANS[plan].name} (${interval}ly)`,metadata:{app:'duke-forge',plan}});
+      AUTO.prices[k]=price.id;console.log(`[stripe] created price ${lookup}`);
+    }
+    if(!process.env.STRIPE_WEBHOOK_SECRET){
+      const url=`${site}/api/billing/webhook`;
+      const list=await stripe('GET','webhook_endpoints?limit=100');
+      const existing=(list.data||[]).find(w=>w.url===url);
+      if(existing&&AUTO.webhookId!==existing.id){await stripe('DELETE',`webhook_endpoints/${existing.id}`);}
+      if(!existing||AUTO.webhookId!==existing.id){
+        const wh=await stripe('POST','webhook_endpoints',{url,description:'Duke Forge subscriptions',metadata:{app:'duke-forge'},
+          enabled_events:{0:'checkout.session.completed',1:'customer.subscription.created',2:'customer.subscription.updated',3:'customer.subscription.deleted'}});
+        AUTO.webhookId=wh.id;AUTO.webhookSecret=wh.secret;console.log('[stripe] created webhook',url);
+      }
+    }
+    const portal=await stripe('GET','billing_portal/configurations?is_default=true&limit=1');
+    if(!portal.data?.length){
+      await stripe('POST','billing_portal/configurations',{business_profile:{headline:'Manage your Duke Forge plan'},
+        features:{invoice_history:{enabled:'true'},payment_method_update:{enabled:'true'},subscription_cancel:{enabled:'true',mode:'at_period_end'}}});
+      console.log('[stripe] created customer portal');
+    }
+    saveAuto();console.log('[stripe] ready');
+  }catch(err){console.error('[stripe] setup failed:',err.message);saveAuto();}
 }

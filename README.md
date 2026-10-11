@@ -66,7 +66,7 @@ Billing details:
 - The first paid plan includes a 7-day trial.
 - 3D generations (Meshy) cost credits: concept 2, model 15, rig 5 and animations 5. Failed jobs are refunded.
 
-Stripe setup, with no SDK:
+Stripe setup, with no SDK. **Easiest:** set only `STRIPE_SECRET_KEY` and `SITE_URL`. On start, Duke creates its own products, monthly and yearly prices (lookup keys `duke_forge_<plan>_<interval>`), the webhook and a Customer Portal config, and stores what it made in `DATA_DIR/stripe.json`. It reuses them on every restart. **Manual alternative:**
 - Set `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`, plus six price IDs: `STRIPE_PRICE_{CREATOR,ACADEMY,STUDIO}_{MONTH,YEAR}`.
 - Point a webhook at `/api/billing/webhook` for `checkout.session.completed` and `customer.subscription.*`.
 - Enable the Customer Portal in Stripe.
