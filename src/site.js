@@ -40,11 +40,11 @@ ${noindex?'<meta name="robots" content="noindex">':''}
 ${ld({'@context':'https://schema.org','@type':'Organization',name:'Duke Forge',url:base(req)})}
 ${schema.map(ld).join('')}
 </head><body>
-<header class="top"><div class="wrap"><a class="logo" href="/"><span class="mark">D</span>Duke Forge</a>
+<header class="top"><div class="wrap"><a class="logo" href="/">Duke <em>Forge</em></a>
 <nav><a href="/guide">The 67 steps</a><a href="/glossary">Glossary</a><a href="/pricing">Pricing</a><a href="/showcase">Showcase</a></nav>
-<div class="cta"><a href="/login" class="ghost">Log in</a><a href="/signup" class="btn">Start free</a></div></div></header>
+<div class="cta"><a href="/login" class="ghost">Log in</a><a href="/signup" class="btn">Start creating</a></div></div></header>
 <main>${body}</main>
-<footer><div class="wrap"><div><a class="logo" href="/"><span class="mark">D</span>Duke Forge</a><p>Build the open-world game you dream about, step by step, with AI doing the slow parts.</p></div>
+<footer><div class="wrap"><div><a class="logo" href="/">Duke <em>Forge</em></a><p>Build the open-world game you dream about, step by step, with AI doing the slow parts.</p></div>
 <div><b>Learn</b><a href="/guide">The 67-step guide</a><a href="/glossary">Game dev glossary</a>${TOPICS.slice(0,4).map(t=>`<a href="/learn/${t.slug}">${esc(t.short)}</a>`).join('')}</div>
 <div><b>Product</b><a href="/pricing">Pricing</a><a href="/showcase">Showcase</a><a href="/signup">Start free</a><a href="/login">Log in</a></div></div>
 <p class="fine wrap">Unreal Engine, Character Creator, Headshot, Blender, Megascans, Suno, ElevenLabs, Convai and other names are trademarks of their owners. Duke Forge is independent and not affiliated with them.</p></footer>
@@ -96,10 +96,20 @@ function home(req){
   const body=`
 <section class="hero"><div class="wrap">
   <p class="eyebrow">AAA-STYLE GAME DEVELOPMENT FOR BEGINNERS</p>
-  <h1>Build the open-world game you dream about.</h1>
+  <h1>Build the open-world game<br>you dream about.<br><em>Start building it.</em></h1>
   <p class="lede">Duke Forge walks you through the same 67 steps studios follow, from your first idea to a released game. AI does the slow parts, and each step is checked before the next one opens. You make every creative decision.</p>
-  <div class="row"><a class="btn big" href="/signup">Start free</a><a class="ghost big" href="/guide">See the 67 steps</a></div>
-  <p class="note">Free plan: plan your whole game. No card needed.</p>
+  <div class="row"><a class="btn big" href="/signup">Build your first game</a><a class="ghost big" href="/guide">See the 67 steps</a></div>
+  <p class="note">Unreal Engine 5 workflow · Your tools, live in Duke · Your original game</p>
+  <figure class="panel"><header><span>World / live preview</span><span>01 — Blockout</span></header><img src="/img/world-preview.jpg" alt="The live 3D preview of a creator's world inside Duke Forge" width="1400" height="788" loading="eager"><figcaption>Every district, landmark and character you design shows up in the live preview as you write it.</figcaption></figure>
+</div></section>
+<section><div class="wrap">
+  <p class="eyebrow">Never leave Duke</p>
+  <h2>Your tools, live in Duke.<br><em>Unreal, Character Creator, Blender.</em></h2>
+  <p class="lede">Install your tools once. Duke opens them, shows them live inside the page, and lets you click and type in them right here. One tap saves what you see as proof for the step you are on.</p>
+  <div class="panels2">
+    <figure class="panel"><header><span>Duke Link / your tools live</span><span>Unreal Editor</span></header><img src="/img/duke-link.jpg" alt="Duke Link showing an Unreal Engine window live inside Duke Forge" loading="lazy"><figcaption>Open a tool, turn on “Use it here”, and work in it from Duke.</figcaption></figure>
+    <figure class="panel"><header><span>Design screen / step by step</span><span>Step 1 of 67</span></header><img src="/img/studio.jpg" alt="The Duke Forge design screen with a step, its gate and the AI director" loading="lazy"><figcaption>Each step explains itself in plain words, drafts with AI, and checks your work.</figcaption></figure>
+  </div>
 </div></section>
 <section class="band"><div class="wrap grid3">
   <div><b>High-definition, not block worlds</b><p>The target is film-lit, crowded, photoreal scenes in Unreal Engine 5, with characters made from your own photos in Character Creator 5 and Headshot 3.</p></div>

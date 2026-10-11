@@ -7,20 +7,20 @@
 <link rel="stylesheet" href="/site.css"/>
 <style>
 .auth{min-height:calc(100vh - 64px);display:grid;place-items:center;padding:40px 16px}
-.box{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:30px}
+.box{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:30px}
 .box h1{font-size:30px;margin:0 0 6px}.box p{color:var(--muted);margin:0 0 20px;font-size:15px}
 label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
-input{width:100%;padding:12px 14px;border-radius:11px;border:1px solid var(--line);background:#0e1011;color:var(--text);font:inherit}
+input{width:100%;padding:12px 14px;border-radius:6px;border:1px solid var(--line);background:#0b1322;color:var(--text);font:inherit}
 input:focus{outline:none;border-color:var(--gold)}
-button{width:100%;margin-top:20px;border:0;cursor:pointer;padding:13px;border-radius:11px;font:inherit;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111}
+button{width:100%;margin-top:20px;border:0;cursor:pointer;padding:13px;border-radius:6px;font:inherit;font-weight:800;background:var(--gold);color:var(--ink)}
 button:disabled{opacity:.6}
 .err{color:#ff8b8b;font-size:14px;min-height:20px;margin-top:12px}
 .switch{text-align:center;margin-top:16px;font-size:14.5px;color:var(--muted)}
-.planNote{background:rgba(240,191,76,.1);border:1px solid rgba(240,191,76,.35);border-radius:10px;padding:10px 12px;font-size:14px;color:#e8d9b0;margin-bottom:6px;display:none}
+.planNote{background:rgba(255,129,95,.1);border:1px solid rgba(255,129,95,.35);border-radius:10px;padding:10px 12px;font-size:14px;color:#ffd4c6;margin-bottom:6px;display:none}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap"><a class="logo" href="/"><span class="mark">D</span>Duke Forge</a><nav></nav></div></header>
+<header class="top"><div class="wrap"><a class="logo" href="/">Duke <em>Forge</em></a><nav></nav></div></header>
 <div class="auth"><form class="box" id="f" novalidate>
   <h1 id="h">Start building</h1>
   <p id="sub">Create your free account. Plan your whole game before you pay anything.</p>
