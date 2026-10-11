@@ -241,7 +241,7 @@ function machineHtml(){
     <ol class="stepsList"><li>Get <b>Python</b> if you don't have it: <a href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">python.org</a> (free, about 1 minute). It runs the Duke app.</li>
       <li>Download <b>DukeForger.py</b> below and double-click it. A small window opens and this panel turns green. Keep that window open while you work.</li>
       <li>It's a plain text program with nothing to install: no installer, no background downloads, nothing added to Windows startup. Right-click it and choose <b>Edit</b> to read it.</li>
-      <li>If double-clicking opens Notepad instead, right-click it, choose <b>Open with</b>, then <b>Python</b>.</li>
+      <li>If it opens as text in Notepad, Cursor or VS Code instead, right-click it, choose <b>Open with</b>, <b>Choose another app</b>, then <b>Python</b> and <b>Always</b>. Or, in that editor, open <b>Terminal</b> and type <code>py "$HOME\\Downloads\\DukeForger.py"</code>.</li>
       <li>Install <b>Unreal Engine 5</b> from the <a href="https://store.epicgames.com/download" target="_blank" rel="noopener">Epic Games Launcher</a>. Duke notices it by itself.</li></ol>
     <div class="row gap6 wrap" style="margin-top:12px"><a class="btn gold" href="/api/agent/DukeForger.py" download>Download DukeForger.py</a><button class="btn" id="showManual">No download: copy 3 commands</button></div>
     <div id="manual" style="display:none;margin-top:12px"><p class="muted small">Open <b>Terminal</b> from the Start menu and paste these one at a time:</p><div class="codeBox" id="agentCmd">Loading…</div></div>`}</div>`;
