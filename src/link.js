@@ -10,6 +10,7 @@ import { requireUser } from './auth.js';
 import { agentFor, settle } from './ctx.js';
 import { UPLOAD_DIR } from './paths.js';
 
+const now=()=>new Date().toISOString();
 const PROOF_DIR=path.join(UPLOAD_DIR,'private');
 const MAX_FRAME=3*1024*1024;
 const links=new Map(); // agent token -> live state
@@ -49,6 +50,8 @@ export function registerLink(r){
     const {tok}=await agentTok(req);const s=L(tok);s.stateAt=Date.now();
     s.windows=(Array.isArray(body.windows)?body.windows:[]).slice(0,60).map(w=>({id:String(w.id),title:String(w.title||'').slice(0,160),tool:String(w.tool||'').slice(0,20)}));
     s.window=body.window?String(body.window):null;s.tools=body.tools||{};s.control=body.control??s.control;s.capture=!!body.capture;
+    s.pixel=body.pixel&&/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?\/?$/.test(String(body.pixel.url||''))?{url:String(body.pixel.url)}:null;
+    if(Array.isArray(body.exports))s.exports=body.exports.slice(0,30).map(f=>({path:String(f.path||'').slice(0,400),name:String(f.name||'').slice(0,160),size:Number(f.size)||0,mtime:Number(f.mtime)||0,kind:String(f.kind||'').slice(0,12),from:String(f.from||'').slice(0,40)}));
     return {watch:Date.now()<s.watchUntil};
   });
   r.post('/api/agent/link/poll',async({req,res})=>{
@@ -67,6 +70,25 @@ export function registerLink(r){
     for(const res of s.watchers)writeFrame(res,buf);
     return {watch:Date.now()<s.watchUntil};
   });
+  r.post('/api/agent/link/upload',async({req})=>{
+    const {tok,agent}=await agentTok(req);
+    const pid=String(req.headers['x-project']||''),collection=String(req.headers['x-collection']||''),eid=String(req.headers['x-entity']||''),slot=String(req.headers['x-slot']||'model');
+    const name=path.basename(decodeURIComponent(String(req.headers['x-filename']||'file'))).replace(/[^\w.\- ]/g,'_').slice(0,120);
+    const ext=path.extname(name).toLowerCase();
+    const allowed={model:['.fbx','.glb'],rig:['.fbx'],concept:['.png','.jpg','.jpeg']};
+    if(!(allowed[slot]||[]).includes(ext))throw new HttpError(400,`A ${slot} must be ${(allowed[slot]||[]).join(' or ')}`);
+    const db=await load();const p=db.projects[pid];if(!p||p.ownerId!==agent.userId)throw new HttpError(404,'project not found');
+    const e=(p.design?.[collection]||[]).find(x=>x.id===eid);if(!e)throw new HttpError(404,'item not found');
+    const buf=await readBody(req,300*1024*1024);
+    const dir=path.join(UPLOAD_DIR,'p',pid,eid);await fs.mkdir(dir,{recursive:true});
+    const file=slot==='rig'?'rig.fbx':slot==='concept'?`concept_upload_${Date.now()}${ext}`:`model${ext}`;
+    await fs.writeFile(path.join(dir,file),buf);const url=`/uploads/p/${pid}/${eid}/${file}`;
+    return mutate(db=>{const q=db.projects[pid];const x=(q.design[collection]||[]).find(y=>y.id===eid);if(!x)return {ok:false};const a=x.art ||= {};
+      if(slot==='rig')a.rig={fbx:url,source:'duke-link'};
+      else if(slot==='concept'){a.concepts=[...(a.concepts||[]),{url,at:now(),source:'duke-link'}];a.approved=url;}
+      else a.model={[ext==='.glb'?'glb':'fbx']:url,source:'duke-link'};
+      const done=settle(db,q);q.updatedAt=now();return {ok:true,url,completed:done};});
+  });
   r.post('/api/agent/link/result',async({req,body})=>{
     const {tok}=await agentTok(req);const s=L(tok);
     s.results.set(String(body.id),{ok:!!body.ok,output:String(body.output||'').slice(0,20000),at:Date.now()});
@@ -82,7 +104,17 @@ export function registerLink(r){
     const {s,a}=await userLink(req);s.watchUntil=Math.max(s.watchUntil,Date.now()+30000);
     const m=a.machine||{};
     return {online:online(s),pcName:m.host||null,windows:s.windows,window:s.window,tools:TOOLS.map(t=>({...t,installed:t.id==='ue'?(m.engines||[]).length>0:t.id==='vs'?!!m.visualStudio:!!m.tools?.[t.id],open:s.windows.some(w=>w.tool===t.id)})),
-      frameAge:s.frameAt?Date.now()-s.frameAt:null,fps:s.fps,size:[s.w,s.h],control:s.control,capture:!!s.capture};
+      frameAge:s.frameAt?Date.now()-s.frameAt:null,fps:s.fps,size:[s.w,s.h],control:s.control,capture:!!s.capture,pixel:s.pixel||null,exports:s.exports||[]};
+  });
+  // Bring a file the agent found (a Character Creator or Blender export) into the game: the agent uploads it
+  // to the chosen character/item and copies it into the Unreal project, importing it if Unreal is open.
+  r.post('/api/link/import',async({req,body})=>{
+    const {s,user,db}=await userLink(req);if(!online(s))throw new HttpError(409,'Your PC is offline.');
+    const f=(s.exports||[]).find(x=>x.path===body.path);if(!f)throw new HttpError(400,'That file is no longer in the list. Refresh and try again.');
+    const p=db.projects[String(body.projectId||'')];if(!p||p.ownerId!==user.id)throw new HttpError(404,'project not found');
+    const collection=String(body.collection||''),eid=String(body.entityId||''),slot=['model','rig','concept'].includes(body.slot)?body.slot:'model';
+    if(collection&&!(p.design?.[collection]||[]).some(e=>e.id===eid))throw new HttpError(400,'Pick what this file is for');
+    return {id:push(s,{type:'import',path:f.path,name:f.name,projectId:p.id,collection,entityId:eid,slot,projectPath:p.roadmap?.answers?.project_path||''})};
   });
   r.get('/api/link/stream',async({req,res})=>{
     const {s}=await userLink(req);
@@ -141,9 +173,11 @@ export const ACTIONS={
   ue_git_init:{tool:'ue',label:'Turn on version control (step 13)',plain:'Makes your project a Git repository with LFS for big files, and saves the first snapshot.'},
   ue_save_all:{tool:'ue',label:'Save everything',plain:'Saves every changed level and asset in the open Unreal editor.'},
   ue_blockout_room:{tool:'ue',label:'Drop a gray test room (step 15)',plain:'Adds a simple floor, four walls and a doorway at the center of the open level, for your blockout.'},
+  ue_pixel_streaming:{tool:'ue',label:'Turn on HD mode (Pixel Streaming)',plain:'Turns on Epic\'s Pixel Streaming and reopens Unreal so it shows in Duke smooth and sharp. Works when you use Duke on the same PC. Save your work first.'},
   ue_play:{tool:'ue',label:'Play in the editor',plain:'Starts playing the open level inside Unreal.'},
   ue_stop:{tool:'ue',label:'Stop playing',plain:'Stops play mode.'},
-  blender_new:{tool:'blender',label:'Open Blender ready to model',plain:'Starts Blender with an empty scene.'},
+  blender_new:{tool:'blender',label:'Open Blender ready to model',plain:'Starts Blender with an empty scene. Export to anywhere: Duke finds your files.'},
+  open_exports:{tool:'cc5',label:'Open my Duke exports folder',plain:'Opens the folder Duke watches. Exporting here (or Desktop, Downloads, Documents) is enough: Duke finds the file.'},
   git_commit:{tool:'ue',label:'Save a snapshot (commit)',plain:'Records the current state of your project in version control, so you can always go back.'}
 };
 export const publicActions=()=>Object.entries(ACTIONS).map(([id,a])=>({id,...a}));

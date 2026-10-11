@@ -14,7 +14,7 @@ Only the Python standard library is used.
 """
 import argparse, ctypes, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
-VERSION = '3.0.0'
+VERSION = '3.1.0'
 WORK = os.path.join(os.path.expanduser('~'), 'DukeForgeBuilds')
 
 
@@ -447,6 +447,31 @@ def report(duke, hello, engines_arg):
 
 
 # ---------------------------------------------------------------- Duke Link (your tools, live inside Duke)
+EXPORTS_DIR = os.path.join(os.path.expanduser('~'), 'DukeForger', 'Exports')
+UE_IMPORT = '''import unreal
+t = unreal.AssetImportTask()
+t.filename = r"%s"
+t.destination_path = "/Game/DukeForge/Imports/%s"
+t.automated = True
+t.save = True
+t.replace_existing = True
+unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([t])
+print(", ".join(str(x) for x in t.imported_object_paths) or "no assets")'''
+
+
+def probe_pixel_streaming():
+    """Finds Epic's Pixel Streaming player started by the Unreal editor on this PC."""
+    for port in (80, 8080, 81):
+        try:
+            with urllib.request.urlopen('http://127.0.0.1:%d/' % port, timeout=1.5) as r:
+                body = r.read(20000).decode('utf-8', 'ignore').lower()
+                if 'pixel' in body or 'webrtc' in body or 'epic' in body:
+                    return {'url': 'http://127.0.0.1:%d' % port}
+        except Exception:
+            continue
+    return None
+
+
 TOOL_TITLES = [('ue', ('Unreal Editor',)), ('cc5', ('Character Creator',)), ('blender', ('Blender',)), ('vs', ('Microsoft Visual Studio',))]
 VK = {'Enter': 0x0D, 'Escape': 0x1B, 'Backspace': 0x08, 'Tab': 0x09, 'Space': 0x20, ' ': 0x20, 'Delete': 0x2E, 'Insert': 0x2D, 'Home': 0x24, 'End': 0x23,
       'PageUp': 0x21, 'PageDown': 0x22, 'ArrowLeft': 0x25, 'ArrowUp': 0x26, 'ArrowRight': 0x27, 'ArrowDown': 0x28, 'Shift': 0x10, 'Control': 0x11, 'Alt': 0x12,
@@ -502,8 +527,43 @@ class Link:
                 print('Duke Link: live view unavailable (Pillow could not be installed).')
 
     def start(self):
-        for fn in (self.poll_loop, self.state_loop, self.capture_loop):
+        self.exports, self.pixel = [], None
+        os.makedirs(EXPORTS_DIR, exist_ok=True)
+        for fn in (self.poll_loop, self.state_loop, self.capture_loop, self.watch_loop):
             threading.Thread(target=fn, daemon=True).start()
+
+    # -- never hunt for files: newest 3D exports and images in the usual places
+    def watch_loop(self):
+        while True:
+            try:
+                home = os.path.expanduser('~')
+                places = [(EXPORTS_DIR, 'Duke exports', 3), (os.path.join(home, 'Desktop'), 'Desktop', 1), (os.path.join(home, 'Downloads'), 'Downloads', 1),
+                          (os.path.join(home, 'Documents'), 'Documents', 2), (os.path.join(home, 'Documents', 'Reallusion'), 'Character Creator', 5),
+                          (os.path.join(home, 'Documents', 'Blender'), 'Blender', 4)]
+                found, cutoff = {}, time.time() - 3 * 86400
+                for root, label, depth in places:
+                    if not os.path.isdir(root):
+                        continue
+                    base = root.rstrip(os.sep).count(os.sep)
+                    for dirpath, dirs, files in os.walk(root):
+                        if dirpath.count(os.sep) - base >= depth:
+                            dirs[:] = []
+                        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ('node_modules', 'Intermediate', 'Saved', 'DerivedDataCache', 'Binaries')]
+                        for f in files:
+                            ext = os.path.splitext(f)[1].lower()
+                            if ext in ('.fbx', '.glb') or (ext in ('.png', '.jpg', '.jpeg') and label == 'Duke exports'):
+                                full = os.path.join(dirpath, f)
+                                try:
+                                    st = os.stat(full)
+                                except OSError:
+                                    continue
+                                if st.st_mtime >= cutoff and full not in found:
+                                    found[full] = {'path': full, 'name': f, 'size': st.st_size, 'mtime': int(st.st_mtime * 1000), 'kind': ext[1:], 'from': label}
+                self.exports = sorted(found.values(), key=lambda x: -x['mtime'])[:30]
+                self.pixel = probe_pixel_streaming()
+            except Exception:
+                pass
+            time.sleep(6)
 
     # -- windows
     def windows(self):
@@ -541,7 +601,8 @@ class Link:
                     self.hwnd = None
                 if not self.hwnd and wins:
                     self.hwnd, self.title = int(wins[0]['id']), wins[0]['title']
-                r = self.duke.post('/api/agent/link/state', {'windows': wins, 'window': self.title if self.hwnd else None, 'control': self.control, 'capture': bool(self.pil)})
+                r = self.duke.post('/api/agent/link/state', {'windows': wins, 'window': self.title if self.hwnd else None, 'control': self.control, 'capture': bool(self.pil),
+                                                             'exports': getattr(self, 'exports', []), 'pixel': getattr(self, 'pixel', None)})
                 self.watch = bool(r.get('watch'))
             except Exception:
                 pass
@@ -621,6 +682,8 @@ class Link:
                 return self.result(cid, True, self.action(c['action'], c.get('project', '')))
             if t == 'python':
                 return self.result(cid, True, ue_python(c['code']))
+            if t == 'import':
+                return self.result(cid, True, self.import_file(c))
         except Exception as e:
             self.result(cid, False, str(e))
 
@@ -738,9 +801,58 @@ class Link:
             return self.commit(root, 'Snapshot from Duke Forger ' + time.strftime('%Y-%m-%d %H:%M'))
         if name == 'blender_new':
             return self.launch('blender', '')
+        if name == 'open_exports':
+            os.makedirs(EXPORTS_DIR, exist_ok=True)
+            os.startfile(EXPORTS_DIR) if hasattr(os, 'startfile') else None
+            return 'Opened ' + EXPORTS_DIR
+        if name == 'ue_pixel_streaming':
+            if not (project and os.path.isfile(project)):
+                raise RuntimeError('Add your .uproject path in step 11 first.')
+            data = json.load(open(project, encoding='utf-8-sig'))
+            plugins = data.setdefault('Plugins', [])
+            hit = next((p for p in plugins if p.get('Name') == 'PixelStreaming'), None)
+            if hit:
+                hit['Enabled'] = True
+            else:
+                plugins.append({'Name': 'PixelStreaming', 'Enabled': True})
+            json.dump(data, open(project, 'w', encoding='utf-8'), indent='\t')
+            engines = find_engines(self.args.engine)
+            if not engines:
+                raise RuntimeError('Unreal Engine 5 is not installed.')
+            exe = os.path.join(engines[0]['path'], 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe')
+            subprocess.Popen([exe, project, '-EditorPixelStreamingStartOnLaunch=true', '-EditorPixelStreamingUseRemoteSignallingServer=false',
+                              '-EditorPixelStreamingSource=Editor', '-EditorPixelStreamingRes=1920x1080'])
+            return 'Pixel Streaming is on. Unreal is reopening in HD mode: close the old Unreal window if one is still open. HD mode appears in Duke Link in a minute.'
         if name in UE_SNIPPETS:
             return ue_python(UE_SNIPPETS[name])
         raise RuntimeError('Unknown action')
+
+    def import_file(self, c):
+        src = c['path']
+        if not os.path.isfile(src):
+            raise RuntimeError('That file was moved or deleted.')
+        notes = []
+        if c.get('collection') and c.get('entityId'):
+            with open(src, 'rb') as f:
+                data = f.read()
+            req = urllib.request.Request(self.duke.server + '/api/agent/link/upload', data=data, method='POST', headers={
+                'x-duke-agent': self.duke.token, 'content-type': 'application/octet-stream', 'x-project': c['projectId'], 'x-collection': c['collection'],
+                'x-entity': c['entityId'], 'x-slot': c.get('slot', 'model'), 'x-filename': urllib.parse.quote(os.path.basename(src))})
+            with urllib.request.urlopen(req, timeout=600) as r:
+                json.loads(r.read() or b'{}')
+            notes.append('Added to Duke Forger')
+        proj = c.get('projectPath') or ''
+        if proj and os.path.isfile(proj):
+            stem = re.sub(r'[^A-Za-z0-9_]', '_', os.path.splitext(os.path.basename(src))[0]) or 'Import'
+            try:
+                out = ue_python(UE_IMPORT % (src.replace('\\', '/'), stem))
+                notes.append('Imported into Unreal: ' + out.strip()[:120])
+            except Exception:
+                dest = os.path.join(os.path.dirname(proj), 'Content', 'DukeForge', 'Imports', os.path.basename(src))
+                os.makedirs(os.path.dirname(dest), exist_ok=True)
+                shutil.copy2(src, dest)
+                notes.append('Copied into your project (Content/DukeForge/Imports). Unreal offers to import it when it next opens.')
+        return '. '.join(notes) or 'Nothing to do'
 
     def commit(self, root, msg):
         _run(['git', '-C', root, 'add', '-A'], timeout=600)

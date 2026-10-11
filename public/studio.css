@@ -281,3 +281,7 @@ small.kind.auto{background:#123536;color:var(--green)}small.kind.proof{backgroun
 }
 
 #dfHelpBtn{bottom:14px!important;right:14px!important}
+.liveWrap.hd iframe{width:100%;height:100%;border:0;background:#000}
+.exportRow{display:grid;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
+.exportRow>div{display:flex;flex-direction:column;gap:2px;min-width:0}.exportRow b{overflow-wrap:anywhere}
+.exportRow select{width:100%;padding:7px 8px;border-radius:6px;border:1px solid var(--line);background:#0b1322;color:var(--text);font:inherit;font-size:13px}

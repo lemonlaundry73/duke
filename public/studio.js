@@ -516,6 +516,26 @@ $('#linkBtn').onclick=()=>openLink();
 async function linkStatus(){try{LS.status=await api('/api/link/status');}catch(e){LS.status={online:false,error:e.message,tools:S.road.tools.map(t=>({...t}))};}
   $('#linkDot').className='ldot '+(LS.status.online?'on':'');$('#linkSub').textContent=LS.status.online?`${LS.status.pcName||'Your PC'} is connected`:'Your tools, live in Duke';}
 function stopStream(){const img=$('#liveImg');if(img)img.src='';clearInterval(LS.timer);LS.timer=null;}
+function linkModeNote(st,tool){
+  if(tool==='blender'||tool==='cc5'){const n=tool==='blender'?'Blender':'Character Creator';
+    return `<div class="banner small"><b>Best way to use ${n}: right on your PC.</b> ${n} is fastest in its own window, so use it there with Duke open beside it (or on your phone or tablet). When you export, save anywhere (Desktop, Downloads or <i>DukeForger/Exports</i>) and it shows up under <b>Exports Duke found</b> in a few seconds. One tap brings it into your game. No hunting for files.</div>`;}
+  return '';
+}
+function exportTargets(){
+  const out=[];for(const [c,C] of Object.entries(S.schema.collections||{})){if(!C.art)continue;for(const e of D()[c]||[])out.push({v:`${c}|${e.id}`,label:`${C.label}: ${e.name||e.title||'Untitled'}`});}
+  return out;
+}
+function exportsHtml(st){
+  const ex=st.exports||[];const tg=exportTargets();
+  const ago=t=>{const m=Math.round((Date.now()-t)/60000);return m<1?'just now':m<60?`${m} min ago`:m<1440?`${Math.round(m/60)} h ago`:`${Math.round(m/1440)} d ago`;};
+  return `<div class="card"><h3>Exports Duke found</h3><p class="muted small">New 3D files from Blender and Character Creator (last 3 days), found automatically on your PC.</p>
+    ${ex.length?ex.slice(0,8).map((f,i)=>{const img=/png|jpe?g/.test(f.kind);return `<div class="exportRow" data-i="${i}"><div><b>${esc(f.name)}</b><span class="muted small">${esc(f.from)} · ${(f.size/1048576).toFixed(1)} MB · ${ago(f.mtime)}</span></div>
+      <select class="exTarget" aria-label="What is this file for"><option value="">Just put it in my Unreal project</option>${tg.map(t=>`<option value="${esc(t.v)}">${esc(t.label)}</option>`).join('')}</select>
+      <select class="exSlot" aria-label="Kind of file">${img?'<option value="concept">Concept art</option>':'<option value="model">3D model</option><option value="rig">Rigged body (skeleton)</option>'}</select>
+      <button class="btn sm gold" data-import="${i}" ${st.online?'':'disabled'}>Bring into my game</button></div>`;}).join('')
+      :`<p class="muted small">${st.online?'Nothing new yet. Export from Blender or Character Creator and it appears here.':'Connect your PC to see your exports.'}</p>`}
+    <button class="btn sm ghost" data-act="open_exports" ${st.online?'':'disabled'}>Open my DukeForger/Exports folder</button></div>`;
+}
 function renderLink(){
   const st=LS.status||{tools:S.road.tools,windows:[]};const s=stepDef(S.rm.current);const ev=stepEv(S.rm.current);
   const proofs=s.checks.filter(c=>c.t==='proof');const tool=st.windows?.find(w=>w.title===st.window)?.tool;
@@ -531,10 +551,14 @@ function renderLink(){
       <div class="liveBar"><select id="winPick" aria-label="Window">${(st.windows||[]).length?st.windows.map(w=>`<option value="${esc(w.id)}" ${w.title===st.window?'selected':''}>${esc(w.title)}</option>`).join(''):'<option>No tool windows open yet</option>'}</select>
         <label class="switch"><input type="checkbox" id="ctlToggle" ${LS.control?'checked':''} ${st.online?'':'disabled'}/><span></span>Use it here</label>
         <span class="muted small">${st.online&&st.frameAge!=null&&st.frameAge<5000?`Live · ${st.fps||0} fps`:''}</span>
+        <label class="switch" title="Unreal at full quality using Epic's Pixel Streaming"><input type="checkbox" id="hdToggle" ${LS.hd?'checked':''} ${st.online?'':'disabled'}/><span></span>HD mode</label>
         <button class="btn sm" id="liveFull">Full screen</button></div>
+      ${LS.hd&&!st.pixel?.url?`<div class="banner gold small"><b>HD mode is not running yet.</b> Tap <b>Turn on HD mode</b> and Duke reopens Unreal with Epic's Pixel Streaming switched on (about a minute). <button class="btn sm gold" data-act="ue_pixel_streaming" ${st.online?'':'disabled'}>Turn on HD mode</button></div>`:''}
+      ${LS.hd&&st.pixel?.url?`<div class="liveWrap hd"><iframe id="hdFrame" src="${esc(st.pixel.url)}" title="Unreal in HD" allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"></iframe></div><p class="muted small">HD mode: Unreal at full quality and full speed, on the PC that runs Unreal. Blank picture? <a href="${esc(st.pixel.url)}" target="_blank" rel="noopener">Open HD mode in its own tab</a> (use Chrome or Edge).</p>`:`
       <div class="liveWrap ${LS.control?'ctl':''}" id="liveWrap" tabindex="0">${st.online&&(st.windows||[]).length?`<img id="liveImg" alt="Live view of ${esc(st.window||'your tool')}" draggable="false"/>`:`<div class="liveEmpty">${st.online?'Open Unreal, Blender or Character Creator above. It appears here.':'Waiting for your PC…'}</div>`}
         ${LS.control?'<div class="ctlNote">You are controlling your PC. Press Esc twice to stop.</div>':''}</div>
-      ${st.control===false?'<p class="badText small">Control was declined on your PC. Restart the Duke agent to be asked again.</p>':'<p class="muted small">The first time you use it here, your PC asks you to allow it. Only Unreal, Blender, Character Creator and Visual Studio windows are ever shown.</p>'}
+      ${linkModeNote(st,tool)}
+      ${st.control===false?'<p class="badText small">Control was declined on your PC. Restart the Duke agent to be asked again.</p>':'<p class="muted small">The first time you use it here, your PC asks you to allow it. Only Unreal, Blender, Character Creator and Visual Studio windows are ever shown.</p>'}`}
     </div>
     <div class="sticky">
       <div class="card"><span class="eyebrow">STEP ${s.n} · ${ev.progress}% DONE</span><h3 style="margin:4px 0 8px">${esc(s.title)}</h3><ol class="how small">${s.how.map(h=>`<li>${terms(h,new Set(),2)}</li>`).join('')}</ol>
@@ -543,15 +567,16 @@ function renderLink(){
       <div class="card"><h3>One-tap actions</h3><p class="muted small">Duke does these for you on your PC.</p>
         ${acts.map(a=>`<button class="actBtn" data-act="${a.id}" ${st.online?'':'disabled'}><b>${esc(a.label)}</b><span>${esc(a.plain)}</span></button>`).join('')||'<p class="muted small">Open a tool to see its actions.</p>'}
         ${LS.log.length?`<div class="actLog">${LS.log.slice(-5).reverse().map(l=>`<div class="${l.ok===false?'badText':l.ok?'okText':''}">${esc(l.text)}</div>`).join('')}</div>`:''}</div>
+      ${exportsHtml(st)}
     </div></div>`;
   bindLink();
   const img=$('#liveImg');if(img&&!img.src.includes('/api/link/stream'))img.src=`/api/link/stream?t=${Date.now()}`;
-  if(!LS.timer)LS.timer=setInterval(async()=>{if(S.view!=='link'||document.hidden)return;const before=JSON.stringify([LS.status?.online,LS.status?.windows,LS.status?.window,LS.status?.control]);await linkStatus();
-    if(JSON.stringify([LS.status?.online,LS.status?.windows,LS.status?.window,LS.status?.control])!==before&&!$('#liveWrap')?.matches(':focus'))renderLink();
+  if(!LS.timer)LS.timer=setInterval(async()=>{if(S.view!=='link'||document.hidden)return;const sig=()=>JSON.stringify([LS.status?.online,LS.status?.windows,LS.status?.window,LS.status?.control,LS.status?.pixel,(LS.status?.exports||[]).map(f=>f.path+f.mtime)]);const before=sig();await linkStatus();
+    if(sig()!==before&&!$('#liveWrap')?.matches(':focus')&&!document.activeElement?.closest?.('.exportRow'))renderLink();
     else{const f=$('.liveBar .muted');if(f)f.textContent=LS.status.online&&LS.status.frameAge<5000?`Live · ${LS.status.fps||0} fps`:'';}},3000);
 }
-async function linkCmd(body,label){
-  const r=await post('/api/link/command',body);if(body.type==='input')return;
+async function linkCmd(body,label,url='/api/link/command'){
+  const r=await post(url,body);if(body.type==='input')return;
   LS.log.push({text:`${label}…`});renderLink();
   for(let i=0;i<60;i++){await new Promise(x=>setTimeout(x,1000));const res=await api(`/api/link/result/${r.id}`);
     if(!res.pending){LS.log.push({text:res.output||label,ok:res.ok});await linkStatus();if(S.view==='link')renderLink();toast(res.output||label,!res.ok);return;}}
@@ -563,9 +588,12 @@ function bindLink(){
   $$('[data-launch]').forEach(b=>b.onclick=()=>linkCmd({type:'launch',tool:b.dataset.launch,project:proj},`Opening ${S.road.tools.find(t=>t.id===b.dataset.launch).name}`));
   $$('[data-showtool]').forEach(b=>b.onclick=()=>{const w=LS.status.windows.find(x=>x.tool===b.dataset.showtool);if(w)linkCmd({type:'focus',window:w.id},`Showing ${w.title}`);});
   $('#winPick')?.addEventListener('change',e=>linkCmd({type:'focus',window:e.target.value},'Switching window'));
-  $$('[data-act]').forEach(b=>b.onclick=()=>{const a=S.road.actions.find(x=>x.id===b.dataset.act);linkCmd({type:'action',action:a.id,project:proj},a.label);});
+  $$('[data-act]').forEach(b=>b.onclick=()=>{const a=S.road.actions.find(x=>x.id===b.dataset.act)||{id:b.dataset.act,label:b.textContent.trim()};linkCmd({type:'action',action:a.id,project:proj},a.label);});
   $$('[data-snap]').forEach(b=>b.onclick=async()=>{const r=await post(`/api/projects/${pid()}/link/snap`,{key:b.dataset.snap});await refreshRm(true);
     toast(r.completed?.length?`Saved. Step ${r.completed.at(-1)} complete!`:`Saved as proof (${r.count}).`);render();});
+  $('#hdToggle')?.addEventListener('change',e=>{LS.hd=e.target.checked;LS.control=false;stopStream();renderLink();});
+  $$('[data-import]').forEach(b=>b.onclick=()=>{const row=b.closest('.exportRow'),f=LS.status.exports[Number(b.dataset.import)];const [collection,entityId]=(row.querySelector('.exTarget').value||'|').split('|');
+    linkCmd({type:'import',path:f.path,projectId:pid(),collection,entityId,slot:row.querySelector('.exSlot').value},`Bringing ${f.name} into your game`,'/api/link/import').then(()=>refreshRm(true)).catch(e=>toast(e.message,true));});
   $('#liveFull')?.addEventListener('click',()=>$('#liveWrap')?.requestFullscreen?.().catch(()=>{}));
   $('#ctlToggle')?.addEventListener('change',e=>{LS.control=e.target.checked;renderLink();if(LS.control)$('#liveWrap')?.focus();});
   const wrap=$('#liveWrap'),img=$('#liveImg');if(!wrap||!img||!LS.control)return;
