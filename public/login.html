@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Log in | Duke Forge</title>
+<meta name="robots" content="noindex"/>
+<link rel="stylesheet" href="/site.css"/>
+<style>
+.auth{min-height:calc(100vh - 64px);display:grid;place-items:center;padding:40px 16px}
+.box{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:30px}
+.box h1{font-size:30px;margin:0 0 6px}.box p{color:var(--muted);margin:0 0 20px;font-size:15px}
+label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px}
+input{width:100%;padding:12px 14px;border-radius:11px;border:1px solid var(--line);background:#0e1011;color:var(--text);font:inherit}
+input:focus{outline:none;border-color:var(--gold)}
+button{width:100%;margin-top:20px;border:0;cursor:pointer;padding:13px;border-radius:11px;font:inherit;font-weight:800;background:linear-gradient(135deg,var(--gold2),var(--gold));color:#111}
+button:disabled{opacity:.6}
+.err{color:#ff8b8b;font-size:14px;min-height:20px;margin-top:12px}
+.switch{text-align:center;margin-top:16px;font-size:14.5px;color:var(--muted)}
+.planNote{background:rgba(240,191,76,.1);border:1px solid rgba(240,191,76,.35);border-radius:10px;padding:10px 12px;font-size:14px;color:#e8d9b0;margin-bottom:6px;display:none}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a class="logo" href="/"><span class="mark">D</span>Duke Forge</a><nav></nav></div></header>
+<div class="auth"><form class="box" id="f" novalidate>
+  <h1 id="h">Start building</h1>
+  <p id="sub">Create your free account. Plan your whole game before you pay anything.</p>
+  <div class="planNote" id="planNote"></div>
+  <div id="nameRow"><label for="name">Your name</label><input id="name" autocomplete="name" placeholder="Shown on your certificates"/></div>
+  <label for="email">Email</label><input id="email" type="email" autocomplete="email" required/>
+  <label for="pw">Password</label><input id="pw" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters"/>
+  <button id="go">Create account</button>
+  <div class="err" id="err" role="alert"></div>
+  <div class="switch" id="sw"></div>
+</form></div>
+<script>
+const q=new URLSearchParams(location.search);
+let mode=location.pathname==='/login'?'login':'signup';
+const plan=q.get('plan');
+const $=id=>document.getElementById(id);
+function render(){
+  const s=mode==='signup';
+  document.title=(s?'Create your account':'Log in')+' | Duke Forge';
+  $('h').textContent=s?'Start building':'Welcome back';
+  $('sub').textContent=s?'Create your free account. Plan your whole game before you pay anything.':'Log in to keep building your game.';
+  $('nameRow').style.display=s?'':'none';
+  $('pw').autocomplete=s?'new-password':'current-password';
+  $('go').textContent=s?'Create account':'Log in';
+  $('sw').innerHTML=s?'Already have an account? <a href="#" id="t">Log in</a>':'New here? <a href="#" id="t">Create an account</a>';
+  $('t').onclick=e=>{e.preventDefault();mode=s?'login':'signup';history.replaceState(null,'',(s?'/login':'/signup')+location.search);render();};
+  if(plan&&plan!=='free'){$('planNote').style.display='block';$('planNote').textContent=`After you ${s?'sign up':'log in'}, you can start your 7-day trial of the ${plan[0].toUpperCase()+plan.slice(1)} plan.`;}
+}
+render();
+$('f').onsubmit=async e=>{
+  e.preventDefault();$('err').textContent='';$('go').disabled=true;
+  try{
+    const r=await fetch('/api/auth/'+mode,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:$('name').value,email:$('email').value,password:$('pw').value})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error||'Something went wrong');
+    const next=q.get('next')||'/studio';
+    location.href=next.startsWith('/')?next+(plan&&plan!=='free'?(next.includes('?')?'&':'?')+'upgrade='+encodeURIComponent(plan):''):'/studio';
+  }catch(err){$('err').textContent=err.message;$('go').disabled=false;}
+};
+</script>
+</body>
+</html>

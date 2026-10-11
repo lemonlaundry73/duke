@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Model Viewer</title>
+<style>html,body{margin:0;height:100%;background:#0b0c0d;overflow:hidden;font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#ddd}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:grab}
+.info{position:fixed;left:12px;bottom:10px;font-size:12px;opacity:.8;text-shadow:0 1px 3px #000;pointer-events:none}
+.msg{position:fixed;inset:0;display:grid;place-items:center;font-size:14px;color:#aaa}</style></head>
+<body><canvas id="c"></canvas><div class="info" id="info">Loading model…</div>
+<script type="module">
+import { Renderer } from '/game/renderer.js';
+import { loadGLB } from '/game/glb.js';
+import { Geo, cylinder } from '/game/geo.js';
+const qs=new URLSearchParams(location.search),url=qs.get('url'),showArrow=qs.has('arrow');
+let yaw=Number(qs.get('yaw')||0)*Math.PI/180;
+const info=document.getElementById('info');
+try{
+  const r=new Renderer(document.getElementById('c'),{shadowSize:1024,maxScale:1.5});
+  const model=await loadGLB(url);const mesh=r.texMesh(model,1);
+  const s=model.size,R=Math.max(s[0],s[1],s[2]);
+  const disc=r.mesh(new Geo().add(cylinder(1,1,.02,48),17,[['t',0,-.02,0]]),1);
+  const arrowGeo=new Geo().box(.08,.02,1,11,[['t',0,.01,.5]]).box(.3,.02,.3,11,[['ry',Math.PI/4],['t',0,.01,1]]);
+  const arrow=r.mesh(arrowGeo,1);
+  const meshes=[{mesh:disc,kind:0},{mesh},{mesh:arrow,kind:0,noShadow:true}];
+  let az=.7,el=.35,dist=R*1.9,drag=false,lx=0,ly=0,spin=!qs.has('still');
+  const c=document.getElementById('c');
+  c.onpointerdown=e=>{drag=true;lx=e.clientX;ly=e.clientY;spin=false;c.setPointerCapture(e.pointerId)};
+  c.onpointermove=e=>{if(!drag)return;az-=(e.clientX-lx)*.008;el=Math.max(-.1,Math.min(1.4,el+(e.clientY-ly)*.006));lx=e.clientX;ly=e.clientY;draw()};
+  c.onpointerup=()=>drag=false;c.onwheel=e=>{dist=Math.max(R*.6,Math.min(R*6,dist*(1+Math.sign(e.deltaY)*.1)));draw();e.preventDefault()};
+  window.addEventListener('message',e=>{if(e.data?.type==='yaw'){yaw=e.data.deg*Math.PI/180;draw();}});
+  const env={sunDir:[.45,.75,.48],lightDir:[.45,.75,.48],lightColor:[3,2.8,2.6],skyTop:[.12,.2,.38],skyHor:[.42,.46,.52],sunVis:.3,night:0,rain:0,fog:.0004,exposure:1.05,time:0};
+  function draw(){
+    disc.data.set([0,0,0,0,R*1.2,1,R*1.2,0,.5,.5,.5,1,0,0,0,0]);r.upload(disc,1);
+    const d=mesh.data;d.set([0,0,0,yaw,1,1,1,0,1,1,1,1,0,0,0,0]);r.upload(mesh,1);
+    arrow.data.set([0,0,0,0,R*.9,1,R*.9,0,1,.75,.2,1,0,0,0,0]);r.upload(arrow,showArrow?1:0);
+    const t=[0,s[1]*.45,0];const eye=[Math.sin(az)*Math.cos(el)*dist,t[1]+Math.sin(el)*dist,Math.cos(az)*Math.cos(el)*dist];
+    env.eye=eye;r.render({env,fov:.7,target:t,shadowCenter:[0,0,0],shadowRadius:R*1.5,meshes,heads:[],vignette:.5});
+  }
+  info.textContent=`${model.tris.toLocaleString()} triangles · ${s.map(v=>v.toFixed(2)).join(' × ')} units${showArrow?' · gold arrow = front of the game object':''}`;
+  const loop=()=>{if(spin){az+=.006;draw();}requestAnimationFrame(loop)};draw();loop();
+}catch(e){document.body.innerHTML=`<div class="msg">Could not show this model: ${String(e.message).replace(/</g,'&lt;')}</div>`;}
+</script></body></html>

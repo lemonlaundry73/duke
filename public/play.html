@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Duke Forge — Play</title>
+<style>
+:root{--gold:#f2c14e;--ink:#fff;--glass:rgba(10,12,14,.55)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+canvas#game{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
+.hud{position:fixed;inset:0;pointer-events:none;user-select:none}
+.embed .hud{font-size:.92em}
+.tr{position:absolute;top:18px;right:22px;text-align:right;text-shadow:0 2px 6px rgba(0,0,0,.7)}
+.money{font:800 34px/1 'Pricedown',Impact,'Arial Black',sans-serif;color:#7be08a;letter-spacing:1px;-webkit-text-stroke:1.2px #0b2410}
+.clock{font:700 22px/1.2 ui-monospace,Menlo,monospace;margin-top:6px}
+.sub{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;margin-top:4px}
+.mini{position:absolute;left:22px;bottom:22px;width:210px;height:210px;border-radius:50%;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+.district{position:absolute;left:244px;bottom:30px;font:800 26px/1 Georgia,'Times New Roman',serif;font-style:italic;color:#fff;text-shadow:0 2px 0 #000,0 0 18px rgba(0,0,0,.6)}
+.speed{position:absolute;right:26px;bottom:26px;font:800 54px/1 'Arial Black',sans-serif;text-shadow:0 3px 10px rgba(0,0,0,.7)}
+.speed small{font-size:16px;font-weight:700;opacity:.8}
+.job{position:absolute;top:18px;left:50%;transform:translateX(-50%);background:var(--glass);backdrop-filter:blur(8px);padding:10px 18px;border-radius:999px;font-size:14px;border:1px solid rgba(255,255,255,.12);white-space:nowrap}
+.job b{color:var(--gold)}
+.prompt{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);background:var(--glass);backdrop-filter:blur(8px);padding:10px 16px;border-radius:10px;font-size:15px;display:none}
+.prompt.show{display:block}
+kbd{display:inline-block;min-width:24px;padding:2px 7px;margin-right:6px;border-radius:6px;background:#fff;color:#111;font:800 13px/1.4 ui-sans-serif,system-ui;text-align:center;box-shadow:0 2px 0 #999}
+.toast{position:absolute;left:50%;top:30%;transform:translate(-50%,-10px);font:900 34px/1 'Arial Black',sans-serif;color:var(--gold);text-shadow:0 3px 0 #000,0 0 30px rgba(0,0,0,.6);opacity:0;transition:opacity .3s,transform .3s;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.tag{position:absolute;transform:translate(-50%,-100%);text-align:center;text-shadow:0 1px 4px #000;font-size:13px;font-weight:700;white-space:nowrap}
+.tag span{display:block;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.overlay{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,rgba(0,0,0,.25),rgba(0,0,0,.75));pointer-events:auto;cursor:pointer;transition:opacity .25s}
+.overlay.hidden{opacity:0;pointer-events:none}
+.card{max-width:520px;padding:28px 30px;border-radius:20px;background:rgba(12,14,16,.78);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1);text-align:center}
+.card h1{margin:0 0 4px;font:900 40px/1 'Arial Black',sans-serif;letter-spacing:-.5px}
+.card h1 em{color:var(--gold);font-style:normal}
+.card p{margin:8px 0 18px;color:#c9cdd1;font-size:14px}
+.ctl{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px;text-align:left;font-size:13px;color:#dfe2e5}
+.play{margin-top:20px;display:inline-block;background:var(--gold);color:#111;font-weight:900;padding:12px 26px;border-radius:999px;letter-spacing:.06em}
+.chat{position:fixed;right:22px;top:80px;width:360px;max-height:70vh;display:none;flex-direction:column;background:rgba(12,14,16,.86);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);border-radius:16px;pointer-events:auto;overflow:hidden}
+.chat.open{display:flex}
+.chat header{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.chat header b{display:block;font-size:16px}.chat header span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.chat .log{flex:1;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:8px;font-size:14px;min-height:120px}
+.bub{padding:8px 11px;border-radius:12px;max-width:85%;line-height:1.4}
+.bub.me{align-self:flex-end;background:#2b6f6f}.bub.them{align-self:flex-start;background:#2a2d31}
+.chat form{display:flex;gap:6px;padding:10px;border-top:1px solid rgba(255,255,255,.08)}
+.chat input{flex:1;background:#1b1e21;border:1px solid #33383d;color:#fff;border-radius:10px;padding:9px 10px;font:inherit}
+.chat button{background:var(--gold);border:0;border-radius:10px;font-weight:800;padding:0 14px;cursor:pointer}
+.err{position:fixed;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:#ddd;background:#0b0c0d}
+.flyover .hud,.flyover .overlay{display:none}
+@media (max-width:700px){.mini{width:140px;height:140px}.district{left:172px;font-size:18px}.money{font-size:26px}.job{font-size:12px;top:auto;bottom:178px}.speed{font-size:38px}}
+</style>
+</head>
+<body>
+<canvas id="game" tabindex="0"></canvas>
+<div class="hud" id="hud">
+  <div class="tr"><div class="money" id="h-money">$0</div><div class="clock" id="h-clock">18:00</div><div class="sub" id="h-weather">Clear</div></div>
+  <div class="job" id="h-job">Loading…</div>
+  <canvas class="mini" id="h-mini" width="420" height="420"></canvas>
+  <div class="district" id="h-district"></div>
+  <div class="speed" id="h-speed"></div>
+  <div class="prompt" id="h-prompt"></div>
+  <div class="toast" id="h-toast"></div>
+  <div id="h-tags"></div>
+</div>
+<div class="overlay" id="overlay">
+  <div class="card">
+    <h1 id="o-title">DUKE <em>CITY</em></h1>
+    <p id="o-sub">A living coastal city generated from your project.</p>
+    <div class="ctl">
+      <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move / drive</div><div><kbd>Mouse</kbd> Look</div>
+      <div><kbd>Shift</kbd> Sprint</div><div><kbd>Space</kbd> Jump / handbrake</div>
+      <div><kbd>F</kbd> Enter / exit vehicle</div><div><kbd>E</kbd> Talk to your NPCs</div>
+      <div><kbd>T</kbd> Advance time</div><div><kbd>R</kbd> Toggle rain</div>
+    </div>
+    <div class="play">CLICK TO PLAY</div>
+  </div>
+</div>
+<div class="chat" id="chat"><header><span id="c-role">NPC</span><b id="c-name"></b></header><div class="log" id="c-log"></div>
+  <form id="c-form"><input id="c-input" autocomplete="off" placeholder="Say something… (Esc to leave)"/><button>Send</button></form></div>
+<script type="module" src="/game/play.js"></script>
+</body>
+</html>

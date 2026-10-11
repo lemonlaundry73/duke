@@ -1,0 +1,13 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "0.1.0",
+  "FriendlyName": "Duke Forge Bridge",
+  "Description": "Imports Duke Forge engine manifests and generated assets into Unreal Editor.",
+  "Category": "Duke Forge",
+  "CreatedBy": "Duke Forge",
+  "CanContainContent": true,
+  "IsBetaVersion": true,
+  "Modules": [{"Name":"DukeForgeBridge","Type":"Editor","LoadingPhase":"Default"}],
+  "Plugins": [{"Name":"PythonScriptPlugin","Enabled":true}]
+}

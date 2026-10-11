@@ -1,0 +1,807 @@
+#!/usr/bin/env python3
+"""
+Duke Forge build agent — runs on your Windows PC next to Unreal Engine 5.
+
+It connects to your Duke Forge server, picks up build jobs, writes the Unreal project,
+imports your Meshy assets, compiles the C++ code, cooks and packages a playable Windows game,
+uploads it back to Duke, and (optionally) publishes it to itch.io with butler.
+
+Usage:
+    python duke_agent.py --server https://your-duke-server --token YOUR_TOKEN
+    python duke_agent.py --check            # only check this PC (Unreal, Visual Studio)
+
+Only the Python standard library is used.
+"""
+import argparse, ctypes, ctypes.wintypes, glob, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
+
+VERSION = '3.0.0'
+WORK = os.path.join(os.path.expanduser('~'), 'DukeForgeBuilds')
+
+
+# ---------------------------------------------------------------- environment detection
+def find_engines(override=None):
+    """Return [{'version': '5.6', 'path': 'C:/Program Files/Epic Games/UE_5.6'}] for installed UE5 engines."""
+    found = {}
+    candidates = []
+    if override:
+        candidates.append(override)
+    if os.environ.get('UE_ROOT'):
+        candidates.append(os.environ['UE_ROOT'])
+    # Epic Games Launcher install manifest
+    launcher = os.path.join(os.environ.get('PROGRAMDATA', r'C:\ProgramData'), 'Epic', 'UnrealEngineLauncher', 'LauncherInstalled.dat')
+    try:
+        with open(launcher, encoding='utf-8') as f:
+            for item in json.load(f).get('InstallationList', []):
+                if str(item.get('AppName', '')).startswith('UE_5'):
+                    candidates.append(item.get('InstallLocation', ''))
+    except Exception:
+        pass
+    for root in [os.environ.get('ProgramFiles', r'C:\Program Files'), r'C:\Program Files', r'D:\Program Files', r'C:\Epic Games', r'D:\Epic Games', r'E:\Epic Games']:
+        candidates += glob.glob(os.path.join(root, 'Epic Games', 'UE_5*')) + glob.glob(os.path.join(root, 'UE_5*'))
+    for c in candidates:
+        if not c:
+            continue
+        editor = os.path.join(c, 'Engine', 'Binaries', 'Win64', 'UnrealEditor-Cmd.exe')
+        if os.path.exists(editor):
+            m = re.search(r'5\.\d+', os.path.basename(os.path.normpath(c))) or re.search(r'5\.\d+', c)
+            version = m.group(0) if m else 'custom'
+            found[os.path.normpath(c)] = {'version': version, 'path': os.path.normpath(c)}
+    return sorted(found.values(), key=lambda e: e['version'], reverse=True)
+
+
+def has_visual_studio():
+    vswhere = os.path.join(os.environ.get('ProgramFiles(x86)', r'C:\Program Files (x86)'), 'Microsoft Visual Studio', 'Installer', 'vswhere.exe')
+    if not os.path.exists(vswhere):
+        return False
+    try:
+        out = subprocess.run([vswhere, '-latest', '-products', '*', '-requires', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64', '-property', 'installationPath'],
+                             capture_output=True, text=True, timeout=30)
+        return bool(out.stdout.strip())
+    except Exception:
+        return False
+
+
+def _run(cmd, timeout=20):
+    try:
+        out = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, encoding='utf-8', errors='replace')
+        return out.stdout.strip() if out.returncode == 0 else ''
+    except Exception:
+        return ''
+
+
+def machine_info():
+    """CPU, memory and graphics cards, so Duke can check the PC against Unreal's needs."""
+    info = {'cpu': platform.processor(), 'cpuCores': os.cpu_count(), 'ramGB': None, 'gpus': []}
+    if platform.system() == 'Windows':
+        ps = _run(['powershell', '-NoProfile', '-Command',
+                   '$c=Get-CimInstance Win32_Processor|Select-Object -First 1;$m=Get-CimInstance Win32_ComputerSystem;'
+                   '"$($c.Name)|$($c.NumberOfCores)|$($m.TotalPhysicalMemory)"'], timeout=40)
+        if ps.count('|') == 2:
+            name, cores, mem = ps.split('|')
+            info['cpu'] = name.strip() or info['cpu']
+            info['cpuCores'] = int(cores) if cores.strip().isdigit() else info['cpuCores']
+            info['ramGB'] = round(int(mem) / 1024 ** 3) if mem.strip().isdigit() else None
+        # Video memory: the driver registry key is accurate above 4 GB (WMI's AdapterRAM is not).
+        try:
+            import winreg
+            root = r'SYSTEM\ControlSet001\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}'
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, root) as k:
+                for i in range(64):
+                    try:
+                        sub = winreg.EnumKey(k, i)
+                    except OSError:
+                        break
+                    if not sub.isdigit():
+                        continue
+                    try:
+                        with winreg.OpenKey(k, sub) as g:
+                            name = winreg.QueryValueEx(g, 'DriverDesc')[0]
+                            try:
+                                mem = winreg.QueryValueEx(g, 'HardwareInformation.qwMemorySize')[0]
+                            except OSError:
+                                mem = 0
+                            if isinstance(mem, bytes):
+                                mem = int.from_bytes(mem, 'little')
+                            if name and 'Basic' not in name and 'Virtual' not in name:
+                                info['gpus'].append({'name': name, 'vramGB': round(int(mem or 0) / 1024 ** 3, 1)})
+                    except OSError:
+                        continue
+        except Exception:
+            pass
+    if not info['gpus'] and shutil.which('nvidia-smi'):
+        for line in _run(['nvidia-smi', '--query-gpu=name,memory.total', '--format=csv,noheader,nounits']).splitlines():
+            if ',' in line:
+                n, m = line.rsplit(',', 1)
+                info['gpus'].append({'name': n.strip(), 'vramGB': round(float(m) / 1024, 1)})
+    if info['ramGB'] is None and hasattr(os, 'sysconf'):
+        try:
+            info['ramGB'] = round(os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES') / 1024 ** 3)
+        except Exception:
+            pass
+    return info
+
+
+def find_tools():
+    """Character Creator 5, Headshot, Blender, Git and Git LFS."""
+    pf = [os.environ.get('ProgramFiles', r'C:\Program Files'), r'C:\Program Files', r'D:\Program Files']
+    tools = {}
+    cc = [d for r in pf for d in glob.glob(os.path.join(r, 'Reallusion', 'Character Creator 5*'))]
+    tools['cc5'] = cc[0] if cc else None
+    hs = [d for r in pf for d in glob.glob(os.path.join(r, 'Reallusion', '**', '*Headshot*'), recursive=True)][:1]
+    tools['headshot'] = hs[0] if hs else None
+    blender = shutil.which('blender')
+    if not blender:
+        found = sorted(d for r in pf for d in glob.glob(os.path.join(r, 'Blender Foundation', 'Blender*', 'blender.exe')))
+        blender = found[-1] if found else None
+    tools['blender'] = (os.path.basename(os.path.dirname(blender)) if blender and 'Blender Foundation' in blender else blender)
+    tools['git'] = _run(['git', '--version']) or None
+    tools['lfs'] = _run(['git', 'lfs', 'version']) or None
+    return tools
+
+
+def inspect_project(duke, project_id, path):
+    """Checks a linked Unreal project: plugins, content folders, Git/LFS, and syncs Duke's design into it."""
+    path = os.path.normpath(os.path.expandvars(os.path.expanduser(path.strip().strip('"'))))
+    uproject = path if path.lower().endswith('.uproject') else next(iter(glob.glob(os.path.join(path, '*.uproject'))), path)
+    report = {'projectId': project_id, 'path': uproject, 'exists': os.path.isfile(uproject)}
+    if report['exists']:
+        root = os.path.dirname(uproject)
+        report['name'] = os.path.splitext(os.path.basename(uproject))[0]
+        try:
+            data = json.load(open(uproject, encoding='utf-8-sig'))
+            report['engine'] = str(data.get('EngineAssociation', ''))
+            report['plugins'] = [p.get('Name') for p in data.get('Plugins', []) if p.get('Enabled')]
+        except Exception:
+            report['plugins'] = []
+        content = os.path.join(root, 'Content')
+        report['folders'] = [d for d in os.listdir(content) if os.path.isdir(os.path.join(content, d))] if os.path.isdir(content) else []
+        git_root = root
+        while git_root and not os.path.isdir(os.path.join(git_root, '.git')):
+            parent = os.path.dirname(git_root)
+            git_root = None if parent == git_root else parent
+        report['git'] = bool(git_root)
+        attrs = os.path.join(git_root, '.gitattributes') if git_root else ''
+        report['lfs'] = bool(attrs and os.path.exists(attrs) and 'filter=lfs' in open(attrs, encoding='utf-8', errors='ignore').read())
+        try:
+            design = duke._req('GET', '/api/agent/projects/%s/design.json' % project_id)
+            out = os.path.join(content, 'DukeForge')
+            os.makedirs(out, exist_ok=True)
+            with open(os.path.join(out, 'design.json'), 'w', encoding='utf-8') as f:
+                json.dump(design, f, indent=2)
+            report['synced'] = True
+        except Exception as e:
+            print('  (design sync failed: %s)' % e)
+    duke.post('/api/agent/inspect', report)
+    return report
+
+
+def find_butler():
+    return shutil.which('butler') or (os.path.exists(os.path.join(WORK, 'butler', 'butler.exe')) and os.path.join(WORK, 'butler', 'butler.exe')) or None
+
+
+# ---------------------------------------------------------------- server API
+class Duke:
+    def __init__(self, server, token):
+        self.server = server.rstrip('/')
+        self.token = token
+
+    def _req(self, method, path, body=None, raw=None, ctype='application/json', timeout=120):
+        data = None
+        headers = {'x-duke-agent': self.token}
+        if raw is not None:
+            data = raw
+            headers['content-type'] = ctype
+        elif body is not None:
+            data = json.dumps(body).encode('utf-8')
+            headers['content-type'] = 'application/json'
+        req = urllib.request.Request(self.server + path, data=data, method=method, headers=headers)
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            payload = r.read()
+            if 'application/json' in (r.headers.get('content-type') or ''):
+                return json.loads(payload.decode('utf-8') or '{}')
+            return payload
+
+    def post(self, path, body=None):
+        return self._req('POST', path, body or {})
+
+    def download(self, path, dest):
+        req = urllib.request.Request(self.server + path, headers={'x-duke-agent': self.token})
+        with urllib.request.urlopen(req, timeout=600) as r, open(dest, 'wb') as f:
+            shutil.copyfileobj(r, f, 1024 * 1024)
+
+    def upload(self, path, file):
+        size = os.path.getsize(file)
+        with open(file, 'rb') as f:
+            req = urllib.request.Request(self.server + path, data=f, method='POST',
+                                         headers={'x-duke-agent': self.token, 'content-type': 'application/zip', 'content-length': str(size)})
+            with urllib.request.urlopen(req, timeout=3600) as r:
+                return json.loads(r.read().decode('utf-8') or '{}')
+
+
+class BuildLog:
+    """Buffers log lines and streams them to Duke every couple of seconds."""
+    def __init__(self, duke, build_id):
+        self.duke, self.bid = duke, build_id
+        self.lines, self.lock = [], threading.Lock()
+        self.phase, self.progress, self.canceled = None, None, False
+        self.tail = []
+
+    def add(self, line, echo=True):
+        line = line.rstrip()
+        if not line:
+            return
+        if echo:
+            print(line)
+        with self.lock:
+            self.lines.append(line[:1000])
+            self.tail = (self.tail + [line])[-80:]
+
+    def set(self, phase, progress):
+        self.phase, self.progress = phase, progress
+        self.add('== ' + phase)
+        self.flush()
+
+    def flush(self):
+        with self.lock:
+            lines, self.lines = self.lines[-200:], []
+        try:
+            r = self.duke.post('/api/agent/builds/%s/log' % self.bid, {'lines': lines, 'phase': self.phase, 'progress': self.progress})
+            if isinstance(r, dict) and r.get('canceled'):
+                self.canceled = True
+        except Exception as e:
+            print('  (could not send log: %s)' % e)
+
+
+def run(cmd, log, cwd=None, important=None, timeout=4 * 3600):
+    """Run a command, stream interesting output to Duke, raise on failure."""
+    log.add('> ' + ' '.join('"%s"' % c if ' ' in c else c for c in cmd))
+    p = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='replace')
+    last = time.time()
+    start = time.time()
+    for line in p.stdout:
+        keep = important is None or any(k in line for k in important) or 'error' in line.lower() or 'warning C' in line
+        log.add(line, echo=True) if keep else print(line.rstrip())
+        if time.time() - last > 3:
+            log.flush(); last = time.time()
+            if log.canceled:
+                p.kill(); raise RuntimeError('Build canceled from Duke Forge')
+        if time.time() - start > timeout:
+            p.kill(); raise RuntimeError('Timed out: ' + cmd[0])
+    p.wait()
+    log.flush()
+    if p.returncode != 0:
+        raise RuntimeError('%s exited with code %s' % (os.path.basename(cmd[0]), p.returncode))
+
+
+def zip_dir(src, dest):
+    with zipfile.ZipFile(dest, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as z:
+        for root, _, files in os.walk(src):
+            for f in files:
+                full = os.path.join(root, f)
+                z.write(full, os.path.relpath(full, src))
+
+
+# ---------------------------------------------------------------- the build
+def build(duke, job, engines, args):
+    bid = job['id']
+    log = BuildLog(duke, bid)
+    try:
+        engines = find_engines(args.engine) or engines  # pick up engines installed since the agent started
+        want = (job.get('engineVersion') or '').strip()
+        engine = next((e for e in engines if e['version'] == want), None) if want else None
+        engine = engine or (engines[0] if engines else None)
+        if not engine:
+            raise RuntimeError('Unreal Engine 5 was not found on this PC. Install it from the Epic Games Launcher or pass --engine "C:/Program Files/Epic Games/UE_5.x".')
+        log.add('Using Unreal Engine %s at %s' % (engine['version'], engine['path']))
+        ue = engine['path']
+        editor = os.path.join(ue, 'Engine', 'Binaries', 'Win64', 'UnrealEditor-Cmd.exe')
+        build_bat = os.path.join(ue, 'Engine', 'Build', 'BatchFiles', 'Build.bat')
+        uat = os.path.join(ue, 'Engine', 'Build', 'BatchFiles', 'RunUAT.bat')
+
+        if job.get('localProject'):
+            return build_local(duke, job, ue, uat, log)
+
+        # 1. project
+        log.set('Downloading your Unreal project from Duke', 5)
+        jobdir = os.path.join(WORK, bid)
+        if os.path.exists(jobdir):
+            shutil.rmtree(jobdir, ignore_errors=True)
+        os.makedirs(jobdir, exist_ok=True)
+        zpath = os.path.join(jobdir, 'project.zip')
+        duke.download('/api/agent/builds/%s/project.zip' % bid, zpath)
+        with zipfile.ZipFile(zpath) as z:
+            z.extractall(jobdir)
+        projdir = next(os.path.join(jobdir, d) for d in os.listdir(jobdir) if os.path.isdir(os.path.join(jobdir, d)))
+        uproject = os.path.join(projdir, 'DukeGame.uproject')
+        log.add('Project ready: ' + projdir)
+
+        # 2. compile editor module (needed to run the import script)
+        log.set('Compiling game code (C++)', 15)
+        run([build_bat, 'DukeGameEditor', 'Win64', 'Development', '-Project=' + uproject, '-WaitMutex', '-NoHotReload'], log,
+            important=['error', 'Building', 'Compil', 'Total time'])
+
+        # 3. import Meshy assets + create materials
+        log.set('Importing your 3D models and animations', 35)
+        script = os.path.join(projdir, 'Content', 'Python', 'duke_import.py')
+        run([editor, uproject, '-run=pythonscript', '-script=' + script, '-unattended', '-nosplash', '-nullrhi', '-stdout', '-FullStdOutLogOutput'], log,
+            important=['[Duke]', 'Error', 'Python'])
+        report = os.path.join(projdir, 'Saved', 'DukeImport.json')
+        if os.path.exists(report):
+            r = json.load(open(report, encoding='utf-8'))
+            for e in r.get('errors', []):
+                log.add('Import warning: ' + e)
+            if r.get('status') != 'ok':
+                raise RuntimeError('Asset import script failed — see the log above')
+
+        # 4. cook + package
+        log.set('Cooking and packaging the game (this takes a while the first time)', 50)
+        archive = os.path.join(jobdir, 'Build')
+        config = 'Shipping' if job.get('config', 'Shipping') == 'Shipping' else 'Development'
+        run([uat, 'BuildCookRun', '-project=' + uproject, '-noP4', '-platform=Win64', '-clientconfig=' + config, '-build', '-cook', '-stage', '-pak', '-iostore',
+             '-prereqs', '-archive', '-archivedirectory=' + archive, '-utf8output', '-unattended'], log,
+            important=['BUILD SUCCESSFUL', 'BUILD FAILED', 'Error', 'Cook', 'Stage', 'Package', 'Archive', 'LogCook: Display: Cooked'])
+        packaged = next((os.path.join(archive, d) for d in ('Windows', 'WindowsNoEditor', 'Win64') if os.path.isdir(os.path.join(archive, d))), archive)
+
+        # 5. upload
+        log.set('Uploading your playable build to Duke', 90)
+        out_zip = os.path.join(jobdir, 'game.zip')
+        zip_dir(packaged, out_zip)
+        duke.upload('/api/agent/builds/%s/artifact' % bid, out_zip)
+
+        # 6. publish (optional)
+        itch_url = None
+        if job.get('publish') and job['publish'].get('itch'):
+            butler = find_butler()
+            if butler:
+                log.set('Publishing to itch.io', 95)
+                run([butler, 'push', packaged, job['publish']['itch'], '--userversion', time.strftime('%Y.%m.%d.%H%M')], log)
+                user_game = job['publish']['itch'].split(':')[0].split('/')
+                itch_url = 'https://%s.itch.io/%s' % (user_game[0], user_game[1])
+            else:
+                log.add('itch.io publishing skipped: install butler (https://itch.io/docs/butler/) and run "butler login" once.')
+        log.flush()
+        duke.post('/api/agent/builds/%s/finish' % bid, {'status': 'succeeded', 'itchUrl': itch_url, 'lines': ['Playable build at ' + packaged]})
+        print('\nBuild %s succeeded. Game folder: %s\n' % (bid, packaged))
+    except Exception as e:
+        log.add('BUILD FAILED: %s' % e)
+        log.flush()
+        try:
+            duke.post('/api/agent/builds/%s/finish' % bid, {'status': 'failed', 'error': str(e), 'lines': log.tail[-30:]})
+        except Exception:
+            pass
+        print('\nBuild %s failed: %s\n' % (bid, e))
+
+
+def build_local(duke, job, ue, uat, log):
+    """Packages the creator's own Unreal project in place (the one linked in step 11)."""
+    bid = job['id']
+    uproject = job['localProject']
+    if not uproject.lower().endswith('.uproject'):
+        uproject = next(iter(glob.glob(os.path.join(uproject, '*.uproject'))), uproject)
+    if not os.path.isfile(uproject):
+        raise RuntimeError('Your Unreal project was not found at %s' % uproject)
+    log.add('Packaging your project: ' + uproject)
+    jobdir = os.path.join(WORK, bid)
+    os.makedirs(jobdir, exist_ok=True)
+    archive = os.path.join(jobdir, 'Build')
+    config = 'Shipping' if job.get('config', 'Shipping') == 'Shipping' else 'Development'
+    log.set('Compiling, cooking and packaging your project', 20)
+    run([uat, 'BuildCookRun', '-project=' + uproject, '-noP4', '-platform=Win64', '-clientconfig=' + config, '-build', '-cook', '-stage', '-pak', '-iostore',
+         '-prereqs', '-archive', '-archivedirectory=' + archive, '-utf8output', '-unattended'], log,
+        important=['BUILD SUCCESSFUL', 'BUILD FAILED', 'Error', 'Cook', 'Stage', 'Package', 'Archive', 'LogCook: Display: Cooked'])
+    packaged = next((os.path.join(archive, d) for d in ('Windows', 'WindowsNoEditor', 'Win64') if os.path.isdir(os.path.join(archive, d))), archive)
+    log.set('Uploading your playable build to Duke', 90)
+    out_zip = os.path.join(jobdir, 'game.zip')
+    zip_dir(packaged, out_zip)
+    duke.upload('/api/agent/builds/%s/artifact' % bid, out_zip)
+    log.flush()
+    duke.post('/api/agent/builds/%s/finish' % bid, {'status': 'succeeded', 'lines': ['Playable build at ' + packaged]})
+    print('\nBuild %s succeeded. Game folder: %s\n' % (bid, packaged))
+
+
+def report(duke, hello, engines_arg):
+    """Sends hardware/tools to Duke and inspects every project Duke asks about."""
+    engines = find_engines(engines_arg)
+    hello.update({'engines': [e['version'] for e in engines], 'visualStudio': has_visual_studio(), 'tools': find_tools()})
+    hello.update(machine_info())
+    r = duke.post('/api/agent/hello', hello)
+    for w in (r or {}).get('watch', []) or []:
+        try:
+            inspect_project(duke, w['projectId'], w['path'])
+        except Exception as e:
+            print('  (could not inspect %s: %s)' % (w.get('path'), e))
+    return engines
+
+
+# ---------------------------------------------------------------- Duke Link (your tools, live inside Duke)
+TOOL_TITLES = [('ue', ('Unreal Editor',)), ('cc5', ('Character Creator',)), ('blender', ('Blender',)), ('vs', ('Microsoft Visual Studio',))]
+VK = {'Enter': 0x0D, 'Escape': 0x1B, 'Backspace': 0x08, 'Tab': 0x09, 'Space': 0x20, ' ': 0x20, 'Delete': 0x2E, 'Insert': 0x2D, 'Home': 0x24, 'End': 0x23,
+      'PageUp': 0x21, 'PageDown': 0x22, 'ArrowLeft': 0x25, 'ArrowUp': 0x26, 'ArrowRight': 0x27, 'ArrowDown': 0x28, 'Shift': 0x10, 'Control': 0x11, 'Alt': 0x12,
+      'CapsLock': 0x14, 'Meta': 0x5B}
+UE_SNIPPETS = {
+    'ue_save_all': "import unreal\nunreal.EditorLoadingAndSavingUtils.save_dirty_packages(True, True)\nprint('Saved')",
+    'ue_play': "import unreal\nunreal.get_editor_subsystem(unreal.LevelEditorSubsystem).editor_request_begin_play()\nprint('Playing')",
+    'ue_stop': "import unreal\nunreal.get_editor_subsystem(unreal.LevelEditorSubsystem).editor_request_end_play()\nprint('Stopped')",
+    'ue_blockout_room': """import unreal
+cube = unreal.EditorAssetLibrary.load_asset('/Engine/BasicShapes/Cube')
+sub = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+def box(name, loc, scale):
+    a = sub.spawn_actor_from_object(cube, unreal.Vector(*loc))
+    a.set_actor_scale3d(unreal.Vector(*scale)); a.set_actor_label('Duke_Blockout_' + name); a.set_folder_path('DukeBlockout')
+box('Floor', (0, 0, -10), (20, 20, 0.2))
+box('WallN', (0, 1000, 150), (20, 0.4, 3))
+box('WallE', (1000, 0, 150), (0.4, 20, 3))
+box('WallW', (-1000, 0, 150), (0.4, 20, 3))
+box('WallS_L', (-600, -1000, 150), (12, 0.4, 3))
+box('WallS_R', (700, -1000, 150), (6, 0.4, 3))
+print('Gray test room added in the DukeBlockout folder')""",
+}
+
+
+def _user32():
+    return ctypes.windll.user32 if platform.system() == 'Windows' else None
+
+
+class Link:
+    """Streams the chosen tool window to Duke and applies the creator's input and actions."""
+    def __init__(self, duke, args):
+        self.duke, self.args = duke, args
+        self.hwnd, self.title, self.watch = None, None, False
+        self.control = None if not args.no_control else False
+        self.project = ''
+        self.u = _user32()
+        self.pil = None
+        if self.u:
+            try:
+                ctypes.windll.shcore.SetProcessDpiAwareness(2)
+            except Exception:
+                pass
+        try:
+            from PIL import ImageGrab, Image  # noqa
+            self.pil = (ImageGrab, Image)
+        except Exception:
+            print('Duke Link: installing Pillow for the live view...')
+            subprocess.run([sys.executable, '-m', 'pip', 'install', '--user', '--quiet', 'pillow'], timeout=300)
+            try:
+                from PIL import ImageGrab, Image  # noqa
+                self.pil = (ImageGrab, Image)
+            except Exception:
+                print('Duke Link: live view unavailable (Pillow could not be installed).')
+
+    def start(self):
+        for fn in (self.poll_loop, self.state_loop, self.capture_loop):
+            threading.Thread(target=fn, daemon=True).start()
+
+    # -- windows
+    def windows(self):
+        if not self.u:
+            return []
+        out = []
+        PROC = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)
+
+        def cb(h, _):
+            if self.u.IsWindowVisible(h):
+                n = self.u.GetWindowTextLengthW(h)
+                if n:
+                    buf = ctypes.create_unicode_buffer(n + 1)
+                    self.u.GetWindowTextW(h, buf, n + 1)
+                    t = buf.value
+                    for tool, keys in TOOL_TITLES:
+                        if any(k in t for k in keys):
+                            out.append({'id': str(h), 'title': t, 'tool': tool})
+                            break
+            return True
+        self.u.EnumWindows(PROC(cb), 0)
+        return out
+
+    def rect(self):
+        r = ctypes.wintypes.RECT()
+        if not self.hwnd or not self.u.GetWindowRect(ctypes.c_void_p(self.hwnd), ctypes.byref(r)):
+            return None
+        return (r.left, r.top, r.right, r.bottom)
+
+    def state_loop(self):
+        while True:
+            try:
+                wins = self.windows()
+                if self.hwnd and not any(w['id'] == str(self.hwnd) for w in wins):
+                    self.hwnd = None
+                if not self.hwnd and wins:
+                    self.hwnd, self.title = int(wins[0]['id']), wins[0]['title']
+                r = self.duke.post('/api/agent/link/state', {'windows': wins, 'window': self.title if self.hwnd else None, 'control': self.control, 'capture': bool(self.pil)})
+                self.watch = bool(r.get('watch'))
+            except Exception:
+                pass
+            time.sleep(3)
+
+    def capture_loop(self):
+        import io
+        while True:
+            if not (self.watch and self.hwnd and self.pil and self.u):
+                time.sleep(0.5)
+                continue
+            t0 = time.time()
+            try:
+                box = self.rect()
+                if box and box[2] - box[0] > 50 and not self.u.IsIconic(ctypes.c_void_p(self.hwnd)):
+                    img = self.pil[0].grab(bbox=box, all_screens=True).convert('RGB')
+                    if img.width > 1280:
+                        img = img.resize((1280, int(img.height * 1280 / img.width)))
+                    b = io.BytesIO()
+                    img.save(b, 'JPEG', quality=62)
+                    data = b.getvalue()
+                    req = urllib.request.Request(self.duke.server + '/api/agent/link/frame', data=data, method='POST',
+                                                 headers={'x-duke-agent': self.duke.token, 'content-type': 'image/jpeg', 'x-frame-w': str(img.width),
+                                                          'x-frame-h': str(img.height), 'x-window': (self.title or '')[:150].encode('ascii', 'ignore').decode()})
+                    with urllib.request.urlopen(req, timeout=10) as resp:
+                        self.watch = bool(json.loads(resp.read() or b'{}').get('watch'))
+            except Exception:
+                time.sleep(1)
+            time.sleep(max(0.0, 0.12 - (time.time() - t0)))
+
+    def poll_loop(self):
+        while True:
+            try:
+                r = self.duke._req('POST', '/api/agent/link/poll', {}, timeout=40)
+                self.watch = bool(r.get('watch'))
+                for c in r.get('commands', []):
+                    threading.Thread(target=self.run, args=(c,), daemon=True).start() if c['type'] in ('action', 'python', 'launch') else self.run(c)
+            except Exception:
+                time.sleep(3)
+
+    def result(self, cid, ok, output):
+        try:
+            self.duke.post('/api/agent/link/result', {'id': cid, 'ok': ok, 'output': output, 'control': self.control})
+        except Exception:
+            pass
+
+    def allowed(self):
+        if self.control is None and self.u:
+            ans = self.u.MessageBoxW(None, 'Duke Forge wants to control your Unreal, Blender, Character Creator and Visual Studio windows from your browser '
+                                           '(mouse, keyboard and one-click actions) until this agent restarts.\n\nAllow?', 'Duke Link', 0x4 | 0x20 | 0x40000 | 0x10000)
+            self.control = (ans == 6)
+            self.result('control', self.control, 'allowed' if self.control else 'declined')
+        return bool(self.control)
+
+    # -- commands
+    def run(self, c):
+        cid = c.get('id')
+        try:
+            t = c['type']
+            if t == 'focus':
+                if any(w['id'] == c['window'] for w in self.windows()):
+                    self.hwnd = int(c['window'])
+                    self.title = next(w['title'] for w in self.windows() if w['id'] == c['window'])
+                    if self.allowed():
+                        self.u.ShowWindow(ctypes.c_void_p(self.hwnd), 9)
+                        self.u.SetForegroundWindow(ctypes.c_void_p(self.hwnd))
+                return self.result(cid, True, 'Showing ' + (self.title or ''))
+            if t == 'input':
+                if self.allowed():
+                    self.input(c['e'])
+                return
+            if not self.allowed():
+                return self.result(cid, False, 'Control was declined on your PC. Restart the Duke agent to be asked again.')
+            if t == 'launch':
+                return self.result(cid, True, self.launch(c['tool'], c.get('project', '')))
+            if t == 'action':
+                return self.result(cid, True, self.action(c['action'], c.get('project', '')))
+            if t == 'python':
+                return self.result(cid, True, ue_python(c['code']))
+        except Exception as e:
+            self.result(cid, False, str(e))
+
+    def input(self, e):
+        u = self.u
+        if not (u and self.hwnd):
+            return
+        box = self.rect()
+        if not box:
+            return
+        if u.GetForegroundWindow() != self.hwnd:
+            u.SetForegroundWindow(ctypes.c_void_p(self.hwnd))
+        k = e['k']
+        if k in ('move', 'down', 'up', 'wheel'):
+            x = int(box[0] + e['x'] * (box[2] - box[0]))
+            y = int(box[1] + e['y'] * (box[3] - box[1]))
+            u.SetCursorPos(x, y)
+            flags = {('down', 'left'): 0x2, ('up', 'left'): 0x4, ('down', 'right'): 0x8, ('up', 'right'): 0x10, ('down', 'middle'): 0x20, ('up', 'middle'): 0x40}
+            if k == 'wheel':
+                u.mouse_event(0x800, 0, 0, ctypes.c_uint32(int(-e['d'] * 120) & 0xffffffff).value, 0)
+            elif (k, e['b']) in flags:
+                u.mouse_event(flags[(k, e['b'])], 0, 0, 0, 0)
+        elif k == 'key':
+            vk = VK.get(e['key'])
+            code = e.get('code', '')
+            if vk is None and len(e['key']) == 1:
+                vk = u.VkKeyScanW(ord(e['key'])) & 0xff
+            if vk is None and code.startswith('F') and code[1:].isdigit():
+                vk = 0x6F + int(code[1:])
+            if vk is not None:
+                u.keybd_event(vk, 0, 0 if e['down'] else 0x2, 0)
+        elif k == 'text':
+            for ch in e['text']:
+                vk = u.VkKeyScanW(ord(ch))
+                if vk == -1:
+                    continue
+                shift = (vk >> 8) & 1
+                if shift:
+                    u.keybd_event(0x10, 0, 0, 0)
+                u.keybd_event(vk & 0xff, 0, 0, 0)
+                u.keybd_event(vk & 0xff, 0, 2, 0)
+                if shift:
+                    u.keybd_event(0x10, 0, 2, 0)
+
+    def launch(self, tool, project):
+        if tool == 'ue':
+            engines = find_engines(self.args.engine)
+            if not engines:
+                raise RuntimeError('Unreal Engine 5 is not installed yet. Install it from the Epic Games Launcher.')
+            exe = os.path.join(engines[0]['path'], 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe')
+            subprocess.Popen([exe] + ([project] if project and os.path.exists(project) else []))
+            return 'Opening Unreal Engine %s%s' % (engines[0]['version'], ' with your project' if project and os.path.exists(project) else '')
+        tools = find_tools()
+        if tool == 'blender':
+            exe = shutil.which('blender') or next(iter(sorted(glob.glob(os.path.join(os.environ.get('ProgramFiles', r'C:\Program Files'), 'Blender Foundation', 'Blender*', 'blender.exe')))[-1:]), None)
+            if not exe:
+                raise RuntimeError('Blender is not installed yet. Get it free from blender.org.')
+            subprocess.Popen([exe])
+            return 'Opening Blender'
+        if tool == 'cc5':
+            exe = tools.get('cc5') and next(iter(glob.glob(os.path.join(tools['cc5'], '**', 'CharacterCreator*.exe'), recursive=True)), None)
+            if not exe:
+                raise RuntimeError('Character Creator 5 was not found. Install it from Reallusion Hub.')
+            subprocess.Popen([exe])
+            return 'Opening Character Creator 5'
+        if tool == 'vs':
+            vswhere = os.path.join(os.environ.get('ProgramFiles(x86)', r'C:\Program Files (x86)'), 'Microsoft Visual Studio', 'Installer', 'vswhere.exe')
+            exe = _run([vswhere, '-latest', '-property', 'productPath']) if os.path.exists(vswhere) else ''
+            if not exe:
+                raise RuntimeError('Visual Studio was not found.')
+            subprocess.Popen([exe])
+            return 'Opening Visual Studio'
+        raise RuntimeError('Unknown tool')
+
+    def action(self, name, project):
+        root = os.path.dirname(project) if project.lower().endswith('.uproject') else project
+        need = name in ('ue_enable_remote', 'ue_enable_plugins', 'ue_make_folders', 'ue_git_init', 'git_commit')
+        if need and not (project and os.path.isfile(project)):
+            raise RuntimeError('Add your .uproject path in step 11 first.')
+        if name == 'ue_enable_remote':
+            ini = os.path.join(root, 'Config', 'DefaultEngine.ini')
+            os.makedirs(os.path.dirname(ini), exist_ok=True)
+            text = open(ini, encoding='utf-8', errors='ignore').read() if os.path.exists(ini) else ''
+            if 'bRemoteExecution=True' not in text:
+                with open(ini, 'a', encoding='utf-8') as f:
+                    f.write('\n[/Script/PythonScriptPlugin.PythonScriptPluginSettings]\nbRemoteExecution=True\n')
+            return 'Remote control is on. Restart Unreal once, then the Unreal buttons in Duke work.'
+        if name == 'ue_enable_plugins':
+            data = json.load(open(project, encoding='utf-8-sig'))
+            plugins = data.setdefault('Plugins', [])
+            for n in ('PCG', 'MassGameplay', 'MassCrowd', 'StateTree', 'PythonScriptPlugin'):
+                hit = next((p for p in plugins if p.get('Name') == n), None)
+                if hit:
+                    hit['Enabled'] = True
+                else:
+                    plugins.append({'Name': n, 'Enabled': True})
+            json.dump(data, open(project, 'w', encoding='utf-8'), indent='\t')
+            return 'Plugins turned on: PCG, Mass Crowd, State Tree, Python. Open Unreal again; it may ask to rebuild, say Yes.'
+        if name == 'ue_make_folders':
+            for f in ('Characters', 'Environments', 'Gameplay', 'Maps', 'Animation', 'Audio', 'UI'):
+                os.makedirs(os.path.join(root, 'Content', f), exist_ok=True)
+            return 'Made the 7 folders in Content.'
+        if name == 'ue_git_init':
+            if not os.path.isdir(os.path.join(root, '.git')):
+                _run(['git', 'init', root])
+            _run(['git', '-C', root, 'lfs', 'install'])
+            attrs = os.path.join(root, '.gitattributes')
+            if not os.path.exists(attrs):
+                open(attrs, 'w').write(''.join('*.%s filter=lfs diff=lfs merge=lfs -text\n' % e for e in ('uasset', 'umap', 'fbx', 'png', 'jpg', 'tga', 'wav', 'mp3', 'blend', 'ccProject', 'exr', 'psd')))
+            ign = os.path.join(root, '.gitignore')
+            if not os.path.exists(ign):
+                open(ign, 'w').write('Binaries/\nIntermediate/\nSaved/\nDerivedDataCache/\n.vs/\n*.sln\n')
+            return self.commit(root, 'First snapshot from Duke Forge') or 'Version control is on.'
+        if name == 'git_commit':
+            return self.commit(root, 'Snapshot from Duke Forge ' + time.strftime('%Y-%m-%d %H:%M'))
+        if name == 'blender_new':
+            return self.launch('blender', '')
+        if name in UE_SNIPPETS:
+            return ue_python(UE_SNIPPETS[name])
+        raise RuntimeError('Unknown action')
+
+    def commit(self, root, msg):
+        _run(['git', '-C', root, 'add', '-A'], timeout=600)
+        out = _run(['git', '-C', root, '-c', 'user.name=Duke Forge creator', '-c', 'user.email=creator@dukeforge.local', 'commit', '-m', msg], timeout=600)
+        return 'Snapshot saved.' if out else 'Nothing new to save.'
+
+
+def ue_python(code):
+    """Runs Python inside the open Unreal editor through Unreal's own remote execution."""
+    engines = find_engines(None)
+    if not engines:
+        raise RuntimeError('Unreal Engine is not installed.')
+    mod = os.path.join(engines[0]['path'], 'Engine', 'Plugins', 'Experimental', 'PythonScriptPlugin', 'Content', 'Python')
+    if mod not in sys.path:
+        sys.path.append(mod)
+    import remote_execution as rex
+    r = rex.RemoteExecution()
+    r.start()
+    try:
+        for _ in range(30):
+            if r.remote_nodes:
+                break
+            time.sleep(0.2)
+        if not r.remote_nodes:
+            raise RuntimeError('Unreal is not answering. Open your project in Unreal, and press "Let Duke talk to Unreal" once, then restart Unreal.')
+        r.open_command_connection(r.remote_nodes[0]['node_id'])
+        res = r.run_command(code, exec_mode=rex.MODE_EXEC_FILE)
+        out = '\n'.join(str(o.get('output', '')).strip() for o in res.get('output', []) if o.get('output'))
+        if not res.get('success'):
+            raise RuntimeError(out or str(res.get('result')))
+        return out or 'Done'
+    finally:
+        r.stop()
+
+
+def main():
+    ap = argparse.ArgumentParser(description='Duke Forge build agent')
+    ap.add_argument('--server', help='Duke Forge server URL')
+    ap.add_argument('--token', help='Agent token from the Build stage')
+    ap.add_argument('--engine', help='Path to a UE5 install (optional, auto-detected)')
+    ap.add_argument('--check', action='store_true', help='Only check this PC and exit')
+    ap.add_argument('--once', action='store_true', help='Process one build then exit')
+    ap.add_argument('--no-control', action='store_true', help='Duke Link: never allow Duke to control this PC')
+    ap.add_argument('--no-link', action='store_true', help='Do not show your tools live in Duke')
+    args = ap.parse_args()
+
+    engines = find_engines(args.engine)
+    vs = has_visual_studio()
+    print('Duke Forge build agent %s on %s (%s)' % (VERSION, socket.gethostname(), platform.platform()))
+    print('Unreal Engine: ' + (', '.join('%s (%s)' % (e['version'], e['path']) for e in engines) or 'NOT FOUND'))
+    print('Visual Studio C++ tools: ' + ('found' if vs else 'NOT FOUND'))
+    if args.check:
+        sys.exit(0 if engines and vs else 1)
+    if not args.server or not args.token:
+        ap.error('--server and --token are required (copy the command from the Build stage in Duke Forge)')
+    if platform.system() != 'Windows':
+        print('Warning: Duke packages Windows builds; this agent is meant to run on Windows.')
+
+    duke = Duke(args.server, args.token)
+    hello = {'host': socket.gethostname(), 'os': platform.platform(), 'engines': [e['version'] for e in engines], 'visualStudio': vs,
+             'python': platform.python_version(), 'version': VERSION}
+    try:
+        engines = report(duke, hello, args.engine)
+    except urllib.error.HTTPError as e:
+        print('Duke rejected this agent (%s). Copy a fresh command or DukeSetup.cmd from the Build stage.' % e.code); sys.exit(2)
+    except urllib.error.URLError as e:
+        print('Cannot reach %s (%s). Is the address right?' % (args.server, e.reason)); sys.exit(2)
+    print('Connected to %s. Waiting for builds... (Ctrl+C to stop)' % args.server)
+    if not args.no_link and not args.once:
+        Link(duke, args).start()
+        print('Duke Link is on: your Unreal, Blender and Character Creator windows can appear inside Duke.')
+    os.makedirs(WORK, exist_ok=True)
+    last_hello = time.time()
+    while True:
+        try:
+            job = duke.post('/api/agent/next').get('build')
+            if job:
+                print('\n=== Build %s: %s ===' % (job['id'], job.get('title')))
+                build(duke, job, engines, args)
+                if args.once:
+                    return
+            elif time.time() - last_hello > 60:
+                engines = report(duke, hello, args.engine); last_hello = time.time()
+        except urllib.error.HTTPError as e:
+            if e.code == 401:
+                print('Duke rejected the token. Copy a fresh command from the Build stage.'); sys.exit(2)
+            print('Server error %s, retrying...' % e.code)
+        except (urllib.error.URLError, ConnectionError, TimeoutError) as e:
+            print('Cannot reach Duke (%s), retrying...' % e)
+        time.sleep(5)
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('\nStopped.')

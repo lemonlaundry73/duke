@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: duke-forge
+    runtime: docker
+    plan: starter
+    healthCheckPath: /api/health
+    disk:
+      name: duke-data
+      mountPath: /var/data
+      sizeGB: 50
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: DATA_DIR
+        value: /var/data
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_REASONING_MODEL
+        value: gpt-5.3-codex
+      - key: MESHY_API_KEY
+        sync: false
+      - key: SITE_URL
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_PRICE_CREATOR_MONTH
+        sync: false
+      - key: STRIPE_PRICE_CREATOR_YEAR
+        sync: false
+      - key: STRIPE_PRICE_ACADEMY_MONTH
+        sync: false
+      - key: STRIPE_PRICE_ACADEMY_YEAR
+        sync: false
+      - key: STRIPE_PRICE_STUDIO_MONTH
+        sync: false
+      - key: STRIPE_PRICE_STUDIO_YEAR
+        sync: false
+      - key: CLOUD_AGENT_TOKEN
+        sync: false

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Studio | Duke Forge</title>
+  <meta name="robots" content="noindex"/>
+  <link rel="stylesheet" href="/studio.css"/>
+</head>
+<body>
+<div id="app">
+  <aside class="rail" id="rail">
+    <div class="brand"><a class="mark" href="/" title="Duke Forge home">D</a><div><b>Duke Forge</b><span>BUILD THE GAME YOU DREAM ABOUT</span></div><button class="iconBtn railClose" id="railClose" title="Close menu">✕</button></div>
+    <div class="projectPick">
+      <select id="projectSelect" aria-label="Your game"></select>
+      <button class="iconBtn" id="newProject" title="New game">+</button>
+    </div>
+    <div class="modeSwitch" role="tablist" aria-label="Mode">
+      <button data-mode="build" role="tab">Build mode</button><button data-mode="course" role="tab">Course mode</button>
+    </div>
+    <button class="linkBtn" id="linkBtn"><span class="ldot" id="linkDot"></span><span><b>Duke Link</b><small id="linkSub">Your tools, live in Duke</small></span></button>
+    <div class="overall"><div class="bar"><i id="overallBar"></i></div><span id="overallPct">0/67</span></div>
+    <nav id="stepNav" aria-label="Steps"></nav>
+    <div class="railFoot">
+      <button class="planBadge" id="planBadge"></button>
+      <div id="providerLine" class="muted small"></div>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="mobileBar"><button class="iconBtn" id="railOpen" title="Steps">☰</button><b id="mobileTitle">Duke Forge</b><button class="iconBtn" id="showSideM" title="Live preview">▶</button></div>
+    <div id="stage"></div>
+  </main>
+
+  <aside class="side" id="side">
+    <div class="sideHead">
+      <div><span class="eyebrow">LIVE PREVIEW</span><b id="previewTitle">Your world</b></div>
+      <div class="row gap6"><button class="btn ghost sm" id="previewFull">Fullscreen</button><button class="iconBtn" id="sideToggle" title="Hide preview">⟩</button></div>
+    </div>
+    <div class="previewWrap"><iframe id="preview" title="Live preview" allow="fullscreen; pointer-lock" allowfullscreen></iframe></div>
+    <p class="muted small sideNote">A quick in-browser preview of your world plan: districts, landmarks, characters, time of day. Your real game is built in Unreal Engine on your PC.</p>
+  </aside>
+</div>
+<button class="showSide" id="showSide" title="Show live preview">⟨ Preview</button>
+
+<div class="modal" id="modal"><div class="modalCard" id="modalCard"></div></div>
+<div class="pop" id="termPop" role="dialog" aria-live="polite"></div>
+<div class="toast" id="toast" role="status"></div>
+<script type="module" src="/studio.js"></script>
+</body>
+</html>
