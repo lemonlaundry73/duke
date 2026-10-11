@@ -228,6 +228,8 @@ function agentBlock(){
   const ag=S.rm.agent,m=ag?.machine,seen=ag?.seenAt&&Date.now()-Date.parse(ag.seenAt)<10*60e3;
   return {ag,m,seen};
 }
+const AGENT_VERSION='3.4.0';
+const verLess=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)<(y[i]||0);}return false;};
 function machineHtml(){
   const {ag,m,seen}=agentBlock();const t=m?.tools||{};
   const row=(k,v,ok)=>`<span>${k}</span><span class="${ok===false?'badText':ok?'okText':''}">${v}</span>`;
@@ -236,8 +238,10 @@ function machineHtml(){
       ${row('Graphics',(m.gpus||[]).map(g=>`${esc(g.name)} (${g.vramGB} GB)`).join(', ')||'—',(m.gpus||[]).length?(m.gpus||[]).some(g=>g.vramGB>=8):undefined)}
       ${row('Unreal Engine',(m.engines||[]).length?esc(m.engines.join(', ')):'Not installed',(m.engines||[]).length>0)}${row('C++ build tools',m.visualStudio?'Installed':'Missing',!!m.visualStudio)}
       ${row('Character Creator 5',t.cc5?'Installed':'Not found',!!t.cc5)}${row('Headshot',t.headshot?'Installed':'Not found',!!t.headshot)}${row('Blender',t.blender?esc(t.blender):'Not found',!!t.blender)}
-      ${row('Git / Git LFS',`${t.git?esc(t.git):'Git not found'} · ${t.lfs?'LFS ok':'LFS not found'}`,!!(t.git&&t.lfs))}${row('Last seen',ag.seenAt?new Date(ag.seenAt).toLocaleString():'—')}</div>`:''}
-    ${seen?'':`<h3 style="margin:16px 0 8px">Connect your Windows PC</h3>
+      ${row('Git / Git LFS',`${t.git?esc(t.git):'Git not found'} · ${t.lfs?'LFS ok':'LFS not found'}`,!!(t.git&&t.lfs))}${row('Last seen',ag.seenAt?new Date(ag.seenAt).toLocaleString():'—')}
+      ${row('Duke app',m.version?`${esc(m.version)}${verLess(m.version,AGENT_VERSION)?` · update to ${AGENT_VERSION} below`:' · up to date'}`:'—',m.version?!verLess(m.version,AGENT_VERSION):undefined)}</div>`:''}
+    ${seen?`<div class="row gap6 wrap" style="margin-top:12px"><a class="btn ${m?.version&&verLess(m.version,AGENT_VERSION)?'gold':'ghost'}" href="/api/agent/DukeForger.py" download>Download the latest Duke app (DukeForger.py)</a></div>
+      <p class="muted small" style="margin-top:6px">To update: download it, press Ctrl + C in the Duke window on your PC, then run <code>py "$HOME\\Downloads\\DukeForger.py"</code> again. If Windows saves it as "DukeForger (1).py", delete the old one and rename the new one.</p>`:`<h3 style="margin:16px 0 8px">Connect your Windows PC</h3>
     <ol class="stepsList"><li>Get <b>Python</b> if you don't have it: <a href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">python.org</a> (free, about 1 minute). It runs the Duke app.</li>
       <li>Download <b>DukeForger.py</b> below and double-click it. A small window opens and this panel turns green. Keep that window open while you work.</li>
       <li>It's a plain text program with nothing to install: no installer, no background downloads, nothing added to Windows startup. Right-click it and choose <b>Edit</b> to read it.</li>
@@ -552,7 +556,7 @@ function renderLink(){
   const hd=LS.hd??(!!st.pixel&&(tool==='ue'||!tool));
   $('#stage').innerHTML=`<div class="stepHead"><div><span class="eyebrow">DUKE LINK</span><h1>Your tools, live in Duke</h1>
       <p class="muted">Your tools run on your own PC, and Duke shows them here. Open one, then turn on <b>Use it here</b> to click and type in the picture as if you were sitting at your PC.</p></div>
-      <button class="btn sm ghost" data-go="${S.rm.current}">← Back to step ${S.rm.current}</button></div>
+      <div class="row gap6 wrap"><a class="btn sm ghost" href="/api/agent/DukeForger.py" download>Get the Duke app</a><button class="btn sm ghost" data-go="${S.rm.current}">← Back to step ${S.rm.current}</button></div></div>
     ${!st.online?`<div class="banner gold"><b>Your PC is not connected.</b> Duke Link uses the Duke agent on your PC. ${S.rm.agent?.seenAt?'Turn your PC on and double-click DukeForger.py.':`Download <a href="/api/agent/DukeForger.py" download>DukeForger.py</a> and double-click it (step 9 walks you through it).`}</div>`:''}
     <div class="toolRow">${st.tools.map(t=>`<div class="toolCard ${t.open?'open':''} ${LS.want===t.id?'want':''}"><b>${esc(t.name)}</b><p>${esc(t.does)}</p>
       <div class="row gap6 wrap"><span class="chip ${t.installed?'ok':''}">${t.installed?'✓ Installed':'Not installed'}</span>${t.open?'<span class="chip ok">● Open</span>':''}</div>

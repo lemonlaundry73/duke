@@ -14,7 +14,7 @@ Only the Python standard library is used.
 """
 import argparse, base64, ctypes, http.server, io, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
-VERSION = '3.3.0'
+VERSION = '3.4.0'
 # Filled in when you download DukeForger.py from your Duke Forger studio, so a double-click is enough.
 DEFAULT_SERVER = ''
 DEFAULT_TOKEN = ''
@@ -1253,6 +1253,11 @@ def ue_python(code):
 
 
 def main():
+    for stream in (sys.stdout, sys.stderr):  # never crash on unusual characters in the Windows console
+        try:
+            stream.reconfigure(errors='replace')
+        except Exception:
+            pass
     ap = argparse.ArgumentParser(description='Duke Forger build agent')
     ap.add_argument('--server', help='Duke Forger server URL')
     ap.add_argument('--token', help='Agent token from the Build stage')
