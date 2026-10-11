@@ -34,7 +34,7 @@ async function agentTok(req){
 }
 async function userLink(req){
   const user=await requireUser(req);const db=await load();const a=agentFor(db,user.id);
-  if(!a)throw new HttpError(409,'Connect your PC first (step 9): download DukeSetup.cmd.');
+  if(!a)throw new HttpError(409,'Connect your PC first (step 9): download DukeForger.py.');
   return {user,a,s:L(a.token),db};
 }
 const online=s=>Date.now()-s.stateAt<20000;
@@ -234,6 +234,8 @@ export const ACTIONS={
   ue_play:{tool:'ue',label:'Play in the editor',plain:'Starts playing the open level inside Unreal.'},
   ue_stop:{tool:'ue',label:'Stop playing',plain:'Stops play mode.'},
   blender_new:{tool:'blender',label:'Open Blender ready to model',plain:'Starts Blender with an empty scene. Export to anywhere: Duke finds your files.'},
+  agent_autostart_on:{tool:'',label:'Start Duke when my PC starts',plain:'Duke opens by itself in the background when you sign in to Windows, so your PC is always connected.'},
+  agent_autostart_off:{tool:'',label:'Stop starting Duke automatically',plain:'Duke only runs when you double-click DukeForger.py.'},
   blender_connect:{tool:'blender',label:'Put the Duke panel in Blender',plain:'Adds a Duke tab to Blender (press N in the 3D view): your step beside your work, Send to my game, and automatic proof screenshots.'},
   open_exports:{tool:'cc5',label:'Open my Duke exports folder',plain:'Opens the folder Duke watches. Exporting here (or Desktop, Downloads, Documents) is enough: Duke finds the file.'},
   git_commit:{tool:'ue',label:'Save a snapshot (commit)',plain:'Records the current state of your project in version control, so you can always go back.'}

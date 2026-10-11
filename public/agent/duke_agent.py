@@ -14,7 +14,10 @@ Only the Python standard library is used.
 """
 import argparse, base64, ctypes, http.server, io, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
-VERSION = '3.2.0'
+VERSION = '3.3.0'
+# Filled in when you download DukeForger.py from your Duke Forger studio, so a double-click is enough.
+DEFAULT_SERVER = ''
+DEFAULT_TOKEN = ''
 WORK = os.path.join(os.path.expanduser('~'), 'DukeForgeBuilds')
 
 
@@ -73,14 +76,24 @@ def machine_info():
     """CPU, memory and graphics cards, so Duke can check the PC against Unreal's needs."""
     info = {'cpu': platform.processor(), 'cpuCores': os.cpu_count(), 'ramGB': None, 'gpus': []}
     if platform.system() == 'Windows':
-        ps = _run(['powershell', '-NoProfile', '-Command',
-                   '$c=Get-CimInstance Win32_Processor|Select-Object -First 1;$m=Get-CimInstance Win32_ComputerSystem;'
-                   '"$($c.Name)|$($c.NumberOfCores)|$($m.TotalPhysicalMemory)"'], timeout=40)
-        if ps.count('|') == 2:
-            name, cores, mem = ps.split('|')
-            info['cpu'] = name.strip() or info['cpu']
-            info['cpuCores'] = int(cores) if cores.strip().isdigit() else info['cpuCores']
-            info['ramGB'] = round(int(mem) / 1024 ** 3) if mem.strip().isdigit() else None
+        # Memory from Windows itself, processor name from the registry.
+        try:
+            class MEM(ctypes.Structure):
+                _fields_ = [('dwLength', ctypes.c_ulong), ('dwMemoryLoad', ctypes.c_ulong), ('ullTotalPhys', ctypes.c_ulonglong),
+                            ('ullAvailPhys', ctypes.c_ulonglong), ('ullTotalPageFile', ctypes.c_ulonglong), ('ullAvailPageFile', ctypes.c_ulonglong),
+                            ('ullTotalVirtual', ctypes.c_ulonglong), ('ullAvailVirtual', ctypes.c_ulonglong), ('ullAvailExtendedVirtual', ctypes.c_ulonglong)]
+            m = MEM()
+            m.dwLength = ctypes.sizeof(MEM)
+            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(m)):
+                info['ramGB'] = round(m.ullTotalPhys / 1024 ** 3)
+        except Exception:
+            pass
+        try:
+            import winreg
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r'HARDWARE\DESCRIPTION\System\CentralProcessor\0') as k:
+                info['cpu'] = str(winreg.QueryValueEx(k, 'ProcessorNameString')[0]).strip() or info['cpu']
+        except Exception:
+            pass
         # Video memory: the driver registry key is accurate above 4 GB (WMI's AdapterRAM is not).
         try:
             import winreg
@@ -814,6 +827,17 @@ class Link:
             return self.commit(root, 'Snapshot from Duke Forger ' + time.strftime('%Y-%m-%d %H:%M'))
         if name == 'blender_new':
             return self.launch('blender', '')
+        if name in ('agent_autostart_on', 'agent_autostart_off'):
+            startup = os.path.join(os.environ.get('APPDATA', ''), 'Microsoft', 'Windows', 'Start Menu', 'Programs', 'Startup', 'Duke Forger.cmd')
+            if name == 'agent_autostart_off':
+                if os.path.exists(startup):
+                    os.remove(startup)
+                return 'Duke will no longer start by itself. Double-click DukeForger.py when you want it.'
+            me = os.path.abspath(sys.argv[0])
+            py = sys.executable.replace('python.exe', 'pythonw.exe') if sys.executable.lower().endswith('python.exe') else sys.executable
+            with open(startup, 'w') as f:
+                f.write('@echo off\r\nstart "" "%s" "%s" --server %s --token %s\r\n' % (py, me, self.duke.server, self.duke.token))
+            return 'Duke will start by itself when you sign in to Windows.'
         if name == 'blender_connect':
             return install_blender_addon(self.duke.server, force=True)
         if name == 'open_exports':
@@ -1221,6 +1245,8 @@ def main():
     ap.add_argument('--no-control', action='store_true', help='Duke Link: never allow Duke to control this PC')
     ap.add_argument('--no-link', action='store_true', help='Do not show your tools live in Duke')
     args = ap.parse_args()
+    args.server = args.server or DEFAULT_SERVER or None
+    args.token = args.token or DEFAULT_TOKEN or None
 
     engines = find_engines(args.engine)
     vs = has_visual_studio()
@@ -1229,6 +1255,13 @@ def main():
     print('Visual Studio C++ tools: ' + ('found' if vs else 'NOT FOUND'))
     if args.check:
         sys.exit(0 if engines and vs else 1)
+    if not engines or not vs:
+        print('\nTo build games this PC also needs (free, from the makers\' own sites):')
+        if not engines:
+            print('  - Epic Games Launcher, then Unreal Engine 5:  https://store.epicgames.com/download')
+        if not vs:
+            print('  - Visual Studio 2022 with "Game development with C++":  https://visualstudio.microsoft.com/downloads/')
+        print('Duke keeps working meanwhile, and notices them as soon as they are installed.\n')
     if not args.server or not args.token:
         ap.error('--server and --token are required (copy the command from the Build stage in Duke Forger)')
     if platform.system() != 'Windows':
@@ -1273,3 +1306,11 @@ if __name__ == '__main__':
         main()
     except KeyboardInterrupt:
         print('\nStopped.')
+    except SystemExit:
+        if len(sys.argv) == 1:
+            input('\nPress Enter to close this window.')
+        raise
+    except Exception as e:
+        print('\nDuke stopped because of an error: %s' % e)
+        if len(sys.argv) == 1:
+            input('Press Enter to close this window.')

@@ -46,7 +46,7 @@ const CHECKS={
   combat_rules:p=>({ok:Number(p.design.combat?.player_health)>0&&!!p.design.combat?.aim_style}),
   weapon1:p=>({ok:(p.design.weapons||[]).some(w=>w.name&&w.type&&w.look)}),
   asset_list:p=>{const a=p.roadmap.assets;const good=a.filter(x=>x.name&&x.action&&x.source&&x.license).length;return {ok:a.length>=10&&good===a.length,detail:`${good} complete of ${a.length} (need 10+)`};},
-  agent_online:(p,c)=>({ok:fresh(c.agent?.seenAt,10),detail:c.agent?.seenAt?`Last seen ${new Date(c.agent.seenAt).toLocaleString()}`:'Run DukeSetup.cmd on your PC'}),
+  agent_online:(p,c)=>({ok:fresh(c.agent?.seenAt,10),detail:c.agent?.seenAt?`Last seen ${new Date(c.agent.seenAt).toLocaleString()}`:'Double-click DukeForger.py on your PC'}),
   pc_gpu:(p,c)=>{const g=c.agent?.machine?.gpus||[];const best=g.reduce((m,x)=>Math.max(m,gb(x.vramGB)),0);
     return {ok:best>=MIN_GPU_GB,detail:g.length?`${g.map(x=>`${x.name} (${gb(x.vramGB)} GB)`).join(', ')}`:'Waiting for the agent to report'};},
   pc_ram:(p,c)=>{const r=gb(c.agent?.machine?.ramGB);return {ok:r>=MIN_RAM_GB,detail:r?`${r} GB${r<64?' (64 GB recommended)':''}`:'Waiting for the agent to report'};},

@@ -11,7 +11,7 @@ import { runArt, validateStep, entityDir, ART_STEPS } from './art.js';
 import { npcReply } from './providers/duke-ai.js';
 import { buildUnrealProject } from './unreal/generate.js';
 import { createZip } from './zip.js';
-import { UPLOAD_DIR, DATA_DIR } from './paths.js';
+import { UPLOAD_DIR, DATA_DIR, PUBLIC_DIR } from './paths.js';
 import { meshyReady } from './meshy.js';
 import { brainName } from './brain.js';
 import { settle, agentFor, ctxFor, ownerOf } from './ctx.js';
@@ -59,7 +59,7 @@ async function agentAuth(req){
   const db=await load();const tok=String(req.headers['x-duke-agent']||'');
   if(isCloud(tok))return {db,cloud:true,tok};
   const a=tok&&db.agents?.[tok];
-  if(!a)throw new HttpError(401,'Invalid agent token. Download a fresh DukeSetup.cmd from Duke Forger.');
+  if(!a)throw new HttpError(401,'Invalid agent token. Download a fresh DukeForger.py from Duke Forger.');
   return {db,agent:a,tok};
 }
 const mayTouch=(auth,p,b)=>auth.cloud?!!b?.cloud:p.ownerId===auth.agent.userId;
@@ -217,13 +217,17 @@ export function registerProduction(r){
       command:`py duke_agent.py --server ${server} --token ${a.token}`,download:'/agent/duke_agent.py',
       manual:[`winget install -e --id Python.Python.3.12`,`curl.exe -L -o duke_agent.py ${server}/agent/duke_agent.py`,`py duke_agent.py --server ${server} --token ${a.token}`]};
   });
-  // One-click Windows setup: installs Python, VS C++ build tools, Epic Games Launcher and the agent (auto-start).
-  // Plain, readable Windows setup: no PowerShell, no hidden download-and-run, nothing outside the steps
-  // written in the file. Antivirus tools flag the "download a script and run it hidden" pattern, so we avoid it.
-  r.get('/api/agent/DukeSetup.cmd',async({req,res})=>{
+  // The Duke app for Windows: one readable Python file with this creator's server and key filled in.
+  // No installer, no hidden downloads, nothing added to Windows startup unless the creator turns it on in Duke,
+  // so antivirus tools (McAfee, Norton, Defender) have nothing installer-like to object to.
+  r.get('/api/agent/DukeForger.py',async({req,res})=>{
     const user=await requireUser(req);const a=await myAgent(user);
-    send(res,200,setupCmd(serverUrl(req),a.token),{'content-type':'application/octet-stream','content-disposition':'attachment; filename="DukeForgerSetup.cmd"'});
+    const src=await fsp.readFile(path.join(PUBLIC_DIR,'agent','duke_agent.py'),'utf8');
+    const out=src.replace(/^DEFAULT_SERVER = ''$/m,`DEFAULT_SERVER = ${JSON.stringify(serverUrl(req))}`).replace(/^DEFAULT_TOKEN = ''$/m,`DEFAULT_TOKEN = ${JSON.stringify(a.token)}`);
+    send(res,200,out,{'content-type':'text/x-python; charset=utf-8','content-disposition':'attachment; filename="DukeForger.py"','cache-control':'no-store'});
   });
+  // Old links to the .cmd installer now get the plain Python app.
+  r.get('/api/agent/DukeSetup.cmd',async({res})=>{res.writeHead(302,{location:'/api/agent/DukeForger.py'});res.end();});
   const str=(v,n)=>String(v??'').slice(0,n);
   r.post('/api/agent/hello',async({req,body})=>{
     const auth=await agentAuth(req);
@@ -304,64 +308,3 @@ export function registerProduction(r){
   });
 }
 
-function setupCmd(server,token){
-  const L=[
-'@echo off','setlocal','title Duke Forger PC setup',
-'echo ==========================================================',
-'echo   Duke Forger PC setup',
-'echo   This file only runs the steps written in it.',
-'echo   Right-click it and choose Edit to read every line.',
-'echo ==========================================================',
-'set "DIR=%USERPROFILE%\\DukeForger"',
-'if not exist "%DIR%" mkdir "%DIR%"',
-'',
-'REM 1. Python, which runs the Duke agent',
-'set "PY="',
-'where py >nul 2>nul && set "PY=py"',
-'if not defined PY if exist "%SystemRoot%\\py.exe" set "PY=%SystemRoot%\\py.exe"',
-'if not defined PY if exist "%LOCALAPPDATA%\\Programs\\Python\\Launcher\\py.exe" set "PY=%LOCALAPPDATA%\\Programs\\Python\\Launcher\\py.exe"',
-'if not defined PY (',
-'  echo Installing Python 3.12 from Microsoft winget...',
-'  winget install --id Python.Python.3.12 --exact --silent --accept-source-agreements --accept-package-agreements',
-'  if exist "%SystemRoot%\\py.exe" set "PY=%SystemRoot%\\py.exe"',
-'  if exist "%LOCALAPPDATA%\\Programs\\Python\\Launcher\\py.exe" set "PY=%LOCALAPPDATA%\\Programs\\Python\\Launcher\\py.exe"',
-')',
-'if not defined PY ( echo Python could not be installed. Install it from python.org, then run this file again. & pause & exit /b 1 )',
-'',
-'REM 2. Visual Studio C++ build tools: Unreal uses them to compile game code',
-'set "VSW=%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere.exe"',
-'set "HASVC="',
-'if exist "%VSW%" for /f "usebackq delims=" %%i in (`"%VSW%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "HASVC=1"',
-'if not defined HASVC (',
-'  echo Installing Visual Studio 2022 C++ build tools. Large download, about 10 minutes...',
-'  winget install --id Microsoft.VisualStudio.2022.BuildTools --exact --silent --accept-source-agreements --accept-package-agreements --override "--quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22621 --includeRecommended"',
-')',
-'',
-'REM 3. Epic Games Launcher, where you install Unreal Engine 5',
-'if not exist "%ProgramFiles(x86)%\\Epic Games\\Launcher" winget install --id EpicGames.EpicGamesLauncher --exact --silent --accept-source-agreements --accept-package-agreements',
-'',
-'REM 4. The Duke agent: a readable Python script from your Duke Forger site',
-`echo Downloading the Duke agent from ${server}/agent/duke_agent.py`,
-`curl.exe -fsSL -o "%DIR%\\duke_agent.py" "${server}/agent/duke_agent.py"`,
-'if errorlevel 1 ( echo Download failed. Check your internet connection and run this file again. & pause & exit /b 1 )',
-'"%PY%" -m pip install --user --quiet --disable-pip-version-check pillow',
-'',
-'REM 5. A start file in your Startup folder so the agent opens when you sign in. Delete it there to stop that.',
-'> "%DIR%\\Start Duke agent.cmd" echo @echo off',
-'>> "%DIR%\\Start Duke agent.cmd" echo title Duke Forger agent - keep this window open',
-`>> "%DIR%\\Start Duke agent.cmd" echo "%PY%" "%DIR%\\duke_agent.py" --server ${server} --token ${token}`,
-'copy /y "%DIR%\\Start Duke agent.cmd" "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Duke Forger agent.cmd" >nul',
-'start "Duke Forger agent" /min "%DIR%\\Start Duke agent.cmd"',
-'echo The Duke agent is running in a small window on your taskbar.',
-'',
-'REM 6. Check for Unreal Engine 5',
-'"%PY%" "%DIR%\\duke_agent.py" --check',
-'if errorlevel 1 (',
-'  echo.',
-'  echo LAST STEP: install Unreal Engine 5 in the Epic Games Launcher. Epic requires your own account.',
-'  echo   Unreal Engine, then Library, then the plus next to Engine Versions, then Install.',
-'  start "" "com.epicgames.launcher://ue/library"',
-') else ( echo All set. Go back to Duke Forger in your browser. )',
-'pause'];
-  return L.join('\r\n')+'\r\n';
-}

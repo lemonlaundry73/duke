@@ -238,10 +238,12 @@ function machineHtml(){
       ${row('Character Creator 5',t.cc5?'Installed':'Not found',!!t.cc5)}${row('Headshot',t.headshot?'Installed':'Not found',!!t.headshot)}${row('Blender',t.blender?esc(t.blender):'Not found',!!t.blender)}
       ${row('Git / Git LFS',`${t.git?esc(t.git):'Git not found'} · ${t.lfs?'LFS ok':'LFS not found'}`,!!(t.git&&t.lfs))}${row('Last seen',ag.seenAt?new Date(ag.seenAt).toLocaleString():'—')}</div>`:''}
     ${seen?'':`<h3 style="margin:16px 0 8px">Connect your Windows PC</h3>
-    <ol class="stepsList"><li>Download <b>DukeForgerSetup.cmd</b> and double-click it. It's a plain text file: right-click it and choose <b>Edit</b> to read every step. It installs Python, the C++ build tools and the Epic Games Launcher, then starts the Duke agent in a small window.</li>
-      <li>Windows may say <b>"Windows protected your PC"</b> because the file is new and not from a big company. Click <b>More info</b>, then <b>Run anyway</b>.</li>
-      <li>Install <b>Unreal Engine 5.8</b> from the Epic Games Launcher (your own Epic account is needed for this one step).</li><li>This panel turns green when your PC checks in.</li></ol>
-    <div class="row gap6 wrap" style="margin-top:12px"><a class="btn gold" href="/api/agent/DukeSetup.cmd" download>Download DukeForgerSetup.cmd</a><button class="btn" id="showManual">No download: copy 3 commands</button></div>
+    <ol class="stepsList"><li>Get <b>Python</b> if you don't have it: <a href="https://www.python.org/downloads/windows/" target="_blank" rel="noopener">python.org</a> (free, about 1 minute). It runs the Duke app.</li>
+      <li>Download <b>DukeForger.py</b> below and double-click it. A small window opens and this panel turns green. Keep that window open while you work.</li>
+      <li>It's a plain text program with nothing to install: no installer, no background downloads, nothing added to Windows startup. Right-click it and choose <b>Edit</b> to read it.</li>
+      <li>If double-clicking opens Notepad instead, right-click it, choose <b>Open with</b>, then <b>Python</b>.</li>
+      <li>Install <b>Unreal Engine 5</b> from the <a href="https://store.epicgames.com/download" target="_blank" rel="noopener">Epic Games Launcher</a>. Duke notices it by itself.</li></ol>
+    <div class="row gap6 wrap" style="margin-top:12px"><a class="btn gold" href="/api/agent/DukeForger.py" download>Download DukeForger.py</a><button class="btn" id="showManual">No download: copy 3 commands</button></div>
     <div id="manual" style="display:none;margin-top:12px"><p class="muted small">Open <b>Terminal</b> from the Start menu and paste these one at a time:</p><div class="codeBox" id="agentCmd">Loading…</div></div>`}</div>`;
 }
 const REQUIRED_PLUGINS=[['PCG','PCG'],['MassCrowd','Mass Crowd'],['StateTree','State Tree'],['PythonScriptPlugin','Python Editor Script']];
@@ -546,12 +548,12 @@ function exportsHtml(st){
 function renderLink(){
   const st=LS.status||{tools:S.road.tools,windows:[]};const s=stepDef(S.rm.current);const ev=stepEv(S.rm.current);
   const proofs=s.checks.filter(c=>c.t==='proof');const tool=st.windows?.find(w=>w.title===st.window)?.tool;
-  const acts=S.road.actions.filter(a=>!tool||a.tool===tool);
+  const acts=S.road.actions.filter(a=>!tool||!a.tool||a.tool===tool);
   const hd=LS.hd??(!!st.pixel&&(tool==='ue'||!tool));
   $('#stage').innerHTML=`<div class="stepHead"><div><span class="eyebrow">DUKE LINK</span><h1>Your tools, live in Duke</h1>
       <p class="muted">Your tools run on your own PC, and Duke shows them here. Open one, then turn on <b>Use it here</b> to click and type in the picture as if you were sitting at your PC.</p></div>
       <button class="btn sm ghost" data-go="${S.rm.current}">← Back to step ${S.rm.current}</button></div>
-    ${!st.online?`<div class="banner gold"><b>Your PC is not connected.</b> Duke Link uses the Duke agent on your PC. ${S.rm.agent?.seenAt?'Turn your PC on and make sure the Duke agent is running.':`Download <a href="/api/agent/DukeSetup.cmd" download>DukeSetup.cmd</a> and run it once (step 9 walks you through it).`}</div>`:''}
+    ${!st.online?`<div class="banner gold"><b>Your PC is not connected.</b> Duke Link uses the Duke agent on your PC. ${S.rm.agent?.seenAt?'Turn your PC on and double-click DukeForger.py.':`Download <a href="/api/agent/DukeForger.py" download>DukeForger.py</a> and double-click it (step 9 walks you through it).`}</div>`:''}
     <div class="toolRow">${st.tools.map(t=>`<div class="toolCard ${t.open?'open':''} ${LS.want===t.id?'want':''}"><b>${esc(t.name)}</b><p>${esc(t.does)}</p>
       <div class="row gap6 wrap"><span class="chip ${t.installed?'ok':''}">${t.installed?'✓ Installed':'Not installed'}</span>${t.open?'<span class="chip ok">● Open</span>':''}</div>
       <div class="row gap6" style="margin-top:8px">${t.open?`<button class="btn sm gold" data-showtool="${t.id}">Show here</button>`:`<button class="btn sm ${t.installed?'gold':''}" data-launch="${t.id}" ${st.online&&t.installed?'':'disabled'}>Open</button>`}</div></div>`).join('')}</div>

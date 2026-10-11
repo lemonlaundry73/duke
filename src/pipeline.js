@@ -199,9 +199,9 @@ export function stageItems(stage,p){
       break;
     case 'build':{
       const m=p.agentMachine||{};
-      add('Build machine connected',p.agentSeenAt&&Date.now()-Date.parse(p.agentSeenAt)<5*60e3,'Run DukeSetup.cmd on your PC (or a cloud build server).');
+      add('Build machine connected',p.agentSeenAt&&Date.now()-Date.parse(p.agentSeenAt)<5*60e3,'Double-click DukeForger.py on your PC (or use a cloud build server).');
       add('Unreal Engine 5 installed on it',(m.engines||[]).length>0,'Install Unreal Engine 5 from the Epic Games Launcher.');
-      add('C++ build tools installed on it',!!m.visualStudio,'DukeSetup.cmd installs these automatically.');
+      add('C++ build tools installed on it',!!m.visualStudio,'Install Visual Studio 2022 with "Game development with C++" (free).');
       break;}
     case 'publish':
       add('A successful build',(p.builds||[]).some(b=>b.status==='succeeded'),'Run a build first.');
