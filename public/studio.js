@@ -1,4 +1,4 @@
-// Duke Forge studio: 67 gated steps from idea to released Unreal Engine 5 game, in Build mode or Course mode.
+// Duke Forger studio: 67 gated steps from idea to released Unreal Engine 5 game, in Build mode or Course mode.
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 const S={schema:null,road:null,me:null,projects:[],project:null,rm:null,step:1,tab:'learn',open:new Set(),jobs:{},busy:{},answer:{},quiz:{},video:{},interval:'month'};
@@ -450,7 +450,7 @@ function publishHtml(){
     <p class="muted small">Create the game page on itch.io once, then fill these in. Your PC pushes every new build with itch's <a href="https://itch.io/docs/butler/" target="_blank" rel="noreferrer">butler</a> tool (install it and run <code>butler login</code> once).</p>
     <div class="form" data-scope="stage" data-stage="publish">${stageDef('publish').fields.map(f=>fieldHtml(f,pub[f.key],'stage',false)).join('')}</div></div>
   <div class="card"><div class="sectionTitle"><h2>Showcase</h2>${sc.on?'<span class="status succeeded">PUBLIC</span>':''}</div>
-    <p class="muted small">Show your game on the Duke Forge showcase with one screenshot and a short description. Your other uploads stay private.</p>
+    <p class="muted small">Show your game on the Duke Forger showcase with one screenshot and a short description. Your other uploads stay private.</p>
     <div class="form"><div class="field full"><label for="scBlurb">Description</label><textarea id="scBlurb" rows="2">${esc(sc.blurb||D().vision?.logline||'')}</textarea></div>
     <div class="field full"><label for="scCover">Cover screenshot</label><select id="scCover"><option value="">Keep current</option>${shots.map(f=>`<option value="${esc(f.file)}">${esc(f.name)}</option>`).join('')}</select></div></div>
     <div class="row gap6" style="margin-top:12px"><button class="btn gold sm" id="scOn">${sc.on?'Update showcase':'Show it publicly'}</button>${sc.on?`<button class="btn sm" id="scOff">Remove</button><a class="btn sm ghost" href="/showcase/${pid()}" target="_blank" rel="noopener">View ↗</a>`:''}</div></div>`;

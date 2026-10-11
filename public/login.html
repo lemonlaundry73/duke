@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Log in | Duke Forge</title>
+<title>Log in | Duke Forger</title>
 <meta name="robots" content="noindex"/>
 <link rel="stylesheet" href="/site.css"/>
 <style>
@@ -20,7 +20,7 @@ button:disabled{opacity:.6}
 </style>
 </head>
 <body>
-<header class="top"><div class="wrap"><a class="logo" href="/">Duke <em>Forge</em></a><nav></nav></div></header>
+<header class="top"><div class="wrap"><a class="logo" href="/">Duke <em>Forger</em></a><nav></nav></div></header>
 <div class="auth"><form class="box" id="f" novalidate>
   <h1 id="h">Start building</h1>
   <p id="sub">Create your free account. Plan your whole game before you pay anything.</p>
@@ -39,7 +39,7 @@ const plan=q.get('plan');
 const $=id=>document.getElementById(id);
 function render(){
   const s=mode==='signup';
-  document.title=(s?'Create your account':'Log in')+' | Duke Forge';
+  document.title=(s?'Create your account':'Log in')+' | Duke Forger';
   $('h').textContent=s?'Start building':'Welcome back';
   $('sub').textContent=s?'Create your free account. Plan your whole game before you pay anything.':'Log in to keep building your game.';
   $('nameRow').style.display=s?'':'none';

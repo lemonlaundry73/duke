@@ -1,4 +1,4 @@
-// Duke Forge playable city: on-foot + driving, traffic, pedestrians, NPCs, jobs, day/night, weather.
+// Duke Forger playable city: on-foot + driving, traffic, pedestrians, NPCs, jobs, day/night, weather.
 import { Renderer, INST_FLOATS } from './renderer.js';
 import * as M from './models.js';
 import { buildCity, collide, insideBuilding, carColor, B, DIRS, yawOf, rightOf, SIZES } from './city.js';

@@ -1,4 +1,4 @@
-// Duke Forge server — zero runtime dependencies (Node.js 22+ built-ins only).
+// Duke Forger server — zero runtime dependencies (Node.js 22+ built-ins only).
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import './src/paths.js';
@@ -13,6 +13,7 @@ import { settle } from './src/ctx.js';
 import { runArt } from './src/art.js';
 import { renderSite } from './src/site.js';
 import { registerLink } from './src/link.js';
+import { registerTeam, startTeamWorker } from './src/team.js';
 import { PUBLIC_DIR, UPLOAD_DIR } from './src/paths.js';
 
 export const VERSION='3.1.0';
@@ -40,6 +41,7 @@ registerBilling(r);
 registerRoadmap(r);
 registerProduction(r);
 registerLink(r);
+registerTeam(r);
 for(const id of resumeArt) void runArt(id);
 
 r.get('/api/health',()=>({ok:true,version:VERSION}));
@@ -131,6 +133,6 @@ const server=http.createServer(async(req,res)=>{
   }
 });
 
-server.listen(port,()=>{console.log(`Duke Forge v${VERSION} running on http://localhost:${port}`);void stripeAutoSetup();});
+server.listen(port,()=>{console.log(`Duke Forger v${VERSION} running on http://localhost:${port}`);void stripeAutoSetup();if(process.env.TEAM_WORKER!=='0')startTeamWorker();});
 const shutdown=()=>server.close(()=>process.exit(0));
 process.on('SIGTERM',shutdown); process.on('SIGINT',shutdown);

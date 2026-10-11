@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Duke Forge build agent — runs on your Windows PC next to Unreal Engine 5.
+Duke Forger build agent — runs on your Windows PC next to Unreal Engine 5.
 
-It connects to your Duke Forge server, picks up build jobs, writes the Unreal project,
+It connects to your Duke Forger server, picks up build jobs, writes the Unreal project,
 imports your Meshy assets, compiles the C++ code, cooks and packages a playable Windows game,
 uploads it back to Duke, and (optionally) publishes it to itch.io with butler.
 
@@ -264,7 +264,7 @@ def run(cmd, log, cwd=None, important=None, timeout=4 * 3600):
         if time.time() - last > 3:
             log.flush(); last = time.time()
             if log.canceled:
-                p.kill(); raise RuntimeError('Build canceled from Duke Forge')
+                p.kill(); raise RuntimeError('Build canceled from Duke Forger')
         if time.time() - start > timeout:
             p.kill(); raise RuntimeError('Timed out: ' + cmd[0])
     p.wait()
@@ -557,7 +557,7 @@ class Link:
 
     def allowed(self):
         if self.control is None and self.u:
-            ans = self.u.MessageBoxW(None, 'Duke Forge wants to control your Unreal, Blender, Character Creator and Visual Studio windows from your browser '
+            ans = self.u.MessageBoxW(None, 'Duke Forger wants to control your Unreal, Blender, Character Creator and Visual Studio windows from your browser '
                                            '(mouse, keyboard and one-click actions) until this agent restarts.\n\nAllow?', 'Duke Link', 0x4 | 0x20 | 0x40000 | 0x10000)
             self.control = (ans == 6)
             self.result('control', self.control, 'allowed' if self.control else 'declined')
@@ -700,9 +700,9 @@ class Link:
             ign = os.path.join(root, '.gitignore')
             if not os.path.exists(ign):
                 open(ign, 'w').write('Binaries/\nIntermediate/\nSaved/\nDerivedDataCache/\n.vs/\n*.sln\n')
-            return self.commit(root, 'First snapshot from Duke Forge') or 'Version control is on.'
+            return self.commit(root, 'First snapshot from Duke Forger') or 'Version control is on.'
         if name == 'git_commit':
-            return self.commit(root, 'Snapshot from Duke Forge ' + time.strftime('%Y-%m-%d %H:%M'))
+            return self.commit(root, 'Snapshot from Duke Forger ' + time.strftime('%Y-%m-%d %H:%M'))
         if name == 'blender_new':
             return self.launch('blender', '')
         if name in UE_SNIPPETS:
@@ -711,7 +711,7 @@ class Link:
 
     def commit(self, root, msg):
         _run(['git', '-C', root, 'add', '-A'], timeout=600)
-        out = _run(['git', '-C', root, '-c', 'user.name=Duke Forge creator', '-c', 'user.email=creator@dukeforge.local', 'commit', '-m', msg], timeout=600)
+        out = _run(['git', '-C', root, '-c', 'user.name=Duke Forger creator', '-c', 'user.email=creator@dukeforge.local', 'commit', '-m', msg], timeout=600)
         return 'Snapshot saved.' if out else 'Nothing new to save.'
 
 
@@ -744,8 +744,8 @@ def ue_python(code):
 
 
 def main():
-    ap = argparse.ArgumentParser(description='Duke Forge build agent')
-    ap.add_argument('--server', help='Duke Forge server URL')
+    ap = argparse.ArgumentParser(description='Duke Forger build agent')
+    ap.add_argument('--server', help='Duke Forger server URL')
     ap.add_argument('--token', help='Agent token from the Build stage')
     ap.add_argument('--engine', help='Path to a UE5 install (optional, auto-detected)')
     ap.add_argument('--check', action='store_true', help='Only check this PC and exit')
@@ -756,13 +756,13 @@ def main():
 
     engines = find_engines(args.engine)
     vs = has_visual_studio()
-    print('Duke Forge build agent %s on %s (%s)' % (VERSION, socket.gethostname(), platform.platform()))
+    print('Duke Forger build agent %s on %s (%s)' % (VERSION, socket.gethostname(), platform.platform()))
     print('Unreal Engine: ' + (', '.join('%s (%s)' % (e['version'], e['path']) for e in engines) or 'NOT FOUND'))
     print('Visual Studio C++ tools: ' + ('found' if vs else 'NOT FOUND'))
     if args.check:
         sys.exit(0 if engines and vs else 1)
     if not args.server or not args.token:
-        ap.error('--server and --token are required (copy the command from the Build stage in Duke Forge)')
+        ap.error('--server and --token are required (copy the command from the Build stage in Duke Forger)')
     if platform.system() != 'Windows':
         print('Warning: Duke packages Windows builds; this agent is meant to run on Windows.')
 

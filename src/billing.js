@@ -175,7 +175,7 @@ export function registerBilling(r){
 }
 
 // One-time Stripe setup, run at server start when STRIPE_SECRET_KEY and SITE_URL are set:
-// creates the Duke Forge products and monthly/yearly prices (found again later by lookup key),
+// creates the Duke Forger products and monthly/yearly prices (found again later by lookup key),
 // the webhook endpoint (its secret is stored in DATA_DIR/stripe.json), and a Customer Portal
 // configuration if the account has none. Safe to run on every start; it only fills what is missing.
 export async function stripeAutoSetup(){
@@ -189,10 +189,11 @@ export async function stripeAutoSetup(){
       const k=`${plan}_${interval}`,lookup=`duke_forge_${k}`;
       if(process.env[`STRIPE_PRICE_${plan.toUpperCase()}_${interval.toUpperCase()}`])continue;
       const found=await stripe('GET',`prices?${q({'lookup_keys[]':lookup,active:'true',limit:'1'})}`);
-      if(found.data?.[0]){AUTO.prices[k]=found.data[0].id;continue;}
-      if(!AUTO.products[plan]){const prod=await stripe('POST','products',{name:`Duke Forge ${PLANS[plan].name}`,description:PLANS[plan].blurb,metadata:{app:'duke-forge',plan}});AUTO.products[plan]=prod.id;}
+      if(found.data?.[0]){AUTO.prices[k]=found.data[0].id;const pid=found.data[0].product;AUTO.products[plan] ||= pid;
+        if(!AUTO.renamed?.[plan]){await stripe('POST',`products/${pid}`,{name:`Duke Forger ${PLANS[plan].name}`}).catch(()=>{});(AUTO.renamed ||= {})[plan]=true;}continue;}
+      if(!AUTO.products[plan]){const prod=await stripe('POST','products',{name:`Duke Forger ${PLANS[plan].name}`,description:PLANS[plan].blurb,metadata:{app:'duke-forge',plan}});AUTO.products[plan]=prod.id;}
       const amount=(interval==='year'?yearPrice(plan):PLANS[plan].month)*100;
-      const price=await stripe('POST','prices',{product:AUTO.products[plan],currency:'usd',unit_amount:amount,recurring:{interval},lookup_key:lookup,nickname:`Duke Forge ${PLANS[plan].name} (${interval}ly)`,metadata:{app:'duke-forge',plan}});
+      const price=await stripe('POST','prices',{product:AUTO.products[plan],currency:'usd',unit_amount:amount,recurring:{interval},lookup_key:lookup,nickname:`Duke Forger ${PLANS[plan].name} (${interval}ly)`,metadata:{app:'duke-forge',plan}});
       AUTO.prices[k]=price.id;console.log(`[stripe] created price ${lookup}`);
     }
     if(!process.env.STRIPE_WEBHOOK_SECRET){
@@ -201,14 +202,14 @@ export async function stripeAutoSetup(){
       const existing=(list.data||[]).find(w=>w.url===url);
       if(existing&&AUTO.webhookId!==existing.id){await stripe('DELETE',`webhook_endpoints/${existing.id}`);}
       if(!existing||AUTO.webhookId!==existing.id){
-        const wh=await stripe('POST','webhook_endpoints',{url,description:'Duke Forge subscriptions',metadata:{app:'duke-forge'},
+        const wh=await stripe('POST','webhook_endpoints',{url,description:'Duke Forger subscriptions',metadata:{app:'duke-forge'},
           enabled_events:{0:'checkout.session.completed',1:'customer.subscription.created',2:'customer.subscription.updated',3:'customer.subscription.deleted'}});
         AUTO.webhookId=wh.id;AUTO.webhookSecret=wh.secret;console.log('[stripe] created webhook',url);
       }
     }
     const portal=await stripe('GET','billing_portal/configurations?is_default=true&limit=1');
     if(!portal.data?.length){
-      await stripe('POST','billing_portal/configurations',{business_profile:{headline:'Manage your Duke Forge plan'},
+      await stripe('POST','billing_portal/configurations',{business_profile:{headline:'Manage your Duke Forger plan'},
         features:{invoice_history:{enabled:'true'},payment_method_update:{enabled:'true'},subscription_cancel:{enabled:'true',mode:'at_period_end'}}});
       console.log('[stripe] created customer portal');
     }

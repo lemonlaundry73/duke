@@ -42,7 +42,7 @@ async function openAIJson(system,user){ return llmJson(system,user); }
 
 export async function planDream(prompt){
   const live=await openAIJson(
-    'You are Duke Forge, an elite game director and technical architect. Design original games only. Output an object with title, genre, pillars, systems, target, worldPlan, gameplayLoops, productionRisks, camera, playerFantasy, contentPlan, aiNpcPlan and performanceTargets.',
+    'You are Duke Forger, an elite game director and technical architect. Design original games only. Output an object with title, genre, pillars, systems, target, worldPlan, gameplayLoops, productionRisks, camera, playerFantasy, contentPlan, aiNpcPlan and performanceTargets.',
     prompt
   );
   if(live) return live;

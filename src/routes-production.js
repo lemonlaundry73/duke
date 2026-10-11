@@ -59,7 +59,7 @@ async function agentAuth(req){
   const db=await load();const tok=String(req.headers['x-duke-agent']||'');
   if(isCloud(tok))return {db,cloud:true,tok};
   const a=tok&&db.agents?.[tok];
-  if(!a)throw new HttpError(401,'Invalid agent token. Download a fresh DukeSetup.cmd from Duke Forge.');
+  if(!a)throw new HttpError(401,'Invalid agent token. Download a fresh DukeSetup.cmd from Duke Forger.');
   return {db,agent:a,tok};
 }
 const mayTouch=(auth,p,b)=>auth.cloud?!!b?.cloud:p.ownerId===auth.agent.userId;
@@ -219,7 +219,7 @@ export function registerProduction(r){
   // One-click Windows setup: installs Python, VS C++ build tools, Epic Games Launcher and the agent (auto-start).
   r.get('/api/agent/DukeSetup.cmd',async({req,res})=>{
     const user=await requireUser(req);const a=await myAgent(user);const server=serverUrl(req),token=a.token;
-    const cmd=`@echo off\r\ntitle Duke Forge PC setup\r\necho Setting up this PC to build Duke Forge games...\r\npowershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -UseBasicParsing '${server}/api/agent/setup.ps1?t=${token}' -OutFile \\"$env:TEMP\\DukeSetup.ps1\\"; & \\"$env:TEMP\\DukeSetup.ps1\\""\r\npause\r\n`;
+    const cmd=`@echo off\r\ntitle Duke Forger PC setup\r\necho Setting up this PC to build Duke Forger games...\r\npowershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -UseBasicParsing '${server}/api/agent/setup.ps1?t=${token}' -OutFile \\"$env:TEMP\\DukeSetup.ps1\\"; & \\"$env:TEMP\\DukeSetup.ps1\\""\r\npause\r\n`;
     send(res,200,cmd,{'content-type':'application/octet-stream','content-disposition':'attachment; filename="DukeSetup.cmd"'});
   });
   r.get('/api/agent/setup.ps1',async({req,res,query})=>{
@@ -298,7 +298,7 @@ export function registerProduction(r){
 }
 
 function setupPs1(server,token){
-  return `# Duke Forge PC setup (generated). Safe to run again: it skips anything already installed.
+  return `# Duke Forger PC setup (generated). Safe to run again: it skips anything already installed.
 $ErrorActionPreference = 'Continue'
 $Server = '${server}'
 $Token = '${token}'
@@ -306,7 +306,7 @@ $Dir = Join-Path $env:USERPROFILE 'DukeForge'
 New-Item -ItemType Directory -Force -Path $Dir | Out-Null
 function Say($m, $c='Cyan') { Write-Host $m -ForegroundColor $c }
 function Refresh-Path { $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') }
-Say 'Duke Forge PC setup' 'Yellow'
+Say 'Duke Forger PC setup' 'Yellow'
 if (-not (Get-Command winget -ErrorAction SilentlyContinue)) { Say 'winget is missing. Install "App Installer" from the Microsoft Store, then run this again.' 'Red'; exit 1 }
 $wg = @('--exact','--silent','--accept-source-agreements','--accept-package-agreements')
 
@@ -338,7 +338,7 @@ if (-not (Test-Path $launcher)) { Say 'Installing Epic Games Launcher...'; winge
 Invoke-WebRequest -UseBasicParsing "$Server/agent/duke_agent.py" -OutFile (Join-Path $Dir 'duke_agent.py')
 $agent = Join-Path $Dir 'duke_agent.py'
 $agentArgs = '"' + $agent + '" --server ' + $Server + ' --token ' + $Token
-schtasks /Create /F /SC ONLOGON /TN 'Duke Forge Build Agent' /TR ('"' + $pyw + '" ' + $agentArgs) | Out-Null
+schtasks /Create /F /SC ONLOGON /TN 'Duke Forger Build Agent' /TR ('"' + $pyw + '" ' + $agentArgs) | Out-Null
 Get-CimInstance Win32_Process -Filter "Name='pythonw.exe'" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like '*duke_agent.py*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
 Start-Process -FilePath $pyw -ArgumentList $agentArgs -WindowStyle Hidden
 Say 'Duke build agent: running (starts automatically when you sign in)' 'Green'

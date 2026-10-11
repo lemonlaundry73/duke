@@ -125,6 +125,8 @@ export function registerLink(r){
       const completed=settle(db,p);p.updatedAt=new Date().toISOString();return {ok:true,completed,count:p.roadmap.proof[key].length};});
   });
 }
+// Lets server features (the AI Team) queue an action for a creator's PC agent.
+export function pushLinkCommand(token,cmd){return push(L(token),{...cmd});}
 const clamp01=v=>Math.max(0,Math.min(1,Number(v)||0));
 function writeFrame(res,buf){
   try{res.write(`--dukeframe\r\nContent-Type: image/jpeg\r\nContent-Length: ${buf.length}\r\n\r\n`);res.write(buf);res.write('\r\n');}catch{}

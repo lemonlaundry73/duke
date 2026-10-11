@@ -1,6 +1,6 @@
-# Duke Forge 3.0: build the open-world game you dream about
+# Duke Forger 3.0: build the open-world game you dream about
 
-Duke Forge is a paid web platform that walks a first-time creator through **67 gated steps**, the way studios make games: from one paragraph about their idea to a released, high-definition Unreal Engine 5 game. Characters are built with Character Creator 5, Headshot 3 and Blender, the world with PCG and AI agents, and AI does the slow parts at every step. The creator makes every decision and plays every role.
+Duke Forger is a paid web platform that walks a first-time creator through **67 gated steps**, the way studios make games: from one paragraph about their idea to a released, high-definition Unreal Engine 5 game. Characters are built with Character Creator 5, Headshot 3 and Blender, the world with PCG and AI agents, and AI does the slow parts at every step. The creator makes every decision and plays every role.
 
 ## Two modes, same steps
 - **Build mode.** Each step is a gate. The next step opens only when its checks pass:

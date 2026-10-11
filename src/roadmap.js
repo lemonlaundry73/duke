@@ -1,4 +1,4 @@
-// The Duke Forge roadmap: 9 phases, 67 steps, from idea to released open-world game.
+// The Duke Forger roadmap: 9 phases, 67 steps, from idea to released open-world game.
 // Each step says what to do in plain words, which role you are playing, how AI helps,
 // what you fill in (inputs), which workspace panels it opens, and the gate that must pass
 // before the next step unlocks.
@@ -23,7 +23,7 @@ export const ROLES=['Director and designer','Writer','Concept artist','Character
 
 export const PHASES=[
   {n:1,id:'plan',title:'Plan',outcome:'A one-page design, a first mission and a costed asset list. Nothing gets built until these exist.'},
-  {n:2,id:'setup',title:'Set up',outcome:'A working Unreal project under version control, connected to Duke Forge.'},
+  {n:2,id:'setup',title:'Set up',outcome:'A working Unreal project under version control, connected to Duke Forger.'},
   {n:3,id:'prototype',title:'Prototype with gray boxes',outcome:'An ugly but complete game: start, play, win or lose, try again.'},
   {n:4,id:'characters',title:'Characters: CC5, Headshot 3 and Blender',outcome:'Your hero, built from your own photos, playable in the prototype. The same pipeline then makes every other character and species.'},
   {n:5,id:'world',title:'Build the world from scratch',outcome:'One region finished to the full quality bar, built from rules that can generate more.'},
@@ -144,7 +144,7 @@ const STEPS_RAW=[
  terms:['version-control','git-lfs','commit'],
  panels:[{p:'project'}],
  checks:[auto('folders','The seven content folders exist'),auto('git_repo','Project is a Git repository with LFS'),self('A second backup exists off this PC')]},
-{phase:2,title:'Connect the project to Duke Forge',role:'Technical artist',
+{phase:2,title:'Connect the project to Duke Forger',role:'Technical artist',
  plain:'Duke copies your design into the project so the engine and Duke always agree.',
  how:['Keep the Duke build agent running.','Duke copies your design data into Content/DukeForge in your project.','Duke only writes into Content/DukeForge. It never edits your other files.'],
  ai:'Your project and Duke now agree on the design. Duke re-syncs it every minute while the agent runs.',

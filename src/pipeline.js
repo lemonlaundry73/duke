@@ -1,4 +1,4 @@
-// Duke Forge production pipeline: the stages a real open-world game goes through,
+// Duke Forger production pipeline: the stages a real open-world game goes through,
 // what each stage needs before the next unlocks, and helpers to measure progress.
 
 const T=(key,label,o={})=>({key,label,type:'text',...o});

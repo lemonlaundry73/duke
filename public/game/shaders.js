@@ -1,4 +1,4 @@
-// GLSL ES 3.00 shaders for the Duke Forge renderer.
+// GLSL ES 3.00 shaders for the Duke Forger renderer.
 const HEAD=`#version 300 es
 precision highp float;
 precision highp sampler2D;
