@@ -12,12 +12,12 @@ import { emptyDesign, ensureDesign } from './src/pipeline.js';
 import { settle } from './src/ctx.js';
 import { runArt } from './src/art.js';
 import { renderSite } from './src/site.js';
-import { registerLink } from './src/link.js';
+import { handleHd, handleHdUpgrade, registerLink } from './src/link.js';
 import { registerTeam, startTeamWorker } from './src/team.js';
 import { registerSupport, recordError } from './src/support.js';
 import { PUBLIC_DIR, UPLOAD_DIR } from './src/paths.js';
 
-export const VERSION='3.1.0';
+export const VERSION='3.2.0';
 const port=Number(process.env.PORT||3000);
 await fs.mkdir(UPLOAD_DIR,{recursive:true});
 
@@ -81,7 +81,7 @@ r.get('/api/jobs/:id',async({params})=>(await load()).jobs[params.id]||notFound(
 
 // Routes that do not need a logged-in user (agents authenticate with their own token, Stripe with a signature).
 const OPEN_API=[/^\/api\/health$/,/^\/api\/auth\//,/^\/api\/billing\/(plans|webhook)$/,/^\/api\/roadmap$/,/^\/api\/course\/quiz\/\d+$/,/^\/api\/lessons\/\d+\/video$/,/^\/api\/pipeline$/,/^\/api\/support\/(chat|faq)$/,
-  /^\/api\/agent\/(hello|next|inspect|setup\.ps1)$/,/^\/api\/agent\/builds\//,/^\/api\/agent\/link\//,/^\/api\/agent\/projects\//];
+  /^\/api\/agent\/(hello|next|inspect|setup\.ps1|guide|proof)$/,/^\/api\/agent\/builds\//,/^\/api\/agent\/link\//,/^\/api\/agent\/projects\//];
 async function guard(req,pathname){
   if(OPEN_API.some(re=>re.test(pathname)))return;
   const db=await load();
@@ -94,13 +94,14 @@ async function guard(req,pathname){
   if(jm){const j=db.jobs?.[decodeURIComponent(jm[1])];if(!j||db.projects[j.projectId]?.ownerId!==u.id)throw new HttpError(404,'not found');}
 }
 
-const PAGES={'/studio':'/studio.html','/login':'/login.html','/signup':'/login.html','/admin':'/admin.html','/reset':'/login.html','/forgot':'/login.html'};
+const PAGES={'/studio':'/studio.html','/login':'/login.html','/signup':'/login.html','/admin':'/admin.html','/companion':'/companion.html','/reset':'/login.html','/forgot':'/login.html'};
 const server=http.createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');
   const pathname=url.pathname;
   res.setHeader('x-content-type-options','nosniff');
   res.setHeader('referrer-policy','strict-origin-when-cross-origin');
   try{
+    if(pathname.startsWith('/api/link/hd/')&&await handleHd(req,res,pathname,url.search))return;
     if(pathname.startsWith('/api/')){
       const m=r.match(req.method,pathname);
       if(!m) throw new HttpError(404,'Unknown API route');
@@ -135,6 +136,7 @@ const server=http.createServer(async(req,res)=>{
   }
 });
 
+server.on('upgrade',(req,socket)=>{socket.on('error',()=>{});if(req.url.startsWith('/api/link/hdws/'))handleHdUpgrade(req,socket);else socket.destroy();});
 server.listen(port,()=>{console.log(`Duke Forger v${VERSION} running on http://localhost:${port}`);void stripeAutoSetup();if(process.env.TEAM_WORKER!=='0')startTeamWorker(Number(process.env.TEAM_TICK_MS)||4000);});
 const shutdown=()=>server.close(()=>process.exit(0));
 process.on('SIGTERM',shutdown); process.on('SIGINT',shutdown);

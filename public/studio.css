@@ -285,3 +285,5 @@ small.kind.auto{background:#123536;color:var(--green)}small.kind.proof{backgroun
 .exportRow{display:grid;gap:6px;padding:10px 0;border-top:1px solid var(--line)}
 .exportRow>div{display:flex;flex-direction:column;gap:2px;min-width:0}.exportRow b{overflow-wrap:anywhere}
 .exportRow select{width:100%;padding:7px 8px;border-radius:6px;border:1px solid var(--line);background:#0b1322;color:var(--text);font:inherit;font-size:13px}
+.banner ul.tight{margin:6px 0 0;padding-left:18px}.banner ul.tight li{margin:2px 0}
+.linkish{background:none;border:0;padding:0;color:var(--gold2,#ff9a7d);text-decoration:underline;cursor:pointer;font:inherit}

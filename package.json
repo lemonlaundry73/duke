@@ -1,6 +1,6 @@
 {
   "name": "duke-forge",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "private": true,
   "type": "module",
   "description": "Duke Forge — creator-first AI game production studio. Zero runtime dependencies.",

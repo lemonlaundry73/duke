@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Duke guide | Duke Forger</title><meta name="robots" content="noindex"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"/>
+<style>
+:root{--bg:#0a101c;--panel:#101a2a;--panel2:#18243a;--line:#2b3a51;--text:#f1f4fa;--muted:#9eacc1;--accent:#ff815f;--accent2:#ff9a7d;--ink:#101622;--green:#79d6d7}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,system-ui,sans-serif}
+header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:2}
+.logo{font-weight:700;letter-spacing:.06em;text-decoration:none;color:var(--text);font-size:13px}.logo em{color:var(--accent);font-style:normal}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#5b6b82;margin-right:6px}.dot.on{background:var(--green)}
+main{padding:14px 16px 40px;max-width:560px;margin:0 auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px}
+.eyebrow{color:var(--accent);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+h1{font-size:22px;margin:4px 0 6px;letter-spacing:-.02em;font-weight:650}h2{font-size:15px;margin:0 0 8px}
+.muted{color:var(--muted)}.small{font-size:13px}
+ol{margin:6px 0 0;padding-left:20px}ol li{margin:4px 0}
+.check{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--line)}.check:first-of-type{border-top:0}
+.tick{flex:none;width:20px;height:20px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px}.tick.ok{background:var(--green);border-color:var(--green);color:var(--ink)}
+.bar{height:6px;background:var(--panel2);border-radius:6px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--accent)}
+.btn{display:inline-block;background:var(--accent);color:var(--ink);border:0;border-radius:6px;padding:9px 14px;font:600 14px Inter,sans-serif;cursor:pointer;text-decoration:none}
+.btn:hover{background:var(--accent2)}.btn.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line)}
+.ex{padding:8px 0;border-top:1px solid var(--line)}.ex:first-of-type{border-top:0}.ex b{overflow-wrap:anywhere}
+.chip{display:inline-block;font-size:11px;font-weight:600;padding:2px 7px;border-radius:6px;background:#123536;color:var(--green);margin:3px 4px 0 0}
+#msg{min-height:20px}
+</style>
+</head>
+<body>
+<header><a class="logo" href="/studio">DUKE <em>FORGER</em></a><span class="small muted" id="pc"><span class="dot"></span>Checking your PC…</span></header>
+<main id="out"><p class="muted">Loading your step…</p></main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const TOOL={ue:'Unreal Engine',cc5:'Character Creator',blender:'Blender'};
+let last='';
+async function load(){
+  const [g,st]=await Promise.all([fetch('/api/link/guide').then(r=>{if(r.status===401){location.href='/login?next=/companion';throw 0;}return r.json();}),fetch('/api/link/status').then(r=>r.json()).catch(()=>({}))]);
+  $('#pc').innerHTML=`<span class="dot ${st.online?'on':''}"></span>${st.online?esc(st.pcName||'Your PC')+' connected':'PC not connected'}`;
+  if(!g.project){$('#out').innerHTML='<div class="card"><h1>No game yet</h1><p class="muted">Start your game in the studio first.</p><a class="btn" href="/studio">Open the studio</a></div>';return;}
+  const sig=JSON.stringify([g,st.exports,st.online]);if(sig===last)return;last=sig;
+  const s=g.step,ex=(st.exports||[]).slice(0,5);
+  $('#out').innerHTML=`<div class="card"><span class="eyebrow">${esc(g.project.name||'Your game')} · Step ${s.n}${s.tool?' · in '+TOOL[s.tool]:''}</span><h1>${esc(s.title)}</h1><p class="muted small">${esc(s.plain||'')}</p>
+      <ol>${s.how.map(h=>`<li>${esc(h)}</li>`).join('')}</ol><div class="bar"><i style="width:${s.progress}%"></i></div></div>
+    <div class="card"><h2>To finish this step</h2>${g.checks.map(c=>`<div class="check"><span class="tick ${c.ok?'ok':''}">${c.ok?'✓':''}</span><div>${esc(c.label)}${c.t==='proof'?` <span class="muted small">(${c.have||0} of ${c.min||1})</span>`:''}</div></div>`).join('')}
+      ${g.nextProof?`<p class="small muted" style="margin:10px 0 6px">Duke saves a screenshot for you when you export. Or add one yourself, even a phone photo of your screen:</p>
+        <label class="btn ghost">Add a screenshot or photo<input type="file" id="shot" accept="image/*" capture="environment" hidden/></label>`:''}<div id="msg" class="small"></div></div>
+    <div class="card"><h2>Latest exports</h2>${ex.length?ex.map(f=>`<div class="ex"><b>${esc(f.name)}</b><div class="muted small">${esc(f.from)}</div>${f.imported?'<span class="chip">✓ In your Unreal project</span>':''}${f.proof?'<span class="chip">✓ Saved as proof</span>':''}</div>`).join(''):'<p class="muted small">Export from Blender or Character Creator and it appears here, already in your game.</p>'}</div>
+    <a class="btn ghost" href="/studio" target="_blank" rel="noopener">Open the full studio</a>`;
+  $('#shot')?.addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const fd=new FormData();fd.append('files',f,f.name);$('#msg').textContent='Saving…';
+    const r=await fetch(`/api/projects/${g.project.id}/proof/${g.nextProof.key}`,{method:'POST',body:fd});const d=await r.json().catch(()=>({}));
+    $('#msg').textContent=r.ok?(d.completed?.length?`Saved. Step ${d.completed.at(-1)} is complete!`:'Saved as proof.'):(d.error||'Could not save');last='';setTimeout(load,800);});
+}
+load().catch(()=>{});setInterval(()=>{if(!document.hidden)load().catch(()=>{});},4000);
+</script>
+</body>
+</html>

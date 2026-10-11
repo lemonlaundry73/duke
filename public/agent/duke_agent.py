@@ -12,9 +12,9 @@ Usage:
 
 Only the Python standard library is used.
 """
-import argparse, ctypes, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
+import argparse, base64, ctypes, http.server, io, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
-VERSION = '3.1.0'
+VERSION = '3.2.0'
 WORK = os.path.join(os.path.expanduser('~'), 'DukeForgeBuilds')
 
 
@@ -461,7 +461,7 @@ print(", ".join(str(x) for x in t.imported_object_paths) or "no assets")'''
 
 def probe_pixel_streaming():
     """Finds Epic's Pixel Streaming player started by the Unreal editor on this PC."""
-    for port in (80, 8080, 81):
+    for port in (80, 8080, 81, 88, 8888):
         try:
             with urllib.request.urlopen('http://127.0.0.1:%d/' % port, timeout=1.5) as r:
                 body = r.read(20000).decode('utf-8', 'ignore').lower()
@@ -529,8 +529,11 @@ class Link:
     def start(self):
         self.exports, self.pixel = [], None
         os.makedirs(EXPORTS_DIR, exist_ok=True)
-        for fn in (self.poll_loop, self.state_loop, self.capture_loop, self.watch_loop):
+        self.guide, self.seen, self.blender_seen = {}, {}, 0
+        self.started = time.time()
+        for fn in (self.poll_loop, self.state_loop, self.capture_loop, self.watch_loop, self.guide_loop, self.hd_loop, self.local_server):
             threading.Thread(target=fn, daemon=True).start()
+        threading.Thread(target=install_blender_addon, args=(self.duke.server,), daemon=True).start()
 
     # -- never hunt for files: newest 3D exports and images in the usual places
     def watch_loop(self):
@@ -559,6 +562,13 @@ class Link:
                                     continue
                                 if st.st_mtime >= cutoff and full not in found:
                                     found[full] = {'path': full, 'name': f, 'size': st.st_size, 'mtime': int(st.st_mtime * 1000), 'kind': ext[1:], 'from': label}
+                for f in found.values():
+                    prev = self.seen.get(f['path'])
+                    if prev and prev.get('mtime') == f['mtime']:
+                        f['imported'], f['proof'] = prev.get('imported'), prev.get('proof')
+                    elif f['mtime'] / 1000 > self.started and f['kind'] in ('fbx', 'glb'):
+                        self.auto_pickup(f)
+                    self.seen[f['path']] = f
                 self.exports = sorted(found.values(), key=lambda x: -x['mtime'])[:30]
                 self.pixel = probe_pixel_streaming()
             except Exception:
@@ -602,7 +612,8 @@ class Link:
                 if not self.hwnd and wins:
                     self.hwnd, self.title = int(wins[0]['id']), wins[0]['title']
                 r = self.duke.post('/api/agent/link/state', {'windows': wins, 'window': self.title if self.hwnd else None, 'control': self.control, 'capture': bool(self.pil),
-                                                             'exports': getattr(self, 'exports', []), 'pixel': getattr(self, 'pixel', None)})
+                                                             'exports': getattr(self, 'exports', []), 'pixel': getattr(self, 'pixel', None),
+                                                             'blender': {'installed': os.path.exists(ADDON_MARK), 'seen': int(self.blender_seen * 1000)}})
                 self.watch = bool(r.get('watch'))
             except Exception:
                 pass
@@ -670,6 +681,8 @@ class Link:
                         self.u.ShowWindow(ctypes.c_void_p(self.hwnd), 9)
                         self.u.SetForegroundWindow(ctypes.c_void_p(self.hwnd))
                 return self.result(cid, True, 'Showing ' + (self.title or ''))
+            if t == 'hd_http':
+                return self.hd_http(c)
             if t == 'input':
                 if self.allowed():
                     self.input(c['e'])
@@ -801,6 +814,8 @@ class Link:
             return self.commit(root, 'Snapshot from Duke Forger ' + time.strftime('%Y-%m-%d %H:%M'))
         if name == 'blender_new':
             return self.launch('blender', '')
+        if name == 'blender_connect':
+            return install_blender_addon(self.duke.server, force=True)
         if name == 'open_exports':
             os.makedirs(EXPORTS_DIR, exist_ok=True)
             os.startfile(EXPORTS_DIR) if hasattr(os, 'startfile') else None
@@ -808,24 +823,218 @@ class Link:
         if name == 'ue_pixel_streaming':
             if not (project and os.path.isfile(project)):
                 raise RuntimeError('Add your .uproject path in step 11 first.')
-            data = json.load(open(project, encoding='utf-8-sig'))
-            plugins = data.setdefault('Plugins', [])
-            hit = next((p for p in plugins if p.get('Name') == 'PixelStreaming'), None)
-            if hit:
-                hit['Enabled'] = True
-            else:
-                plugins.append({'Name': 'PixelStreaming', 'Enabled': True})
-            json.dump(data, open(project, 'w', encoding='utf-8'), indent='\t')
             engines = find_engines(self.args.engine)
             if not engines:
                 raise RuntimeError('Unreal Engine 5 is not installed.')
+            media = os.path.join(engines[0]['path'], 'Engine', 'Plugins', 'Media')
+            name = 'PixelStreaming2' if os.path.isdir(os.path.join(media, 'PixelStreaming2')) else 'PixelStreaming'
+            data = json.load(open(project, encoding='utf-8-sig'))
+            plugins = data.setdefault('Plugins', [])
+            hit = next((p for p in plugins if p.get('Name') == name), None)
+            if hit:
+                hit['Enabled'] = True
+            else:
+                plugins.append({'Name': name, 'Enabled': True})
+            json.dump(data, open(project, 'w', encoding='utf-8'), indent='\t')
             exe = os.path.join(engines[0]['path'], 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe')
+            # Both spellings: Unreal ignores the arguments of the plugin version it does not have.
             subprocess.Popen([exe, project, '-EditorPixelStreamingStartOnLaunch=true', '-EditorPixelStreamingUseRemoteSignallingServer=false',
-                              '-EditorPixelStreamingSource=Editor', '-EditorPixelStreamingRes=1920x1080'])
+                              '-EditorPixelStreamingSource=Editor', '-EditorPixelStreamingRes=1920x1080',
+                              '-EditorPixelStreaming2StartOnLaunch=true', '-EditorPixelStreaming2UseRemoteSignallingServer=false', '-EditorPixelStreaming2Source=Editor'])
             return 'Pixel Streaming is on. Unreal is reopening in HD mode: close the old Unreal window if one is still open. HD mode appears in Duke Link in a minute.'
         if name in UE_SNIPPETS:
             return ue_python(UE_SNIPPETS[name])
         raise RuntimeError('Unknown action')
+
+    # -- never hunt for files: a new export goes straight into the Unreal project, and counts as proof
+    def guide_loop(self):
+        while True:
+            try:
+                self.guide = self.duke._req('GET', '/api/agent/guide', timeout=20) or {}
+            except Exception:
+                pass
+            time.sleep(10)
+
+    def auto_pickup(self, f):
+        g = self.guide or {}
+        if g.get('autoImport') is False:
+            return
+        proj = ((g.get('project') or {}).get('path')) or ''
+        time.sleep(2)  # let the exporting app finish writing
+        try:
+            if proj and os.path.isfile(proj):
+                f['imported'] = self.import_file({'path': f['path'], 'projectPath': proj})[:200]
+        except Exception as e:
+            f['imported'] = None
+            print('  (could not bring %s into Unreal: %s)' % (f['name'], e))
+        # A Character Creator or Blender export during a step that needs screenshots: save one automatically.
+        step = (g.get('step') or {})
+        nxt = g.get('nextProof')
+        tool = 'cc5' if 'Reallusion' in f['path'] or f['from'] == 'Character Creator' else 'blender' if f['from'] in ('Blender',) else ''
+        if nxt and step.get('tool') in ('cc5', 'blender') and (not tool or tool == step.get('tool')):
+            win = next((w for w in self.windows() if w['tool'] == step.get('tool')), None)
+            if win and self.save_window_proof(int(win['id']), nxt['key'], 'Auto: ' + f['name']):
+                f['proof'] = True
+
+    def save_window_proof(self, hwnd, key, label):
+        if not (self.pil and self.u):
+            return False
+        r = ctypes.wintypes.RECT()
+        if not self.u.GetWindowRect(ctypes.c_void_p(hwnd), ctypes.byref(r)) or self.u.IsIconic(ctypes.c_void_p(hwnd)):
+            return False
+        img = self.pil[0].grab(bbox=(r.left, r.top, r.right, r.bottom), all_screens=True).convert('RGB')
+        b = io.BytesIO()
+        img.save(b, 'PNG')
+        return bool(self.upload_proof(b.getvalue(), key, label, 'duke-agent'))
+
+    def upload_proof(self, data, key, label, source):
+        g = self.guide or {}
+        pid = (g.get('project') or {}).get('id')
+        if not (pid and key):
+            return None
+        req = urllib.request.Request(self.duke.server + '/api/agent/proof', data=data, method='POST', headers={
+            'x-duke-agent': self.duke.token, 'content-type': 'application/octet-stream', 'x-project': pid, 'x-key': key,
+            'x-label': urllib.parse.quote(label[:80]), 'x-source': source})
+        with urllib.request.urlopen(req, timeout=120) as r:
+            out = json.loads(r.read() or b'{}')
+        if out.get('guide'):
+            self.guide = out['guide']
+        return out
+
+    # -- local link for the Blender add-on (this PC only, needs the key in ~/DukeForger/.local_key)
+    def local_server(self):
+        link = self
+        key = local_key()
+
+        class H(http.server.BaseHTTPRequestHandler):
+            def log_message(self, *a):
+                pass
+
+            def reply(self, code, obj):
+                b = json.dumps(obj).encode()
+                self.send_response(code)
+                self.send_header('content-type', 'application/json')
+                self.send_header('content-length', str(len(b)))
+                self.end_headers()
+                self.wfile.write(b)
+
+            def ok(self):
+                if self.headers.get('x-duke-local') != key or self.headers.get('origin'):
+                    self.reply(403, {'error': 'forbidden'})
+                    return False
+                link.blender_seen = time.time()
+                return True
+
+            def do_GET(self):
+                if not self.ok():
+                    return
+                if self.path == '/guide':
+                    return self.reply(200, link.guide or {})
+                self.reply(404, {'error': 'not found'})
+
+            def do_POST(self):
+                if not self.ok():
+                    return
+                n = min(int(self.headers.get('content-length') or 0), 20 * 1024 * 1024)
+                body = self.rfile.read(n)
+                try:
+                    if self.path == '/proof':
+                        nxt = (link.guide or {}).get('nextProof') or {}
+                        k = self.headers.get('x-key') or nxt.get('key')
+                        if not k:
+                            return self.reply(200, {'ok': False, 'message': 'This step does not need screenshots.'})
+                        out = link.upload_proof(body, k, urllib.parse.unquote(self.headers.get('x-label') or 'Blender'), 'blender')
+                        return self.reply(200, {'ok': True, 'completed': (out or {}).get('completed') or []})
+                    if self.path == '/exported':
+                        path = json.loads(body or b'{}').get('path', '')
+                        if os.path.isfile(path) and os.path.abspath(path).startswith(os.path.abspath(EXPORTS_DIR)):
+                            st = os.stat(path)
+                            f = {'path': path, 'name': os.path.basename(path), 'size': st.st_size, 'mtime': int(st.st_mtime * 1000), 'kind': 'fbx', 'from': 'Blender'}
+                            link.auto_pickup(f)
+                            link.seen[path] = f
+                            return self.reply(200, {'ok': True, 'imported': f.get('imported')})
+                        return self.reply(400, {'error': 'file not found'})
+                except Exception as e:
+                    return self.reply(500, {'error': str(e)})
+                self.reply(404, {'error': 'not found'})
+
+        try:
+            http.server.ThreadingHTTPServer(('127.0.0.1', LOCAL_PORT), H).serve_forever()
+        except OSError as e:
+            print('Duke Link: Blender connection unavailable (%s)' % e)
+
+    # -- HD mode: tunnel Epic's Pixel Streaming player and signalling through Duke
+    def hd_http(self, c):
+        px = getattr(self, 'pixel', None)
+        path = c.get('path') or '/'
+        status, ctype, data = 502, 'text/plain', b'Pixel Streaming is not running'
+        if px and path.startswith('/') and '..' not in path and '://' not in path:
+            try:
+                with urllib.request.urlopen(px['url'].rstrip('/') + path, timeout=15) as r:
+                    status, ctype, data = r.status, r.headers.get('content-type') or 'application/octet-stream', r.read(30 * 1024 * 1024)
+            except urllib.error.HTTPError as e:
+                status, ctype, data = e.code, 'text/plain', b''
+            except Exception as e:
+                data = str(e).encode()
+        req = urllib.request.Request(self.duke.server + '/api/agent/link/hd/http/' + c['id'], data=data, method='POST', headers={
+            'x-duke-agent': self.duke.token, 'content-type': 'application/octet-stream', 'x-status': str(status), 'x-type': ctype})
+        try:
+            urllib.request.urlopen(req, timeout=60).read()
+        except Exception:
+            pass
+
+    def hd_loop(self):
+        chans = {}
+        while True:
+            try:
+                r = self.duke._req('POST', '/api/agent/link/hdws/poll', {}, timeout=40)
+            except Exception:
+                time.sleep(3)
+                continue
+            for m in r.get('msgs', []):
+                ch = m.get('chan')
+                try:
+                    if m.get('open'):
+                        px = getattr(self, 'pixel', None)
+                        if not px:
+                            self.hd_send([{'chan': ch, 'close': True}])
+                            continue
+                        u = urllib.parse.urlparse(px['url'])
+                        ws = LocalWS(u.hostname or '127.0.0.1', u.port or 80)
+                        chans[ch] = ws
+                        threading.Thread(target=self.hd_pump, args=(ch, ws, chans), daemon=True).start()
+                    elif m.get('close'):
+                        ws = chans.pop(ch, None)
+                        if ws:
+                            ws.close()
+                    elif ch in chans:
+                        if 'data' in m:
+                            chans[ch].send(m['data'].encode('utf-8'), 1)
+                        elif 'b64' in m:
+                            chans[ch].send(base64.b64decode(m['b64']), 2)
+                except Exception:
+                    ws = chans.pop(ch, None)
+                    if ws:
+                        ws.close()
+                    self.hd_send([{'chan': ch, 'close': True}])
+
+    def hd_pump(self, ch, ws, chans):
+        try:
+            while True:
+                op, data = ws.recv()
+                if op == 8:
+                    break
+                self.hd_send([{'chan': ch, 'data': data.decode('utf-8', 'replace')} if op == 1 else {'chan': ch, 'b64': base64.b64encode(data).decode()}])
+        except Exception:
+            pass
+        if chans.pop(ch, None):
+            self.hd_send([{'chan': ch, 'close': True}])
+
+    def hd_send(self, msgs):
+        try:
+            self.duke.post('/api/agent/link/hdws/send', {'msgs': msgs})
+        except Exception:
+            pass
 
     def import_file(self, c):
         src = c['path']
@@ -858,6 +1067,120 @@ class Link:
         _run(['git', '-C', root, 'add', '-A'], timeout=600)
         out = _run(['git', '-C', root, '-c', 'user.name=Duke Forger creator', '-c', 'user.email=creator@dukeforge.local', 'commit', '-m', msg], timeout=600)
         return 'Snapshot saved.' if out else 'Nothing new to save.'
+
+
+LOCAL_PORT = 47811
+LOCAL_KEY = os.path.join(os.path.expanduser('~'), 'DukeForger', '.local_key')
+ADDON_MARK = os.path.join(os.path.expanduser('~'), 'DukeForger', '.blender_addon')
+
+
+def local_key():
+    os.makedirs(os.path.dirname(LOCAL_KEY), exist_ok=True)
+    if not os.path.exists(LOCAL_KEY):
+        with open(LOCAL_KEY, 'w') as f:
+            f.write(base64.urlsafe_b64encode(os.urandom(24)).decode())
+    return open(LOCAL_KEY).read().strip()
+
+
+def blender_exe():
+    found = shutil.which('blender')
+    if found:
+        return found
+    pf = [os.environ.get('ProgramFiles', r'C:\Program Files'), r'C:\Program Files', r'D:\Program Files']
+    hits = sorted(d for r in pf for d in glob.glob(os.path.join(r, 'Blender Foundation', 'Blender*', 'blender.exe')))
+    return hits[-1] if hits else None
+
+
+def install_blender_addon(server, force=False):
+    """Puts the Duke Forger panel into Blender (sidebar, Duke tab). Runs once per Blender version."""
+    exe = blender_exe()
+    if not exe:
+        return 'Blender is not installed.'
+    mark = '%s|%s' % (exe, VERSION)
+    if not force and os.path.exists(ADDON_MARK) and open(ADDON_MARK).read() == mark:
+        return 'The Duke panel is already in Blender.'
+    src = os.path.join(tempfile.gettempdir(), 'duke_forger_blender.py')
+    with urllib.request.urlopen(server.rstrip('/') + '/agent/duke_blender_addon.py', timeout=60) as r, open(src, 'wb') as f:
+        f.write(r.read())
+    script = ("import bpy, shutil, os, addon_utils\n"
+              "d = bpy.utils.user_resource('SCRIPTS', path='addons', create=True)\n"
+              "shutil.copy(r'%s', os.path.join(d, 'duke_forger.py'))\n"
+              "addon_utils.enable('duke_forger', default_set=True, persistent=True)\n"
+              "bpy.ops.wm.save_userpref()\n") % src
+    subprocess.run([exe, '-b', '--factory-startup', '--python-expr', script], timeout=180, capture_output=True)
+    with open(ADDON_MARK, 'w') as f:
+        f.write(mark)
+    return 'The Duke panel is in Blender: press N in the 3D view and open the Duke tab. Restart Blender if it was open.'
+
+
+class LocalWS:
+    """A tiny WebSocket client for the Pixel Streaming signalling server on this PC."""
+    def __init__(self, host, port, path='/'):
+        self.s = socket.create_connection((host, port), timeout=10)
+        key = base64.b64encode(os.urandom(16)).decode()
+        self.s.sendall(('GET %s HTTP/1.1\r\nHost: %s:%d\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Key: %s\r\n'
+                        'Sec-WebSocket-Version: 13\r\nOrigin: http://%s:%d\r\n\r\n' % (path, host, port, key, host, port)).encode())
+        buf = b''
+        while b'\r\n\r\n' not in buf:
+            chunk = self.s.recv(4096)
+            if not chunk:
+                raise ConnectionError('signalling server closed')
+            buf += chunk
+        head, self.rest = buf.split(b'\r\n\r\n', 1)
+        if b' 101' not in head.split(b'\r\n')[0]:
+            raise ConnectionError('signalling server refused: ' + head.split(b'\r\n')[0].decode('latin-1'))
+        self.s.settimeout(None)
+        self.lock = threading.Lock()
+
+    def _n(self, n):
+        while len(self.rest) < n:
+            c = self.s.recv(65536)
+            if not c:
+                raise EOFError()
+            self.rest += c
+        out, self.rest = self.rest[:n], self.rest[n:]
+        return out
+
+    def recv(self):
+        parts, first = [], None
+        while True:
+            b0, b1 = self._n(2)
+            op, n = b0 & 0x0F, b1 & 0x7F
+            if n == 126:
+                n = int.from_bytes(self._n(2), 'big')
+            elif n == 127:
+                n = int.from_bytes(self._n(8), 'big')
+            mask = self._n(4) if b1 & 0x80 else None
+            data = self._n(n)
+            if mask:
+                data = bytes(x ^ mask[i % 4] for i, x in enumerate(data))
+            if op == 9:
+                self.send(data, 10)
+                continue
+            if op == 10:
+                continue
+            if op == 8:
+                return 8, data
+            if op != 0:
+                first = op
+            parts.append(data)
+            if b0 & 0x80:
+                return first or 1, b''.join(parts)
+
+    def send(self, data, op=1):
+        n = len(data)
+        head = bytes([0x80 | op])
+        head += bytes([0x80 | n]) if n < 126 else bytes([0x80 | 126]) + n.to_bytes(2, 'big') if n < 65536 else bytes([0x80 | 127]) + n.to_bytes(8, 'big')
+        mask = os.urandom(4)
+        with self.lock:
+            self.s.sendall(head + mask + bytes(x ^ mask[i % 4] for i, x in enumerate(data)))
+
+    def close(self):
+        try:
+            self.send(b'', 8)
+            self.s.close()
+        except Exception:
+            pass
 
 
 def ue_python(code):
