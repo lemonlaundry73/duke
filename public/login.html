@@ -31,14 +31,21 @@ button:disabled{opacity:.6}
   <button id="go">Create account</button>
   <div class="err" id="err" role="alert"></div>
   <div class="switch" id="sw"></div>
+  <div class="switch" id="fg"><a href="/forgot">Forgot password?</a></div>
 </form></div>
 <script>
 const q=new URLSearchParams(location.search);
-let mode=location.pathname==='/login'?'login':'signup';
+let mode=location.pathname==='/login'?'login':location.pathname==='/forgot'?'forgot':location.pathname==='/reset'?'reset':'signup';
 const plan=q.get('plan');
 const $=id=>document.getElementById(id);
 function render(){
   const s=mode==='signup';
+  $('fg').style.display=mode==='login'?'':'none';
+  if(mode==='forgot'||mode==='reset'){const f=mode==='forgot';document.title=(f?'Forgot password':'Choose a new password')+' | Duke Forger';
+    $('h').textContent=f?'Forgot your password?':'Choose a new password';$('sub').textContent=f?'Enter your email and we\'ll send you a reset link.':'Pick a new password with at least 8 characters.';
+    $('nameRow').style.display='none';$('email').parentElement;$('email').style.display=f?'':'none';document.querySelector('label[for=email]').style.display=f?'':'none';
+    $('pw').style.display=f?'none':'';document.querySelector('label[for=pw]').style.display=f?'none':'';$('pw').autocomplete='new-password';
+    $('go').textContent=f?'Send reset link':'Save new password';$('sw').innerHTML='<a href="/login">Back to log in</a>';$('planNote').style.display='none';return;}
   document.title=(s?'Create your account':'Log in')+' | Duke Forger';
   $('h').textContent=s?'Start building':'Welcome back';
   $('sub').textContent=s?'Create your free account. Plan your whole game before you pay anything.':'Log in to keep building your game.';
@@ -53,6 +60,9 @@ render();
 $('f').onsubmit=async e=>{
   e.preventDefault();$('err').textContent='';$('go').disabled=true;
   try{
+    if(mode==='forgot'){const r=await fetch('/api/auth/forgot',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email:$('email').value})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Something went wrong');
+      $('err').style.color='var(--green)';$('err').textContent=d.emailed?'If that email has an account, a reset link is on its way. Check your inbox.':'Request received. If you don\'t get an email within a few minutes, click Help at the bottom right and the team will send you a link.';$('go').disabled=false;return;}
+    if(mode==='reset'){const r=await fetch('/api/auth/reset',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({token:q.get('token'),password:$('pw').value})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Something went wrong');location.href='/studio';return;}
     const r=await fetch('/api/auth/'+mode,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:$('name').value,email:$('email').value,password:$('pw').value})});
     const d=await r.json();if(!r.ok)throw new Error(d.error||'Something went wrong');
     const next=q.get('next')||'/studio';
@@ -60,5 +70,6 @@ $('f').onsubmit=async e=>{
   }catch(err){$('err').textContent=err.message;$('go').disabled=false;}
 };
 </script>
+<script src="/help.js" defer></script>
 </body>
 </html>

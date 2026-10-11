@@ -12,7 +12,7 @@ Usage:
 
 Only the Python standard library is used.
 """
-import argparse, ctypes, ctypes.wintypes, glob, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
+import argparse, ctypes, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
 VERSION = '3.0.0'
 WORK = os.path.join(os.path.expanduser('~'), 'DukeForgeBuilds')
@@ -171,8 +171,41 @@ def inspect_project(duke, project_id, path):
             report['synced'] = True
         except Exception as e:
             print('  (design sync failed: %s)' % e)
+        try:
+            sync_team_files(duke, project_id, root)
+        except Exception as e:
+            print('  (AI Team file sync failed: %s)' % e)
     duke.post('/api/agent/inspect', report)
     return report
+
+
+TEAM_PREFIXES = ('Source/', 'Config/DukeForge/', 'Content/DukeForge/', 'Docs/')
+
+
+def sync_team_files(duke, project_id, root):
+    """Writes files the AI Team produced into the linked project (only under safe folders)."""
+    manifest_path = os.path.join(root, 'Content', 'DukeForge', 'team_versions.json')
+    try:
+        have = json.load(open(manifest_path, encoding='utf-8'))
+    except Exception:
+        have = {}
+    listing = duke._req('GET', '/api/agent/projects/%s/workspace' % project_id)
+    changed = 0
+    for f in listing.get('files', []):
+        rel = f['path']
+        if '..' in rel or rel.startswith('/') or not rel.startswith(TEAM_PREFIXES) or have.get(rel) == f['version']:
+            continue
+        data = duke._req('GET', '/api/agent/projects/%s/workspace?path=%s' % (project_id, urllib.parse.quote(rel)))
+        dest = os.path.join(root, *rel.split('/'))
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        with open(dest, 'w', encoding='utf-8') as out:
+            out.write(data.get('content', ''))
+        have[rel] = f['version']
+        changed += 1
+    if changed:
+        os.makedirs(os.path.dirname(manifest_path), exist_ok=True)
+        json.dump(have, open(manifest_path, 'w', encoding='utf-8'), indent=2)
+        print('  AI Team: wrote %d file(s) into your project' % changed)
 
 
 def find_butler():

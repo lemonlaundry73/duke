@@ -8,7 +8,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { load, mutate } from './store.js';
 import { HttpError, id as nanoid } from './http.js';
-import { requireUser } from './auth.js';
+import { requireUser, isAdminEmail } from './auth.js';
 import { planOf, PLANS } from './billing.js';
 import { seal, open, hint } from './secrets.js';
 import { PROVIDERS, listModels, complete, testConnection, parseJson } from './providers.js';
@@ -23,7 +23,7 @@ const now=()=>new Date().toISOString();
 const day=()=>new Date().toISOString().slice(0,10);
 const nf=(w='not found')=>{throw new HttpError(404,w);};
 export const WORKSPACES=path.join(DATA_DIR,'workspaces');
-const LEASE_MS=6*60e3, MAX_ATTEMPTS=3, MAX_FILE=200*1024;
+const LEASE_MS=(Number(process.env.TEAM_LEASE_MS)||6*60e3), MAX_ATTEMPTS=3, MAX_FILE=200*1024;
 
 // ---------------------------------------------------------------- roles and what each may touch
 export const ROLES={
@@ -50,6 +50,7 @@ export const ROLES={
 };
 const ROLE_KEYS=Object.keys(ROLES);
 const AGENT_LIMIT={free:0,creator:3,academy:5,studio:12};
+const agentLimit=u=>isAdminEmail(u?.email)?50:AGENT_LIMIT[planOf(u)]||0;
 // Starting price estimates (USD per million tokens). Creators confirm or edit them; budgets use these.
 const PRICE_DEFAULT={anthropic:[3,15],openai:[2.5,10],xai:[3,15],llama:[0.6,1.8]};
 
@@ -142,7 +143,7 @@ function credOf(db,user,credId){const c=db.creds?.[credId];if(!c||c.userId!==use
 const credView=c=>({id:c.id,provider:c.provider,label:c.label,baseUrl:c.baseUrl||'',hint:c.hint,createdAt:c.createdAt,lastTest:c.lastTest||null});
 function teamView(db,p){
   const t=ensureTeam(p);
-  return {team:{...t,agents:t.agents.map(publicAgent)},roles:ROLES,providers:PROVIDERS,limits:{agents:AGENT_LIMIT[ownerPlan(db,p)]},
+  return {team:{...t,agents:t.agents.map(publicAgent)},roles:ROLES,providers:PROVIDERS,limits:{agents:agentLimit(db.users?.[p.ownerId])},
     creds:Object.values(db.creds||{}).filter(c=>c.userId===p.ownerId).map(credView),
     pc:{online:!!agentFor(db,p.ownerId)?.seenAt&&Date.now()-Date.parse(agentFor(db,p.ownerId).seenAt)<10*60e3},
     build:(p.builds||[]).find(b=>b.status==='succeeded')||null};
@@ -195,7 +196,7 @@ export function registerTeam(r){
     if('status' in b&&['active','paused'].includes(b.status))a.status=b.status;
   };
   r.post('/api/projects/:id/team/agents',async({req,params,body})=>withTeam(req,params.id,(p,db,user)=>{
-    const lim=AGENT_LIMIT[planOf(user)]||0;if(p.team.agents.length>=lim)throw new HttpError(402,lim?`Your plan includes ${lim} agents. Upgrade for more.`:'The AI Team is part of the Creator plan or higher.');
+    const lim=agentLimit(user);if(p.team.agents.length>=lim)throw new HttpError(402,lim?`Your plan includes ${lim} agents. Upgrade for more.`:'The AI Team is part of the Creator plan or higher.');
     const c=credOf(db,user,body.credId);
     const a={id:nanoid(8),name:'Agent',credId:c.id,provider:c.provider,model:c.lastTest?.model||'',roles:['director'],tools:[],limitUSD:20,maxConcurrent:1,
       priceIn:PRICE_DEFAULT[c.provider][0],priceOut:PRICE_DEFAULT[c.provider][1],status:'active',spent:0,stats:{done:0,failed:0,reviews:0,tokensIn:0,tokensOut:0,ms:0},createdAt:now()};
@@ -213,7 +214,7 @@ export function registerTeam(r){
   r.post('/api/projects/:id/team/setup',async({req,params})=>withTeam(req,params.id,(p,db,user)=>{
     const creds=Object.values(db.creds||{}).filter(c=>c.userId===user.id&&c.lastTest?.ok!==false);
     if(!creds.length)throw new HttpError(400,'Connect at least one AI provider first');
-    const lim=AGENT_LIMIT[planOf(user)]||0;if(!lim)throw new HttpError(402,'The AI Team is part of the Creator plan or higher.');
+    const lim=agentLimit(user);if(!lim)throw new HttpError(402,'The AI Team is part of the Creator plan or higher.');
     const byProv={};for(const c of creds)(byProv[c.provider] ||= []).push(c);
     const pick=role=>{for(const pr of ROLES[role].prefer)if(byProv[pr])return pr;return Object.keys(byProv)[0];};
     const plan={};for(const role of ROLE_KEYS.filter(r=>r!=='tester'))(plan[pick(role)] ||= []).push(role);
@@ -454,4 +455,6 @@ export async function tick(){
   for(const [pid,tid,lease] of jobs){running.add(`${pid}:${tid}`);void work(pid,tid,lease);}
 }
 let timer=null;
-export function startTeamWorker(ms=4000){if(timer)return;timer=setInterval(()=>{tick().catch(e=>console.error('[team]',e.message));},ms);timer.unref?.();}
+export function startTeamWorker(ms=4000){if(timer)return;
+  // On boot nothing can still be running in this process: hand every leased task back to the queue.
+  void mutate(db=>{for(const p of Object.values(db.projects))for(const x of p.team?.tasks||[])if(x.status==='running'){ensureTeam(p);retryOrBlock(p.team,x,'The server restarted while this was running');}return true;});timer=setInterval(()=>{tick().catch(e=>console.error('[team]',e.message));},ms);timer.unref?.();}

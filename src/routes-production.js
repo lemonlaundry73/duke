@@ -214,17 +214,15 @@ export function registerProduction(r){
   r.get('/api/agent/setup',async({req})=>{
     const user=await requireUser(req);const a=await myAgent(user);const server=serverUrl(req);
     return {server,seenAt:a.seenAt||null,machine:a.machine||null,inspect:a.inspect||{},
-      command:`python duke_agent.py --server ${server} --token ${a.token}`,download:'/agent/duke_agent.py'};
+      command:`py duke_agent.py --server ${server} --token ${a.token}`,download:'/agent/duke_agent.py',
+      manual:[`winget install -e --id Python.Python.3.12`,`curl.exe -L -o duke_agent.py ${server}/agent/duke_agent.py`,`py duke_agent.py --server ${server} --token ${a.token}`]};
   });
   // One-click Windows setup: installs Python, VS C++ build tools, Epic Games Launcher and the agent (auto-start).
+  // Plain, readable Windows setup: no PowerShell, no hidden download-and-run, nothing outside the steps
+  // written in the file. Antivirus tools flag the "download a script and run it hidden" pattern, so we avoid it.
   r.get('/api/agent/DukeSetup.cmd',async({req,res})=>{
-    const user=await requireUser(req);const a=await myAgent(user);const server=serverUrl(req),token=a.token;
-    const cmd=`@echo off\r\ntitle Duke Forger PC setup\r\necho Setting up this PC to build Duke Forger games...\r\npowershell -NoProfile -ExecutionPolicy Bypass -Command "Invoke-WebRequest -UseBasicParsing '${server}/api/agent/setup.ps1?t=${token}' -OutFile \\"$env:TEMP\\DukeSetup.ps1\\"; & \\"$env:TEMP\\DukeSetup.ps1\\""\r\npause\r\n`;
-    send(res,200,cmd,{'content-type':'application/octet-stream','content-disposition':'attachment; filename="DukeSetup.cmd"'});
-  });
-  r.get('/api/agent/setup.ps1',async({req,res,query})=>{
-    const db=await load();const token=String(query.get('t')||'');if(!token||!db.agents?.[token])throw new HttpError(401,'Invalid setup link');
-    send(res,200,setupPs1(serverUrl(req),token),{'content-type':'text/plain; charset=utf-8'});
+    const user=await requireUser(req);const a=await myAgent(user);
+    send(res,200,setupCmd(serverUrl(req),a.token),{'content-type':'application/octet-stream','content-disposition':'attachment; filename="DukeForgerSetup.cmd"'});
   });
   const str=(v,n)=>String(v??'').slice(0,n);
   r.post('/api/agent/hello',async({req,body})=>{
@@ -255,6 +253,15 @@ export function registerProduction(r){
     const auth=await agentAuth(req);const db=auth.db;const p=db.projects[params.pid];
     if(!p||auth.cloud||p.ownerId!==auth.agent.userId)nf('project not found');
     ensureDesign(p);return {duke:'design',version:1,exportedAt:now(),project:{id:p.id,title:p.design.vision?.title||p.name},game:gameData(p),roadmap:{answers:p.roadmap?.answers||{},requirements:p.roadmap?.requirements||[]}};
+  });
+  // AI Team files for the creator's PC agent to write into their Unreal project.
+  r.get('/api/agent/projects/:pid/workspace',async({req,params,query})=>{
+    const auth=await agentAuth(req);const p=auth.db.projects[params.pid];
+    if(!p||auth.cloud||p.ownerId!==auth.agent.userId)nf('project not found');
+    const f=query.get('path');
+    if(f){const meta=p.team?.files?.[f];if(!meta||f.includes('..'))nf('file not found');
+      return {path:f,version:meta.version,content:await fsp.readFile(path.join(DATA_DIR,'workspaces',p.id,f),'utf8').catch(()=>'')};}
+    return {files:Object.entries(p.team?.files||{}).map(([fp,m])=>({path:fp,version:m.version}))};
   });
   r.post('/api/agent/next',async({req})=>{
     const auth=await agentAuth(req);
@@ -297,61 +304,64 @@ export function registerProduction(r){
   });
 }
 
-function setupPs1(server,token){
-  return `# Duke Forger PC setup (generated). Safe to run again: it skips anything already installed.
-$ErrorActionPreference = 'Continue'
-$Server = '${server}'
-$Token = '${token}'
-$Dir = Join-Path $env:USERPROFILE 'DukeForge'
-New-Item -ItemType Directory -Force -Path $Dir | Out-Null
-function Say($m, $c='Cyan') { Write-Host $m -ForegroundColor $c }
-function Refresh-Path { $env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User') }
-Say 'Duke Forger PC setup' 'Yellow'
-if (-not (Get-Command winget -ErrorAction SilentlyContinue)) { Say 'winget is missing. Install "App Installer" from the Microsoft Store, then run this again.' 'Red'; exit 1 }
-$wg = @('--exact','--silent','--accept-source-agreements','--accept-package-agreements')
-
-# 1. Python
-Refresh-Path
-$py = Get-Command pythonw -ErrorAction SilentlyContinue
-if (-not $py) { Say 'Installing Python 3.12...'; winget install --id Python.Python.3.12 @wg; Refresh-Path; $py = Get-Command pythonw -ErrorAction SilentlyContinue }
-if (-not $py) { $cand = Get-ChildItem "$env:LOCALAPPDATA\\Programs\\Python\\Python3*\\pythonw.exe" -ErrorAction SilentlyContinue | Select-Object -First 1; if ($cand) { $py = $cand } }
-$pyw = if ($py.Source) { $py.Source } else { $py.FullName }
-$pyexe = $pyw -replace 'pythonw.exe$','python.exe'
-Say "Python: $pyexe" 'Green'
-& $pyexe -m pip install --user --quiet pillow | Out-Null
-Say 'Duke Link live view: ready' 'Green'
-
-# 2. Visual Studio C++ build tools (Unreal compiles game code with them)
-$vswhere = Join-Path \${env:ProgramFiles(x86)} 'Microsoft Visual Studio\\Installer\\vswhere.exe'
-$hasVC = $false
-if (Test-Path $vswhere) { $hasVC = [bool](& $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath) }
-if (-not $hasVC) {
-  Say 'Installing Visual Studio 2022 C++ build tools (large download, about 10 minutes)...'
-  winget install --id Microsoft.VisualStudio.2022.BuildTools @wg --override '--quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22621 --add Microsoft.Net.Component.4.8.SDK --includeRecommended'
-} else { Say 'Visual Studio C++ tools: already installed' 'Green' }
-
-# 3. Epic Games Launcher (Unreal Engine comes from Epic)
-$launcher = Join-Path \${env:ProgramFiles(x86)} 'Epic Games\\Launcher'
-if (-not (Test-Path $launcher)) { Say 'Installing Epic Games Launcher...'; winget install --id EpicGames.EpicGamesLauncher @wg } else { Say 'Epic Games Launcher: already installed' 'Green' }
-
-# 4. Duke build agent, started now and at every sign-in
-Invoke-WebRequest -UseBasicParsing "$Server/agent/duke_agent.py" -OutFile (Join-Path $Dir 'duke_agent.py')
-$agent = Join-Path $Dir 'duke_agent.py'
-$agentArgs = '"' + $agent + '" --server ' + $Server + ' --token ' + $Token
-schtasks /Create /F /SC ONLOGON /TN 'Duke Forger Build Agent' /TR ('"' + $pyw + '" ' + $agentArgs) | Out-Null
-Get-CimInstance Win32_Process -Filter "Name='pythonw.exe'" -ErrorAction SilentlyContinue | Where-Object { $_.CommandLine -like '*duke_agent.py*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
-Start-Process -FilePath $pyw -ArgumentList $agentArgs -WindowStyle Hidden
-Say 'Duke build agent: running (starts automatically when you sign in)' 'Green'
-
-# 5. Unreal Engine 5
-& $pyexe $agent --check
-if ($LASTEXITCODE -ne 0) {
-  Say ''
-  Say 'LAST STEP - install Unreal Engine 5 (Epic requires your own Epic account):' 'Yellow'
-  Say '  1. The Epic Games Launcher will open. Sign in (or create a free account).'
-  Say '  2. Click Unreal Engine > Library > the + next to ENGINE VERSIONS > Install (latest 5.x).'
-  Say '  Duke detects it automatically when the install finishes. You can close this window.'
-  Start-Process 'com.epicgames.launcher://ue/library' -ErrorAction SilentlyContinue
-} else { Say 'All set. Duke can build your game on this PC.' 'Green' }
-`;
+function setupCmd(server,token){
+  const L=[
+'@echo off','setlocal','title Duke Forger PC setup',
+'echo ==========================================================',
+'echo   Duke Forger PC setup',
+'echo   This file only runs the steps written in it.',
+'echo   Right-click it and choose Edit to read every line.',
+'echo ==========================================================',
+'set "DIR=%USERPROFILE%\\DukeForger"',
+'if not exist "%DIR%" mkdir "%DIR%"',
+'',
+'REM 1. Python, which runs the Duke agent',
+'set "PY="',
+'where py >nul 2>nul && set "PY=py"',
+'if not defined PY if exist "%SystemRoot%\\py.exe" set "PY=%SystemRoot%\\py.exe"',
+'if not defined PY if exist "%LOCALAPPDATA%\\Programs\\Python\\Launcher\\py.exe" set "PY=%LOCALAPPDATA%\\Programs\\Python\\Launcher\\py.exe"',
+'if not defined PY (',
+'  echo Installing Python 3.12 from Microsoft winget...',
+'  winget install --id Python.Python.3.12 --exact --silent --accept-source-agreements --accept-package-agreements',
+'  if exist "%SystemRoot%\\py.exe" set "PY=%SystemRoot%\\py.exe"',
+'  if exist "%LOCALAPPDATA%\\Programs\\Python\\Launcher\\py.exe" set "PY=%LOCALAPPDATA%\\Programs\\Python\\Launcher\\py.exe"',
+')',
+'if not defined PY ( echo Python could not be installed. Install it from python.org, then run this file again. & pause & exit /b 1 )',
+'',
+'REM 2. Visual Studio C++ build tools: Unreal uses them to compile game code',
+'set "VSW=%ProgramFiles(x86)%\\Microsoft Visual Studio\\Installer\\vswhere.exe"',
+'set "HASVC="',
+'if exist "%VSW%" for /f "usebackq delims=" %%i in (`"%VSW%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "HASVC=1"',
+'if not defined HASVC (',
+'  echo Installing Visual Studio 2022 C++ build tools. Large download, about 10 minutes...',
+'  winget install --id Microsoft.VisualStudio.2022.BuildTools --exact --silent --accept-source-agreements --accept-package-agreements --override "--quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22621 --includeRecommended"',
+')',
+'',
+'REM 3. Epic Games Launcher, where you install Unreal Engine 5',
+'if not exist "%ProgramFiles(x86)%\\Epic Games\\Launcher" winget install --id EpicGames.EpicGamesLauncher --exact --silent --accept-source-agreements --accept-package-agreements',
+'',
+'REM 4. The Duke agent: a readable Python script from your Duke Forger site',
+`echo Downloading the Duke agent from ${server}/agent/duke_agent.py`,
+`curl.exe -fsSL -o "%DIR%\\duke_agent.py" "${server}/agent/duke_agent.py"`,
+'if errorlevel 1 ( echo Download failed. Check your internet connection and run this file again. & pause & exit /b 1 )',
+'"%PY%" -m pip install --user --quiet --disable-pip-version-check pillow',
+'',
+'REM 5. A start file in your Startup folder so the agent opens when you sign in. Delete it there to stop that.',
+'> "%DIR%\\Start Duke agent.cmd" echo @echo off',
+'>> "%DIR%\\Start Duke agent.cmd" echo title Duke Forger agent - keep this window open',
+`>> "%DIR%\\Start Duke agent.cmd" echo "%PY%" "%DIR%\\duke_agent.py" --server ${server} --token ${token}`,
+'copy /y "%DIR%\\Start Duke agent.cmd" "%APPDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\Duke Forger agent.cmd" >nul',
+'start "Duke Forger agent" /min "%DIR%\\Start Duke agent.cmd"',
+'echo The Duke agent is running in a small window on your taskbar.',
+'',
+'REM 6. Check for Unreal Engine 5',
+'"%PY%" "%DIR%\\duke_agent.py" --check',
+'if errorlevel 1 (',
+'  echo.',
+'  echo LAST STEP: install Unreal Engine 5 in the Epic Games Launcher. Epic requires your own account.',
+'  echo   Unreal Engine, then Library, then the plus next to Engine Versions, then Install.',
+'  start "" "com.epicgames.launcher://ue/library"',
+') else ( echo All set. Go back to Duke Forger in your browser. )',
+'pause'];
+  return L.join('\r\n')+'\r\n';
 }

@@ -77,7 +77,7 @@ a.term{color:inherit;text-decoration:underline dotted var(--gold);text-underline
 .cert{border:2px solid var(--gold);border-radius:8px;padding:48px;margin:48px 0;text-align:center;background:radial-gradient(600px 300px at 50% 0%,rgba(255,129,95,.1),transparent)}
 .cert p{font-size:18px}.small{font-size:13px}
 footer{border-top:1px solid var(--line);padding:44px 0 28px;margin-top:20px}
-footer .wrap:first-child{display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px}footer p{color:var(--muted);font-size:14px}
+footer .wrap:first-child{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px}footer p{color:var(--muted);font-size:14px}
 footer b{display:block;margin-bottom:8px}footer a:not(.logo){display:block;color:var(--muted);text-decoration:none;font-size:14px;margin-bottom:6px}
 .fine{font-size:12px!important;margin-top:24px}
 @media (max-width:900px){.grid3,.grid4,.phases,.plans{grid-template-columns:1fr 1fr}.top nav{display:none}.steplist{columns:1}}

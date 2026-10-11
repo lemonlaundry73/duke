@@ -16,13 +16,13 @@ const webhookSecret=()=>process.env.STRIPE_WEBHOOK_SECRET||AUTO.webhookSecret||'
 
 export const PLANS={
   free:   {id:'free',   name:'Free',   month:0,  credits:0,   projects:1, features:{build:false,course:false,expansion:false,cloud:false},
-           blurb:'Plan your game: all of Phase 1, Duke the director, and the live preview of your world.'},
+           blurb:'Plan your whole game: Phase 1, Duke the AI director, the live preview, every guide and the help assistant.'},
   creator:{id:'creator',name:'Creator',month:39, credits:300, projects:3, features:{build:true,course:false,expansion:false,cloud:false},
-           blurb:'Build mode: all 67 gated steps, AI drafting, 3D generation credits and PC builds.'},
+           blurb:'Build your game: all 67 checked steps, Duke Link with your tools live in Duke, an AI Team of 3 agents with Autopilot, 3D credits and PC builds.'},
   academy:{id:'academy',name:'Academy',month:69, credits:300, projects:3, features:{build:true,course:true,expansion:false,cloud:false},
-           blurb:'Everything in Creator plus Course mode: lessons on your own game, phase quizzes and certificates.'},
+           blurb:'Learn while you build: everything in Creator plus Course mode lessons on your own game, quizzes, shareable certificates and 5 AI agents.'},
   studio: {id:'studio', name:'Studio', month:149,credits:1000,projects:10,features:{build:true,course:true,expansion:true,cloud:true},
-           blurb:'Everything in Academy plus the AI expansion loop, cloud builds and more credits.'}
+           blurb:'Build at full speed: everything in Academy plus 12 AI agents, the AI expansion loop, cloud builds, 1,000 credits and priority support.'}
 };
 export const PLAN_ORDER=['free','creator','academy','studio'];
 export const yearPrice=plan=>PLANS[plan].month*10; // two months free
@@ -215,4 +215,14 @@ export async function stripeAutoSetup(){
     }
     saveAuto();console.log('[stripe] ready');
   }catch(err){console.error('[stripe] setup failed:',err.message);saveAuto();}
+}
+
+// Re-reads a customer's subscription from Stripe (used by the support assistant when a plan looks wrong).
+export async function refreshSubscription(userId){
+  const db=await load();const u=db.users?.[userId];if(!u)return {ok:false};
+  if(!stripeKey()||!u.stripeCustomerId)return {ok:true,updated:false,note:'No Stripe customer on this account yet'};
+  const list=await stripe('GET',`subscriptions?customer=${encodeURIComponent(u.stripeCustomerId)}&status=all&limit=5`);
+  const sub=(list.data||[]).sort((a,b)=>b.created-a.created)[0];if(!sub)return {ok:true,updated:false};
+  await mutate(db=>{const x=db.users[userId];applySubscription(x,sub);return true;});
+  return {ok:true,updated:true,status:sub.status};
 }

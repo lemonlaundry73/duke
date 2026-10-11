@@ -6,7 +6,7 @@ import { load, mutate } from './src/store.js';
 import { Router, HttpError, id as nanoid, readJson, send, serveStatic } from './src/http.js';
 import { registerProduction } from './src/routes-production.js';
 import { registerRoadmap, roadmapView } from './src/routes-roadmap.js';
-import { registerAuth, userFromRequest, requireUser } from './src/auth.js';
+import { registerAuth, userFromRequest, requireUser, isAdminEmail } from './src/auth.js';
 import { registerBilling, PLANS, planOf, stripeAutoSetup } from './src/billing.js';
 import { emptyDesign, ensureDesign } from './src/pipeline.js';
 import { settle } from './src/ctx.js';
@@ -14,6 +14,7 @@ import { runArt } from './src/art.js';
 import { renderSite } from './src/site.js';
 import { registerLink } from './src/link.js';
 import { registerTeam, startTeamWorker } from './src/team.js';
+import { registerSupport, recordError } from './src/support.js';
 import { PUBLIC_DIR, UPLOAD_DIR } from './src/paths.js';
 
 export const VERSION='3.1.0';
@@ -42,6 +43,7 @@ registerRoadmap(r);
 registerProduction(r);
 registerLink(r);
 registerTeam(r);
+registerSupport(r);
 for(const id of resumeArt) void runArt(id);
 
 r.get('/api/health',()=>({ok:true,version:VERSION}));
@@ -55,7 +57,7 @@ r.post('/api/projects',async({req,body})=>{
   const id=nanoid(10), t=now();
   const p=await mutate(db=>{
     const mine=Object.values(db.projects).filter(x=>x.ownerId===u.id).length;
-    if(mine>=plan.projects)throw new HttpError(402,`The ${plan.name} plan includes ${plan.projects} game${plan.projects===1?'':'s'}. Upgrade to start another.`);
+    if(!isAdminEmail(u.email)&&mine>=plan.projects)throw new HttpError(402,`The ${plan.name} plan includes ${plan.projects} game${plan.projects===1?'':'s'}. Upgrade to start another.`);
     const p={id,ownerId:u.id,name:String(body.name||'Untitled Game').slice(0,120),createdAt:t,updatedAt:t,world:{seed:Math.floor(Math.random()*1e9)},npcs:[],design:emptyDesign(),mode:'build'};
     p.design.vision.title=p.name==='Untitled Game'?'':p.name;
     db.projects[id]=p;settle(db,p);return p;
@@ -78,7 +80,7 @@ r.del('/api/projects/:id',async({params})=>{
 r.get('/api/jobs/:id',async({params})=>(await load()).jobs[params.id]||notFound());
 
 // Routes that do not need a logged-in user (agents authenticate with their own token, Stripe with a signature).
-const OPEN_API=[/^\/api\/health$/,/^\/api\/auth\//,/^\/api\/billing\/(plans|webhook)$/,/^\/api\/roadmap$/,/^\/api\/course\/quiz\/\d+$/,/^\/api\/lessons\/\d+\/video$/,/^\/api\/pipeline$/,
+const OPEN_API=[/^\/api\/health$/,/^\/api\/auth\//,/^\/api\/billing\/(plans|webhook)$/,/^\/api\/roadmap$/,/^\/api\/course\/quiz\/\d+$/,/^\/api\/lessons\/\d+\/video$/,/^\/api\/pipeline$/,/^\/api\/support\/(chat|faq)$/,
   /^\/api\/agent\/(hello|next|inspect|setup\.ps1)$/,/^\/api\/agent\/builds\//,/^\/api\/agent\/link\//,/^\/api\/agent\/projects\//];
 async function guard(req,pathname){
   if(OPEN_API.some(re=>re.test(pathname)))return;
@@ -92,7 +94,7 @@ async function guard(req,pathname){
   if(jm){const j=db.jobs?.[decodeURIComponent(jm[1])];if(!j||db.projects[j.projectId]?.ownerId!==u.id)throw new HttpError(404,'not found');}
 }
 
-const PAGES={'/studio':'/studio.html','/login':'/login.html','/signup':'/login.html'};
+const PAGES={'/studio':'/studio.html','/login':'/login.html','/signup':'/login.html','/admin':'/admin.html','/reset':'/login.html','/forgot':'/login.html'};
 const server=http.createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');
   const pathname=url.pathname;
@@ -125,7 +127,7 @@ const server=http.createServer(async(req,res)=>{
     throw new HttpError(404,'not found');
   }catch(err){
     const status=err instanceof HttpError?err.status:500;
-    if(!(err instanceof HttpError)) console.error(`[${req.method} ${pathname}]`,err);
+    if(!(err instanceof HttpError)){console.error(`[${req.method} ${pathname}]`,err);recordError(`${req.method} ${pathname}`,err);}
     if(pathname.startsWith('/api/')) return send(res,status,{error:status===500?'Server error':err.message||'Server error'});
     const page=await renderSite('/__404',req).catch(()=>null);
     if(page&&!res.headersSent){res.writeHead(404,{'content-type':'text/html; charset=utf-8'});return res.end(page.body);}
@@ -133,6 +135,6 @@ const server=http.createServer(async(req,res)=>{
   }
 });
 
-server.listen(port,()=>{console.log(`Duke Forger v${VERSION} running on http://localhost:${port}`);void stripeAutoSetup();if(process.env.TEAM_WORKER!=='0')startTeamWorker();});
+server.listen(port,()=>{console.log(`Duke Forger v${VERSION} running on http://localhost:${port}`);void stripeAutoSetup();if(process.env.TEAM_WORKER!=='0')startTeamWorker(Number(process.env.TEAM_TICK_MS)||4000);});
 const shutdown=()=>server.close(()=>process.exit(0));
 process.on('SIGTERM',shutdown); process.on('SIGINT',shutdown);

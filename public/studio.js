@@ -61,7 +61,8 @@ async function boot(){
   if(q.get('welcome')){toast(`Welcome to ${q.get('welcome')[0].toUpperCase()+q.get('welcome').slice(1)}. Your plan is active.`);refreshMe();}
   if(q.size)history.replaceState(null,'','/studio');
   setInterval(poll,5000);
-  linkStatus().then(()=>{if(S.view!=='link')renderStep();});
+  linkStatus().then(()=>{if(S.view!=='link'&&S.view!=='team')renderStep();});
+  loadTeam().catch(()=>{});
 }
 async function refreshMe(){S.me=await api('/api/me');renderRail();}
 async function openProject(id){
@@ -109,7 +110,7 @@ $('#planBadge').onclick=()=>accountModal();
 function goStep(n){S.view='step';S.step=n;S.tab=firstCourseTab(n);S.answer={};render();$('#main').scrollTop=0;document.body.classList.remove('railOpen');}
 
 // ---------------------------------------------------------------- step page
-function render(){$('#app').classList.toggle('linkMode',S.view==='link');document.body.classList.toggle('linkModeBody',S.view==='link');renderRail();$('#linkBtn').classList.toggle('active',S.view==='link');if(S.view==='link'){renderLink();}else{stopStream();renderStep();}$('#previewTitle').textContent=D().world?.city_name||D().vision?.title||'Your world';}
+function render(){$('#app').classList.toggle('linkMode',S.view==='link'||S.view==='team');document.body.classList.toggle('linkModeBody',S.view==='link');renderRail();$('#linkBtn').classList.toggle('active',S.view==='link');$('#teamBtn').classList.toggle('active',S.view==='team');if(S.view==='team'){stopStream();renderTeam();}else if(S.view==='link'){renderLink();}else{stopStream();renderStep();}$('#previewTitle').textContent=D().world?.city_name||D().vision?.title||'Your world';}
 function renderStep(){
   const n=S.step,s=stepDef(n),ev=stepEv(n),el=$('#stage');const keep=$('#main').scrollTop;
   const course=P().mode==='course';const ph=S.road.phases[s.phase-1];
@@ -236,11 +237,12 @@ function machineHtml(){
       ${row('Unreal Engine',(m.engines||[]).length?esc(m.engines.join(', ')):'Not installed',(m.engines||[]).length>0)}${row('C++ build tools',m.visualStudio?'Installed':'Missing',!!m.visualStudio)}
       ${row('Character Creator 5',t.cc5?'Installed':'Not found',!!t.cc5)}${row('Headshot',t.headshot?'Installed':'Not found',!!t.headshot)}${row('Blender',t.blender?esc(t.blender):'Not found',!!t.blender)}
       ${row('Git / Git LFS',`${t.git?esc(t.git):'Git not found'} · ${t.lfs?'LFS ok':'LFS not found'}`,!!(t.git&&t.lfs))}${row('Last seen',ag.seenAt?new Date(ag.seenAt).toLocaleString():'—')}</div>`:''}
-    ${seen?'':`<h3 style="margin:16px 0 8px">Connect your Windows PC in one click</h3>
-    <ol class="stepsList"><li>Download and run <b>DukeSetup.cmd</b>. It installs Python, the C++ build tools, the Epic Games Launcher and the Duke build agent, which starts automatically.</li>
+    ${seen?'':`<h3 style="margin:16px 0 8px">Connect your Windows PC</h3>
+    <ol class="stepsList"><li>Download <b>DukeForgerSetup.cmd</b> and double-click it. It's a plain text file: right-click it and choose <b>Edit</b> to read every step. It installs Python, the C++ build tools and the Epic Games Launcher, then starts the Duke agent in a small window.</li>
+      <li>Windows may say <b>"Windows protected your PC"</b> because the file is new and not from a big company. Click <b>More info</b>, then <b>Run anyway</b>.</li>
       <li>Install <b>Unreal Engine 5.8</b> from the Epic Games Launcher (your own Epic account is needed for this one step).</li><li>This panel turns green when your PC checks in.</li></ol>
-    <div class="row gap6 wrap" style="margin-top:12px"><a class="btn gold" href="/api/agent/DukeSetup.cmd" download>Download DukeSetup.cmd</a><button class="btn" id="showManual">Manual setup</button></div>
-    <div id="manual" style="display:none;margin-top:12px"><p class="muted small">Already have Python 3.10+? Download <a href="/agent/duke_agent.py" download>duke_agent.py</a> and run:</p><div class="codeBox" id="agentCmd">Loading…</div></div>`}</div>`;
+    <div class="row gap6 wrap" style="margin-top:12px"><a class="btn gold" href="/api/agent/DukeSetup.cmd" download>Download DukeForgerSetup.cmd</a><button class="btn" id="showManual">No download: copy 3 commands</button></div>
+    <div id="manual" style="display:none;margin-top:12px"><p class="muted small">Open <b>Terminal</b> from the Start menu and paste these one at a time:</p><div class="codeBox" id="agentCmd">Loading…</div></div>`}</div>`;
 }
 const REQUIRED_PLUGINS=[['PCG','PCG'],['MassCrowd','Mass Crowd'],['StateTree','State Tree'],['PythonScriptPlugin','Python Editor Script']];
 const FOLDERS=['Characters','Environments','Gameplay','Maps','Animation','Audio','UI'];
@@ -316,7 +318,7 @@ function bindStep(s,ev){
   $$('[data-asset]').forEach(el=>el.addEventListener('change',async()=>{apply(await patch(`/api/projects/${pid()}/asset-list/${el.dataset.asset}`,{values:{[el.dataset.k]:el.value}}));render();}));
   $$('[data-delasset]').forEach(b=>b.onclick=async()=>{apply(await del(`/api/projects/${pid()}/asset-list/${b.dataset.delasset}`));render();});
   // machine
-  $('#showManual')?.addEventListener('click',async()=>{const m=$('#manual');m.style.display=m.style.display==='none'?'block':'none';const a=await api('/api/agent/setup');$('#agentCmd').textContent=a.command;});
+  $('#showManual')?.addEventListener('click',async()=>{const m=$('#manual');m.style.display=m.style.display==='none'?'block':'none';const a=await api('/api/agent/setup');$('#agentCmd').textContent=(a.manual||[a.command]).join('\n');});
   $$('[data-openlink]').forEach(b=>b.onclick=()=>openLink(b.dataset.openlink));
   bindCollections();bindBuild();bindPublish();bindRequirements();bindExpansion();
 }
@@ -580,6 +582,124 @@ function bindLink(){
     if(e.key==='Escape'){const t=Date.now();if(t-lastEsc<600){LS.control=false;renderLink();return;}lastEsc=t;}
     e.preventDefault();send({k:'key',key:e.key,code:e.code,down:true});});
   wrap.addEventListener('keyup',e=>{e.preventDefault();send({k:'key',key:e.key,code:e.code,down:false});});
+}
+
+
+// ---------------------------------------------------------------- AI Team + Autopilot
+const TM={data:null,adv:false,timer:null,file:null};
+const money=n=>`$${(Number(n)||0).toFixed(2)}`;
+const FLOW=[['Describe',[1]],['Build',[2,4,5,6,7]],['Play',[3]],['Refine',[8]],['Release',[9]]];
+$('#teamBtn').onclick=async()=>{S.view='team';await loadTeam();render();$('#main').scrollTop=0;document.body.classList.remove('railOpen');};
+async function loadTeam(){TM.data=await api(`/api/projects/${pid()}/team`);const ap=TM.data.team.autopilot;
+  $('#teamDot').className='ldot '+(ap.state==='running'?'on':'');$('#teamSub').textContent=ap.state==='running'?`Autopilot on · ${TM.data.team.agents.length} agents`:'Agents that build day and night';}
+function renderTeam(){
+  const d=TM.data;if(!d){$('#stage').innerHTML='<p class="muted">Loading…</p>';return;}
+  const t=d.team,ap=t.autopilot,phase=stepDef(S.rm.current).phase;const today=new Date().toISOString().slice(0,10);
+  const paid=feat('build');const prov=d.providers;
+  const flow=`<div class="flow">${FLOW.map(([n,ph])=>`<span class="${ph.includes(phase)?'on':''}">${n}</span>`).join('<i>→</i>')}</div>`;
+  const runningT=t.tasks.filter(x=>x.status==='running');const needs=t.tasks.filter(x=>['needs_you','needs_review','blocked'].includes(x.status));
+  const done=t.tasks.filter(x=>x.status==='done'&&!x.kind).slice(-12).reverse();const queued=t.tasks.filter(x=>x.status==='queued'||x.status==='review');
+  const files=Object.entries(t.files).sort((a,b)=>b[1].at.localeCompare(a[1].at)).slice(0,14);
+  const credOpts=d.creds.map(c=>`<option value="${c.id}">${esc(c.label)} · ${esc(prov[c.provider].name)}</option>`).join('');
+  $('#stage').innerHTML=`<div class="stepHead"><div><span class="eyebrow">AI TEAM · OPTIONAL</span><h1>Your AI Team</h1>
+      <p class="muted">Optional: connect AI accounts you already pay for, give each agent a job, and turn on <b>Autopilot</b>. They keep moving your game forward while you sleep and bring you only the decisions that matter. You can skip this and build everything yourself.</p>${flow}</div>
+      <button class="btn sm ghost" data-go="${S.rm.current}">← Back to step ${S.rm.current}</button></div>
+    ${!paid?`<div class="banner gold"><b>The AI Team is part of the Creator plan and up.</b> <button class="btn gold sm" data-plans="creator">See plans</button></div>`:''}
+    <div class="teamGrid"><div>
+    <div class="card"><div class="sectionTitle"><div><h2>1. Connect your AI accounts</h2><span class="muted small">Your keys are encrypted on our server and never shown again, never put in prompts or project files.</span></div></div>
+      ${d.creds.length?`<div class="credList">${d.creds.map(c=>`<div class="cred"><b>${esc(c.label)}</b><span class="muted small">${esc(prov[c.provider].name)} · key ${esc(c.hint||'none')} ${c.lastTest?.ok?'<span class="okText">● connected</span>':c.lastTest?`<span class="badText">● ${esc(c.lastTest.error||'failed')}</span>`:''}</span>
+        <span class="row gap6"><button class="btn sm" data-ctest="${c.id}">Test</button><button class="btn sm danger" data-cdel="${c.id}">Remove</button></span></div>`).join('')}</div>`:''}
+      <details ${d.creds.length?'':'open'} class="addCred"><summary class="btn sm gold">+ Connect an AI account</summary>
+        <div class="form" style="margin-top:12px"><div class="field"><label>Provider</label><select id="cProv">${Object.entries(prov).map(([k,v])=>`<option value="${k}">${esc(v.name)}</option>`).join('')}</select></div>
+        <div class="field"><label>Name (optional)</label><input id="cLabel" placeholder="e.g. My Claude key"/></div>
+        <div class="field full"><label>API key</label><input id="cKey" type="password" autocomplete="off" placeholder="Paste your API key"/><span class="help" id="cHelp"></span></div>
+        <div class="field full" id="cBaseWrap" style="display:none"><label>Endpoint base URL</label><input id="cBase" placeholder="https://api.llama.com/compat/v1 or http://your-server:11434/v1"/></div></div>
+        <div class="row gap10" style="margin-top:10px"><button class="btn gold sm" id="cGo">Connect and test</button><span class="muted small" id="cMsg"></span></div></details></div>
+
+    <div class="card"><div class="sectionTitle"><div><h2>2. Your agents</h2><span class="muted small">${t.agents.length} of ${d.limits.agents} agents on your plan · an agent can hold several roles</span></div>
+      <div class="row gap6"><button class="btn gold sm" id="setupTeam" ${d.creds.length?'':'disabled'}>Set Up My Team</button>${d.creds.length?`<button class="btn sm" id="addAgent">+ Agent</button>`:''}</div></div>
+      ${t.agents.length?t.agents.map(a=>{const cr=d.creds.find(c=>c.id===a.credId);const models=cr?.lastTest?.models||[a.model];const cur=runningT.find(x=>x.agentId===a.id);
+        return `<div class="agent ${a.status}"><div class="row between gap10 wrap"><div><input class="aname" data-agent="${a.id}" data-k="name" value="${esc(a.name)}"/>
+          <div class="muted small">${esc(prov[a.provider]?.name||a.provider)} · ${a.status==='disconnected'?'<span class="badText">disconnected</span>':a.status}${cur?` · <span class="okText">working on “${esc(cur.title)}”</span>`:''}</div></div>
+          <div class="row gap6"><span class="chip">${money(a.spent)} of ${money(a.limitUSD)}</span>${a.status==='active'?`<button class="btn sm" data-astatus="${a.id}:paused">Pause</button>`:a.status==='paused'?`<button class="btn sm" data-astatus="${a.id}:active">Resume</button>`:''}<button class="btn sm danger" data-adel="${a.id}">Disconnect</button></div></div>
+          <div class="roles">${Object.entries(d.roles).map(([k,r])=>`<label class="rchip ${a.roles.includes(k)?'on':''}" title="${esc(r.does)}"><input type="checkbox" data-role="${a.id}:${k}" ${a.roles.includes(k)?'checked':''}/>${esc(r.label)}</label>`).join('')}</div>
+          ${TM.adv?`<div class="form advForm"><div class="field"><label>Connection</label><select data-agent="${a.id}" data-k="credId">${d.creds.map(c=>`<option value="${c.id}" ${c.id===a.credId?'selected':''}>${esc(c.label)}</option>`).join('')}</select></div>
+            <div class="field"><label>Model</label><select data-agent="${a.id}" data-k="model">${models.map(m=>`<option ${m===a.model?'selected':''}>${esc(m)}</option>`).join('')}</select></div>
+            <div class="field"><label>Monthly spending limit ($)</label><input type="number" min="0" step="1" data-agent="${a.id}" data-k="limitUSD" value="${a.limitUSD}"/></div>
+            <div class="field"><label>Tasks at once</label><input type="number" min="1" max="4" data-agent="${a.id}" data-k="maxConcurrent" value="${a.maxConcurrent}"/></div>
+            <div class="field"><label>Price per 1M input tokens ($)</label><input type="number" min="0" step="0.01" data-agent="${a.id}" data-k="priceIn" value="${a.priceIn}"/></div>
+            <div class="field"><label>Price per 1M output tokens ($)</label><input type="number" min="0" step="0.01" data-agent="${a.id}" data-k="priceOut" value="${a.priceOut}"/></div>
+            <div class="field full"><label>Tools this agent may use</label><div class="roles">${[...new Set(a.roles.flatMap(r=>d.roles[r].tools))].map(tl=>`<label class="rchip ${a.tools.includes(tl)?'on':''}"><input type="checkbox" data-tool="${a.id}:${tl}" ${a.tools.includes(tl)?'checked':''}/>${esc(tl.replace(/_/g,' '))}</label>`).join('')||'<span class="muted small">No tools for these roles</span>'}</div></div></div>`:''}
+          </div>`;}).join(''):`<div class="empty">${d.creds.length?'Press <b>Set Up My Team</b>: Duke spreads the ten studio roles across the accounts you connected, with a separate independent tester.':'Connect at least one AI account first.'}</div>`}
+      <label class="switch" style="margin-top:12px"><input type="checkbox" id="advToggle" ${TM.adv?'checked':''}/><span></span>Show advanced settings (models, limits, prices, tools)</label>
+      ${TM.adv?'<p class="muted small">Prices are estimates you can edit. Check your provider\'s pricing page; budgets are enforced using these numbers.</p>':''}</div>
+
+    <div class="card"><h2>Tell the team what to change</h2><p class="muted small">Write it in plain words. The director turns it into revision work.</p>
+      <div class="askRow"><input id="corrText" placeholder="e.g. Make the main character older and the tone less dark"/><button class="btn sm" id="corrGo">Send</button></div>
+      ${t.corrections.slice(-3).reverse().map(c=>`<div class="muted small">“${esc(c.text)}” · ${esc(c.status)}</div>`).join('')}</div>
+    </div>
+
+    <div class="sticky">
+      <div class="card autopilot ${ap.state}"><div class="sectionTitle"><h2>Autopilot</h2><span class="status ${ap.state==='running'?'succeeded':ap.state==='paused'?'running':'canceled'}">${ap.state.toUpperCase()}</span></div>
+        ${ap.milestone?`<p class="small"><span class="muted">Next milestone:</span> <b>${esc(ap.milestone)}</b></p>`:''}
+        ${ap.reason?`<p class="small ${ap.state==='paused'?'badText':'muted'}">${esc(ap.reason)}</p>`:''}
+        <div class="row gap6 wrap">${ap.state==='running'?'<button class="btn sm" data-ap="pause">Pause</button>':`<button class="btn gold sm" data-ap="${ap.state==='paused'?'resume':'start'}" ${t.agents.length?'':'disabled'}>${ap.state==='paused'?'Resume':'Start Autopilot'}</button>`}${ap.state!=='stopped'?'<button class="btn sm danger" data-ap="stop">Stop</button>':''}</div>
+        <div class="kv" style="margin-top:12px"><span>Spent today</span><span>${money(t.spend.days[today])} of ${money(ap.dailyLimit)}</span><span>Spent on project</span><span>${money(t.spend.total)} of ${money(ap.projectLimit)}</span>
+          <span>Working now</span><span>${runningT.length} of ${ap.maxParallel} at once</span><span>Queue</span><span>${queued.length} waiting</span></div>
+        <div class="form" style="margin-top:12px"><div class="field"><label>When</label><select id="apMode"><option value="always" ${ap.mode==='always'?'selected':''}>Day and night</option><option value="window" ${ap.mode==='window'?'selected':''}>Only between set hours</option></select></div>
+          <div class="field"><label>Jobs at once</label><input id="apPar" type="number" min="1" max="8" value="${ap.maxParallel}"/></div>
+          ${ap.mode==='window'?`<div class="field"><label>From</label><input id="apFrom" type="time" value="${ap.windowStart}"/></div><div class="field"><label>Until</label><input id="apTo" type="time" value="${ap.windowEnd}"/></div>`:''}
+          <div class="field"><label>Daily limit ($)</label><input id="apDay" type="number" min="0" value="${ap.dailyLimit}"/></div><div class="field"><label>Project limit ($)</label><input id="apProj" type="number" min="0" value="${ap.projectLimit}"/></div></div>
+        <p class="muted small" style="margin-top:8px">Autopilot runs on our servers, so it keeps going when you close this page. Work inside Unreal also needs your PC on with the Duke agent running ${d.pc.online?'<span class="okText">(your PC is connected)</span>':'<span class="badText">(your PC is offline)</span>'}.</p></div>
+
+      ${needs.length||(t.humanSteps||[]).length?`<div class="card"><h2>Needs you</h2>
+        ${(t.humanSteps||[]).map(h=>`<div class="need"><b>Only you can do this:</b> ${esc(h)}</div>`).join('')}
+        ${needs.map(x=>x.status==='needs_you'?(()=>{const dd=t.decisions.find(z=>z.id===x.decisionId);return `<div class="need"><b>${esc(dd?.question||x.title)}</b><div class="row gap6 wrap" style="margin-top:6px">${(dd?.options||[]).map(o=>`<button class="btn sm" data-decide="${dd.id}" data-ans="${esc(o)}">${esc(o)}</button>`).join('')}<input class="decIn" data-decin="${dd?.id}" placeholder="Or type your answer"/></div></div>`;})()
+          :x.status==='needs_review'?`<div class="need"><b>Approve: ${esc(x.title)}</b><p class="muted small">${esc(x.summary||'')} (no independent tester is free, so you review it)</p>${outputsHtml(x)}<div class="row gap6"><button class="btn gold sm" data-appr="${x.id}:1">Approve</button><button class="btn sm" data-appr="${x.id}:0">Send back</button></div></div>`
+          :`<div class="need blocked"><b>Blocked: ${esc(x.title)}</b><p class="small badText">${esc(x.blocker||'')}</p></div>`).join('')}</div>`:''}
+
+      <div class="card"><h2>What the team did</h2>${done.length?done.map(x=>`<div class="doneItem"><div class="row between"><b>${esc(x.title)}</b><span class="chip ok">✓ ${x.integratedBy==='you'?'approved by you':'tested'}</span></div>
+        <div class="muted small">${esc(x.agentName||'')}${x.review?` · reviewed by ${esc(x.review.by)}: ${esc(x.review.notes||'pass')}`:''}</div>${(x.changed||[]).length?`<div class="small">${x.changed.map(esc).join(' · ')}</div>`:''}</div>`).join(''):'<p class="muted small">Nothing yet. Start Autopilot to see real work appear here.</p>'}</div>
+
+      <div class="card"><h2>Files changed</h2>${files.length?files.map(([fp,f])=>`<button class="fileRow" data-file="${esc(fp)}"><span class="mono">${esc(fp)}</span><span class="muted small">v${f.version} · ${esc(f.by||'')}</span></button>`).join(''):'<p class="muted small">No files yet.</p>'}
+        ${TM.file?`<div class="codeBox" style="margin-top:8px;max-height:300px">${esc(TM.file.content)}</div>`:''}
+        <p class="muted small" style="margin-top:6px">${d.build?`Latest verified playable build: ${new Date(d.build.finishedAt||d.build.createdAt).toLocaleString()}.`:'No playable build yet. Files sync into your Unreal project through the Duke agent.'}</p></div>
+
+      <div class="card"><h2>Activity</h2><div class="actLog">${t.log.slice(-14).reverse().map(l=>`<div class="${l.kind==='warn'?'badText':l.kind==='ok'?'okText':''}"><span class="muted">${new Date(l.at).toLocaleTimeString()}</span> ${esc(l.msg)}</div>`).join('')||'<span class="muted">Quiet so far.</span>'}</div></div>
+    </div></div>`;
+  bindTeam();
+  clearInterval(TM.timer);TM.timer=setInterval(async()=>{if(S.view!=='team'||document.hidden)return;const a=document.activeElement;if(a&&a.closest('#stage')&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;
+    const before=JSON.stringify(TM.data?.team);await loadTeam();if(JSON.stringify(TM.data.team)!==before)renderTeam();},4000);
+}
+function outputsHtml(x){return `<div class="small mono" style="margin:6px 0">${(x.outputs||[]).map(o=>o.type==='file'?`file ${esc(o.path)}`:o.type==='design'?`${esc(o.stage)}.${esc(o.key)}`:o.type==='answer'?`step ${o.step}: ${esc(o.key)}`:esc(o.type)).join(' · ')}</div>`;}
+function bindTeam(){
+  $$('[data-go]').forEach(b=>b.onclick=()=>goStep(Number(b.dataset.go)));$$('[data-plans]').forEach(b=>b.onclick=()=>plansModal(b.dataset.plans));
+  const prov=TM.data.providers;const help=()=>{const k=$('#cProv')?.value;if(!k)return;$('#cHelp').innerHTML=`${esc(prov[k].billing)} ${prov[k].keyUrl?`<a href="${prov[k].keyUrl}" target="_blank" rel="noopener">Get a key ↗</a>`:''}`;$('#cBaseWrap').style.display=k==='llama'?'':'none';};
+  $('#cProv')?.addEventListener('change',help);help();
+  $('#cGo')?.addEventListener('click',async()=>{$('#cMsg').textContent='Testing the connection…';
+    try{await post('/api/team/connections',{provider:$('#cProv').value,label:$('#cLabel').value,apiKey:$('#cKey').value,baseUrl:$('#cBase').value});$('#cKey').value='';await loadTeam();renderTeam();toast('Connected and tested');}
+    catch(e){$('#cMsg').textContent=e.message;}});
+  $$('[data-ctest]').forEach(b=>b.onclick=async()=>{b.textContent='Testing…';const r=await post(`/api/team/connections/${b.dataset.ctest}/test`);await loadTeam();renderTeam();toast(r.connection.lastTest.ok?'Connection works':r.connection.lastTest.error,!r.connection.lastTest.ok);});
+  $$('[data-cdel]').forEach(b=>b.onclick=async()=>{if(!confirm('Remove this connection? Agents using it will be disconnected.'))return;await del(`/api/team/connections/${b.dataset.cdel}`);await loadTeam();renderTeam();});
+  $('#setupTeam')?.addEventListener('click',async()=>{TM.data=await post(`/api/projects/${pid()}/team/setup`);renderTeam();toast('Your team is ready. Start Autopilot when you are.');});
+  $('#addAgent')?.addEventListener('click',async()=>{TM.data=await post(`/api/projects/${pid()}/team/agents`,{credId:TM.data.creds[0].id,name:'New agent',roles:['content']});TM.adv=true;renderTeam();});
+  const pa=(id,body)=>patch(`/api/projects/${pid()}/team/agents/${id}`,body).then(d=>{TM.data=d;renderTeam();});
+  $$('[data-agent]').forEach(el=>el.addEventListener('change',()=>pa(el.dataset.agent,{[el.dataset.k]:el.value})));
+  $$('[data-role]').forEach(cb=>cb.addEventListener('change',()=>{const [id,role]=cb.dataset.role.split(':');const a=TM.data.team.agents.find(x=>x.id===id);
+    const roles=cb.checked?[...a.roles,role]:a.roles.filter(x=>x!==role);pa(id,{roles,tools:[...new Set(roles.flatMap(r=>TM.data.roles[r].tools))]});}));
+  $$('[data-tool]').forEach(cb=>cb.addEventListener('change',()=>{const [id,tl]=cb.dataset.tool.split(':');const a=TM.data.team.agents.find(x=>x.id===id);pa(id,{tools:cb.checked?[...a.tools,tl]:a.tools.filter(x=>x!==tl)});}));
+  $$('[data-astatus]').forEach(b=>b.onclick=()=>{const [id,st]=b.dataset.astatus.split(':');pa(id,{status:st});});
+  $$('[data-adel]').forEach(b=>b.onclick=async()=>{if(!confirm('Disconnect this agent? Its open work goes back to the queue.'))return;TM.data=await del(`/api/projects/${pid()}/team/agents/${b.dataset.adel}`);renderTeam();});
+  $('#advToggle')?.addEventListener('change',e=>{TM.adv=e.target.checked;renderTeam();});
+  const settings=()=>({mode:$('#apMode').value,maxParallel:$('#apPar').value,dailyLimit:$('#apDay').value,projectLimit:$('#apProj').value,windowStart:$('#apFrom')?.value,windowEnd:$('#apTo')?.value,tzOffsetMin:new Date().getTimezoneOffset()});
+  ['#apMode','#apPar','#apDay','#apProj','#apFrom','#apTo'].forEach(sel=>$(sel)?.addEventListener('change',async()=>{TM.data=await post(`/api/projects/${pid()}/team/autopilot`,{settings:settings()});renderTeam();}));
+  $$('[data-ap]').forEach(b=>b.onclick=async()=>{if(b.dataset.ap==='stop'&&!confirm('Stop Autopilot and cancel the open tasks?'))return;TM.data=await post(`/api/projects/${pid()}/team/autopilot`,{action:b.dataset.ap,settings:settings()});await loadTeam();render();
+    toast(b.dataset.ap==='start'||b.dataset.ap==='resume'?'Autopilot is on. It keeps working when you close this page.':'Autopilot '+b.dataset.ap+(b.dataset.ap==='stop'?'ped':'d'));});
+  $('#corrGo')?.addEventListener('click',async()=>{const text=$('#corrText').value.trim();if(!text)return;TM.data=await post(`/api/projects/${pid()}/team/correct`,{text});renderTeam();toast('Sent to the director');});
+  $$('[data-decide]').forEach(b=>b.onclick=async()=>{TM.data=await post(`/api/projects/${pid()}/team/decisions/${b.dataset.decide}`,{answer:b.dataset.ans});renderTeam();});
+  $$('[data-decin]').forEach(i=>i.addEventListener('keydown',async e=>{if(e.key!=='Enter'||!i.value.trim())return;TM.data=await post(`/api/projects/${pid()}/team/decisions/${i.dataset.decin}`,{answer:i.value.trim()});renderTeam();}));
+  $$('[data-appr]').forEach(b=>b.onclick=async()=>{const [id,okk]=b.dataset.appr.split(':');TM.data=await post(`/api/projects/${pid()}/team/tasks/${id}/approve`,{approve:okk==='1'});await refreshRm(true);renderTeam();});
+  $$('[data-file]').forEach(b=>b.onclick=async()=>{TM.file=await api(`/api/projects/${pid()}/team/file?path=${encodeURIComponent(b.dataset.file)}`);renderTeam();});
 }
 
 // ---------------------------------------------------------------- plans + account

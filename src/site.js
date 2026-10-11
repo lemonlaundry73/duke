@@ -41,12 +41,14 @@ ${ld({'@context':'https://schema.org','@type':'Organization',name:'Duke Forger',
 ${schema.map(ld).join('')}
 </head><body>
 <header class="top"><div class="wrap"><a class="logo" href="/">Duke <em>Forger</em></a>
-<nav><a href="/guide">The 67 steps</a><a href="/glossary">Glossary</a><a href="/pricing">Pricing</a><a href="/showcase">Showcase</a></nav>
+<nav><a href="/guide">The 67 steps</a><a href="/learn">Learn</a><a href="/pricing">Pricing</a><a href="/faq">FAQ</a></nav>
 <div class="cta"><a href="/login" class="ghost">Log in</a><a href="/signup" class="btn">Start creating</a></div></div></header>
 <main>${body}</main>
+<script src="/help.js" defer></script>
 <footer><div class="wrap"><div><a class="logo" href="/">Duke <em>Forger</em></a><p>Build the open-world game you dream about, step by step, with AI doing the slow parts.</p></div>
 <div><b>Learn</b><a href="/guide">The 67-step guide</a><a href="/glossary">Game dev glossary</a>${TOPICS.slice(0,4).map(t=>`<a href="/learn/${t.slug}">${esc(t.short)}</a>`).join('')}</div>
-<div><b>Product</b><a href="/pricing">Pricing</a><a href="/showcase">Showcase</a><a href="/signup">Start free</a><a href="/login">Log in</a></div></div>
+<div><b>Product</b><a href="/pricing">Pricing</a><a href="/showcase">Showcase</a><a href="/signup">Start free</a><a href="/login">Log in</a></div>
+<div><b>Help</b><a href="/faq">FAQ</a><a href="/faq#contact">Customer support</a><a href="/learn">All guides</a></div></div>
 <p class="fine wrap">Unreal Engine, Character Creator, Headshot, Blender, Megascans, Suno, ElevenLabs, Convai and other names are trademarks of their owners. Duke Forger is independent and not affiliated with them.</p></footer>
 </body></html>`;
 }
@@ -54,6 +56,41 @@ const crumbs=(req,items)=>({'@context':'https://schema.org','@type':'BreadcrumbL
 
 // ---------------------------------------------------------------- topic landing pages (search intent)
 const TOPICS=[
+ {slug:'learn-game-development-without-a-degree',short:'Game dev without a degree',title:'Learn game development without a degree',
+  desc:'You do not need a degree to make video games. Learn game development step by step by building your own game, with plain-language lessons and AI help.',
+  intro:['Studios hire for what you can show, not for a diploma. A finished, playable game says more about you than any certificate. The fastest way to learn is to build one: plan it, prototype it, make the characters and the world, and ship it.','Duke Forger teaches exactly that. Every one of the 67 steps explains its words in plain language, shows the step on a sample game, and then has you do it on your own game, with AI help and a check before you move on.'],
+  steps:[1,5,7,15,21,23,34,59,66],
+  faq:[['Can I get a game development job without a degree?','Many developers are self-taught. A portfolio with a playable game and clear, documented work matters most. Course mode gives you certificates for each phase you finish.'],['How long does it take to learn?','It depends on your hours and scope. Duke Forger has you finish a small playable loop early (Phase 3), so you have something real within weeks, not years.']]},
+ {slug:'how-to-make-a-video-game-step-by-step',short:'Make a video game step by step',title:'How to make a video game, step by step',
+  desc:'The complete step-by-step process to make a video game, from your idea to release: plan, prototype, characters, world, audio, testing and publishing.',
+  intro:['Every game, from small indie hits to open-world blockbusters, goes through the same stages: plan, prototype, build the content, polish one slice, expand, test and release. Skipping a stage is how most first games stall.','This page lays out that path in order. Each step links to a full guide that explains what to do, why it matters, and how AI can speed it up.'],
+  steps:[1,4,7,11,15,21,22,23,34,53,59,64,66,67],
+  faq:[['What is the first step to making a game?','Write one paragraph: who you play, what you do, what you want and why it is interesting. Everything else is checked against it.'],['Should I make a small game first?','Yes. Finish one small, complete loop first, then grow it. That is how studios avoid wasted work.']]},
+ {slug:'game-development-course-online',short:'Online game development course',title:'Online game development course: learn by building your own game',
+  desc:'An online game development course where your own game idea is the class project. 67 lessons, quizzes, certificates and AI help, using Unreal Engine 5.',
+  intro:['Most courses teach on a sample project you will never ship. In Duke Forger\'s Course mode, every lesson has four parts: learn the idea, watch it on a sample game, do it on your own game, and check it with the same gate the pros use.','Finish a phase, pass its quiz, and you get a shareable certificate. Finish the course and you have a working game.'],
+  steps:[1,2,9,15,23,34,45,53,59,64],
+  faq:[['Is there a free trial?','Yes. Your first paid plan starts with 7 days free, and the planning phase is free forever.'],['Do I get a certificate?','Yes, one for each of the 9 phases, each with its own public page.']]},
+ {slug:'unreal-engine-5-course-for-beginners',short:'Unreal Engine 5 for beginners',title:'Unreal Engine 5 course for complete beginners',
+  desc:'Learn Unreal Engine 5 from zero by building your own game: project setup, Blueprints, gameplay, characters, open worlds, lighting and packaging.',
+  intro:['Unreal Engine 5 powers games with film-quality graphics, and it is free until your game earns $1 million. It is also big, which is why beginners get lost. The answer is order: learn each part when your game needs it.','Duke Forger\'s steps introduce Unreal one piece at a time, from creating the project to packaging a playable build, with every term explained the first time it appears.'],
+  steps:[10,11,12,13,16,17,18,19,21,34,42,64],
+  faq:[['Is Unreal Engine 5 good for beginners?','Yes, if you learn it in order. Blueprints let you build logic without typing code.'],['Is Unreal Engine free?','Yes. Epic takes a 5% royalty only after a game earns $1 million.']]},
+ {slug:'how-to-make-a-game-with-ai',short:'Make a game with AI',title:'How to make a video game with AI (that actually ships)',
+  desc:'How to use AI to make a real video game: AI drafting, code, 3D generation, procedural worlds, AI NPC dialogue and AI agents that work around the clock.',
+  intro:['AI will not make a great game from one prompt. It will remove most of the slow work when you use it at the right steps: drafting your design, writing and explaining code, generating background 3D assets, laying out worlds by rules, multiplying crowds and voicing side characters.','Duke Forger builds that in at every step, and its optional AI Team lets agents from the AI accounts you connect keep advancing your game day and night, with an independent reviewer and spending limits you control.'],
+  steps:[1,5,17,32,40,44,46,49,61],
+  faq:[['Can AI make a whole game for me?','No tool can make a good game without your decisions. AI does the slow parts; you choose the direction and approve the results.'],['Which AI models can I use?','The AI Team supports Claude (Anthropic), OpenAI, Grok (xAI) and Llama endpoints, using your own API keys.']]},
+ {slug:'ai-agents-for-game-development',short:'AI agents for game development',title:'AI agents for game development: a studio that works while you sleep',
+  desc:'Use AI agents as your game studio: a director, gameplay engineer, world builder, narrative designer, tester and more, running on Autopilot with budgets and reviews.',
+  intro:['A game studio is a set of roles: direction, gameplay, world, characters, UI, story, research, testing and builds. Duke Forger\'s AI Team gives each role to an agent from the AI accounts you connect.','Autopilot plans the next milestone, runs independent tasks in parallel, has a separate agent review every result, integrates only passing work and saves a checkpoint. You set the schedule and the spending limits, and you make the creative calls.'],
+  steps:[14,44,59,60,61,62],
+  faq:[['Do the agents need my computer?','Planning, writing and code run on our servers. Work inside Unreal needs your PC on with the Duke agent running.'],['How do I control costs?','Daily, project and per-agent limits. Autopilot pauses and tells you when one is reached.']]},
+ {slug:'how-to-become-a-game-developer',short:'Become a game developer',title:'How to become a game developer in 2026',
+  desc:'A practical path to becoming a game developer: the skills studios use, the tools to learn, and how to build a portfolio game that proves it.',
+  intro:['Game developers are people who ship games. The skills are learnable: design, scripting, 3D, lighting, audio, testing and release. The proof is a playable game.','Duke Forger walks you through all of them in the order studios use, on your own game, so by the end you have both the skills and the portfolio.'],
+  steps:[1,3,5,15,21,23,34,53,59,65,66],
+  faq:[['What should be in a game developer portfolio?','A playable build, a short trailer, and clear notes on what you made. A finished small game beats an unfinished big one.']]},
  {slug:'how-to-make-a-game-like-gta',short:'Make a game like GTA',title:'How to make a game like GTA by yourself',
   desc:'A realistic, step-by-step path to an open-world game like GTA as a solo creator: what to build first, which tools to use, and where AI saves months.',
   intro:['GTA is made by hundreds of people over many years. You can still make an open-world crime or adventure game alone, if you make it the way studios do: plan tightly, prove the fun with gray boxes, finish one district to full quality, then grow the world from that standard.','The biggest difference today is AI. Procedural generation fills streets with buildings and props by rules you set, character tools build realistic people from photos, and AI agents can lay out districts in a sandbox copy of your project for you to approve. You still make every creative decision.'],
@@ -127,6 +164,12 @@ function home(req){
   <h2>The path, phase by phase</h2>
   <ol class="phases">${PHASES.map(ph=>{const st=STEPS.filter(s=>s.phase===ph.n);return `<li><div><b>Phase ${ph.n}: ${esc(ph.title)}</b><span>Steps ${st[0].n}–${st.at(-1).n}</span></div><p>${esc(ph.outcome)}</p><a href="/guide#phase-${ph.n}">See the steps</a></li>`;}).join('')}</ol>
 </div></section>
+<section><div class="wrap">
+  <p class="eyebrow">Optional · AI Team</p>
+  <h2>A studio that works while you sleep.<br><em>You stay the director.</em></h2>
+  <p class="lede">Connect the AI accounts you already have (Claude, OpenAI, Grok or Llama), give each agent a studio job, and turn on Autopilot. Agents plan, build, test each other's work and save checkpoints day and night, within the spending limits you set, and bring you only the decisions that matter.</p>
+  <div class="steps3"><article><i>01</i><h3>Connect</h3><p>Add your API keys once. They're encrypted and never shown again.</p></article><article><i>02</i><h3>Set up my team</h3><p>One click spreads ten studio roles across your accounts, with a separate independent tester.</p></article><article><i>03</i><h3>Autopilot</h3><p>Real files, real design work, reviewed and merged, with spending and progress always visible.</p></article></div>
+</div></section>
 <section class="band"><div class="wrap">
   <h2>What Duke checks for you</h2>
   <div class="grid4">
@@ -144,9 +187,9 @@ function home(req){
 <section><div class="wrap">${pricingCards()}<p class="center"><a href="/pricing">Compare plans</a></p></div></section>
 <section><div class="wrap narrow"><h2>Questions</h2>${FAQ_HOME.map(([q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>
 <section class="final"><div class="wrap"><h2>Your game starts with one paragraph.</h2><p>Write it today. Duke takes it from there, one step at a time.</p><a class="btn big" href="/signup">Start free</a></div></section>`;
-  return page(req,{title:'Duke Forger: build your dream open-world game, step by step, with AI',
-    desc:'Make a high-definition open-world game in Unreal Engine 5, even as a beginner. 67 guided steps, AI help at every stage, and checks before each step opens.',path:'/',body,
-    schema:[{'@context':'https://schema.org','@type':'SoftwareApplication',name:'Duke Forger',applicationCategory:'DeveloperApplication',operatingSystem:'Web, Windows',
+  return page(req,{title:'Duke Forger: learn game development and build your dream game with AI, no degree needed',
+    desc:'Learn game development without a degree by building your own high-definition Unreal Engine 5 game. 67 guided steps, AI help, an optional AI Team on Autopilot, and checks at every step.',path:'/',body,
+    schema:[{'@context':'https://schema.org','@type':'Course',name:'Make an open-world game: the 67-step course',description:'Learn game development without a degree by building your own high-definition Unreal Engine 5 game, step by step, with AI help.',provider:{'@type':'Organization',name:'Duke Forger',sameAs:base(req)},educationalLevel:'Beginner',inLanguage:'en',isAccessibleForFree:false,offers:{'@type':'Offer',category:'Subscription',price:'0',priceCurrency:'USD'},hasCourseInstance:{'@type':'CourseInstance',courseMode:'online',courseWorkload:'P12W'}},{'@context':'https://schema.org','@type':'SoftwareApplication',name:'Duke Forger',applicationCategory:'DeveloperApplication',operatingSystem:'Web, Windows',
       offers:PLAN_ORDER.map(id=>({'@type':'Offer',name:PLANS[id].name,price:String(PLANS[id].month),priceCurrency:'USD'}))},
       {'@context':'https://schema.org','@type':'FAQPage',mainEntity:FAQ_HOME.map(([q,a])=>({'@type':'Question',name:q,acceptedAnswer:{'@type':'Answer',text:a}}))}]});
 }
@@ -167,11 +210,11 @@ function pricingCards(){
 function planBullets(id){
   const p=PLANS[id];const b=[];
   b.push(id==='free'?'Phase 1: steps 1 to 8':'All 67 steps');
-  b.push('Duke, your AI director','Plain-language glossary','Live 3D preview of your world');
-  if(p.features.build)b.push(`${p.credits} 3D credits a month`,'Builds on your own PC');
+  b.push('Duke, your AI director','Plain-language glossary and every guide','Live 3D preview of your world','24/7 help assistant');
+  if(p.features.build)b.push('Duke Link: your tools live in Duke',`AI Team: ${{creator:3,academy:5,studio:12}[id]} agents with Autopilot`,`${p.credits} 3D credits a month`,'Builds on your own PC');
   if(p.features.course)b.push('Course mode lessons and quizzes','Phase certificates');
   if(p.features.expansion)b.push('AI expansion loop with review queue');
-  if(p.features.cloud)b.push('Cloud builds');
+  if(p.features.cloud)b.push('Cloud builds','Priority support');
   b.push(`${p.projects} game${p.projects===1?'':'s'}`);
   return b;
 }
@@ -270,11 +313,26 @@ async function certificate(req,id){
 <p class="muted small">Each step was completed through Duke Forger's gates, and the phase quiz was passed.</p></div></article>`;
   return page(req,{title:`${c.name}: Phase ${c.phase} certificate | Duke Forger Academy`,desc:`${c.name} completed Phase ${c.phase} (${c.phaseTitle}) of the Duke Forger open-world production course.`,path:`/certificate/${id}`,body,noindex:true});
 }
+async function faqPage(req){
+  const {FAQ}=await import('./support.js');const cats=[...new Set(FAQ.map(f=>f[0]))];
+  const body=`<section class="hero small"><div class="wrap"><p class="eyebrow">Help center</p><h1>Questions, answered.</h1><p class="lede">Quick answers about building your game, plans, the AI Team, Duke Link and your account. Can't find it? Click <b>Help</b> at the bottom right: our assistant answers right away, fixes many account problems on the spot, and sends anything else to the team.</p></div></section>
+<section><div class="wrap narrow">${cats.map(c=>`<h2>${esc(c)}</h2>${FAQ.filter(f=>f[0]===c).map(([,q,a])=>`<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}`).join('')}
+<h2 id="contact" style="margin-top:50px">Customer support</h2><p class="lede">Click <b>Help</b> at the bottom right of any page. The assistant can re-check your plan with Stripe, clear stuck jobs, re-queue failed builds and more, instantly. Anything it can't fix becomes a ticket for the Duke Forger team.</p></div></section>`;
+  return page(req,{title:'FAQ and customer support | Duke Forger',desc:'Answers about Duke Forger: making your game, plans and billing, the AI Team, Duke Link, Course mode and your account, plus 24/7 AI customer support.',path:'/faq',body,
+    schema:[{'@context':'https://schema.org','@type':'FAQPage',mainEntity:FAQ.map(([,q,a])=>({'@type':'Question',name:q,acceptedAnswer:{'@type':'Answer',text:a}}))}]});
+}
+function learnHub(req){
+  const body=`<section class="hero small"><div class="wrap"><p class="eyebrow">Learn game development</p><h1>Learn to make games. <em>No degree needed.</em></h1><p class="lede">Free guides that take you from idea to released game, in plain words. Every guide links to the steps that teach it, and you can build each step on your own game.</p></div></section>
+<section><div class="wrap"><div class="grid3">${TOPICS.map(t=>`<a class="card" style="text-decoration:none;color:inherit" href="/learn/${t.slug}"><h3>${esc(t.title)}</h3><p>${esc(t.desc)}</p></a>`).join('')}</div>
+<p class="center" style="margin-top:30px"><a class="btn big" href="/guide">See all 67 steps</a></p></div></section>`;
+  return page(req,{title:'Learn game development: free guides, no degree needed | Duke Forger',desc:'Free step-by-step guides to learn game development without a degree: make a video game, Unreal Engine 5 for beginners, game characters, open worlds and AI.',path:'/learn',body,
+    schema:[{'@context':'https://schema.org','@type':'ItemList',itemListElement:TOPICS.map((t,i)=>({'@type':'ListItem',position:i+1,url:`${base(req)}/learn/${t.slug}`,name:t.title}))}]});
+}
 function notFoundPage(req){
   return page(req,{title:'Page not found | Duke Forger',desc:'This page does not exist.',path:'/404',noindex:true,body:`<section class="hero small"><div class="wrap"><h1>That page is not here.</h1><p class="lede">Try <a href="/guide">the 67-step guide</a>, <a href="/glossary">the glossary</a> or <a href="/">the home page</a>.</p></div></section>`});
 }
 function sitemap(req){
-  const b=base(req);const urls=['/','/pricing','/guide','/glossary','/showcase',...STEPS.map(s=>`/guide/${s.slug}`),...Object.keys(GLOSSARY).map(k=>`/glossary/${k}`),...TOPICS.map(t=>`/learn/${t.slug}`)];
+  const b=base(req);const urls=['/','/pricing','/guide','/glossary','/showcase','/faq','/learn',...STEPS.map(s=>`/guide/${s.slug}`),...Object.keys(GLOSSARY).map(k=>`/glossary/${k}`),...TOPICS.map(t=>`/learn/${t.slug}`)];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(u=>`<url><loc>${esc(b+u)}</loc></url>`).join('')}</urlset>`;
 }
 
@@ -291,6 +349,8 @@ export async function renderSite(pathname,req){
   if(pathname==='/showcase')return {...html(await showcase(req)),cache:'public, max-age=60'};
   if((m=/^\/showcase\/([\w-]+)$/.exec(pathname))){const b=await showcaseGame(req,m[1]);return b?html(b):null;}
   if((m=/^\/certificate\/([\w-]+)$/.exec(pathname))){const b=await certificate(req,m[1]);return b?html(b):null;}
+  if(pathname==='/faq')return html(await faqPage(req));
+  if(pathname==='/learn')return html(learnHub(req));
   if(pathname==='/sitemap.xml')return {body:sitemap(req),type:'application/xml; charset=utf-8'};
   if(pathname==='/robots.txt')return {body:`User-agent: *\nAllow: /\nDisallow: /studio\nDisallow: /api/\nDisallow: /login\nDisallow: /signup\nDisallow: /certificate/\nSitemap: ${base(req)}/sitemap.xml\n`,type:'text/plain; charset=utf-8'};
   if(pathname==='/__404')return {status:404,body:notFoundPage(req)};

@@ -81,6 +81,31 @@ export function registerAuth(r){
     res.setHeader('set-cookie',sessionCookie(req,out.tok));
     return {user:publicUser(out.u)};
   });
+  // Password reset: a one-hour link, emailed when an email service is set up, and always sent to the
+  // owner's support inbox so a person can forward it.
+  r.post('/api/auth/forgot',async({req,body})=>{
+    throttle(req);const email=String(body.email||'').trim().toLowerCase();
+    const site=(process.env.SITE_URL||`${req.headers['x-forwarded-proto']||'http'}://${req.headers.host}`).replace(/\/$/,'');
+    const out=await mutate(db=>{const u=Object.values(db.users||{}).find(x=>x.email===email);if(!u)return null;
+      const tok=randomBytes(24).toString('base64url');db.resets ||= {};db.resets[tok]={userId:u.id,exp:new Date(Date.now()+3600e3).toISOString()};
+      for(const [k,v] of Object.entries(db.resets))if(Date.parse(v.exp)<Date.now())delete db.resets[k];
+      const link=`${site}/reset?token=${tok}`;db.tickets ||= {};const id=nanoid(6).toUpperCase();
+      db.tickets[id]={id,userId:u.id,email,subject:'Password reset requested',summary:`${email} asked to reset their password. If they contact you, send them this one-hour link:\n${link}`,severity:'normal',status:'open',at:now(),actions:[],replies:[],transcript:[]};
+      return {link,email};});
+    if(out&&process.env.RESEND_API_KEY){
+      try{await fetch('https://api.resend.com/emails',{method:'POST',signal:AbortSignal.timeout(15000),headers:{authorization:`Bearer ${process.env.RESEND_API_KEY}`,'content-type':'application/json'},
+        body:JSON.stringify({from:process.env.SUPPORT_FROM||'Duke Forger <support@dukeforger.com>',to:[out.email],subject:'Reset your Duke Forger password',text:`Click this link within one hour to choose a new password:\n${out.link}\n\nIf you didn't ask for this, ignore this email.`})});}catch{}
+    }
+    return {ok:true,emailed:!!process.env.RESEND_API_KEY};
+  });
+  r.post('/api/auth/reset',async({req,res,body})=>{
+    throttle(req);const password=String(body.password||'');if(password.length<8)throw new HttpError(400,'Use a password with at least 8 characters');
+    const out=await mutate(async db=>{const r=db.resets?.[String(body.token||'')];if(!r||Date.parse(r.exp)<Date.now())throw new HttpError(400,'This reset link expired. Ask for a new one.');
+      const u=db.users[r.userId];u.pass=hashPassword(password);delete db.resets[String(body.token)];
+      for(const [k,s] of Object.entries(db.sessions||{}))if(s.userId===u.id)delete db.sessions[k];
+      return {u,tok:await createSession(db,u.id)};});
+    res.setHeader('set-cookie',sessionCookie(req,out.tok));return {user:publicUser(out.u)};
+  });
   r.post('/api/auth/logout',async({req,res})=>{
     const tok=parseCookies(req)[COOKIE];
     if(tok)await mutate(db=>{if(db.sessions)delete db.sessions[tok];return true;});
