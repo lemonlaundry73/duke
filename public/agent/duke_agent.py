@@ -14,7 +14,7 @@ Only the Python standard library is used.
 """
 import argparse, base64, ctypes, http.server, io, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
-VERSION = '3.5.0'
+VERSION = '3.6.0'
 # Filled in when you download DukeForger.py from your Duke Forger studio, so a double-click is enough.
 DEFAULT_SERVER = ''
 DEFAULT_TOKEN = ''
@@ -768,12 +768,50 @@ class Link:
             pass
 
     def allowed(self):
-        if self.control is None and self.u:
-            ans = self.u.MessageBoxW(None, 'Duke Forger wants to control your Unreal, Blender, Character Creator and Visual Studio windows from your browser '
-                                           '(mouse, keyboard and one-click actions) until this agent restarts.\n\nAllow?', 'Duke Link', 0x4 | 0x20 | 0x40000 | 0x10000)
-            self.control = (ans == 6)
-            self.result('control', self.control, 'allowed' if self.control else 'declined')
+        """Asks once on this PC (a box that stays on top) and remembers the answer, without blocking anything."""
+        if self.control is None and os.path.exists(CONTROL_FILE):
+            self.control = open(CONTROL_FILE).read().strip() == 'allow'
+        if self.control is None and self.u and not getattr(self, 'asking', False):
+            self.asking = True
+
+            def ask():
+                ans = self.u.MessageBoxW(None, 'Let Duke Forger use your Unreal, Blender, Character Creator and Visual Studio windows '
+                                               'from Duke in your browser (mouse, keyboard and one-tap actions)?\n\n'
+                                               'Duke remembers your answer. Delete DukeForger\\.control to be asked again.', 'Duke Link', 0x4 | 0x20 | 0x40000 | 0x10000)
+                self.control = (ans == 6)
+                try:
+                    with open(CONTROL_FILE, 'w') as f:
+                        f.write('allow' if self.control else 'deny')
+                except OSError:
+                    pass
+                self.asking = False
+                self.result('control', self.control, 'allowed' if self.control else 'declined')
+            threading.Thread(target=ask, daemon=True).start()
         return bool(self.control)
+
+    def bring_to_front(self, hwnd):
+        """Windows refuses focus changes from background programs; this is the standard way through."""
+        u, k = self.u, ctypes.windll.kernel32
+        vp = ctypes.c_void_p
+        if u.GetForegroundWindow() == hwnd:
+            return
+        if u.IsIconic(vp(hwnd)):
+            u.ShowWindow(vp(hwnd), 9)
+        fg = u.GetForegroundWindow()
+        me = k.GetCurrentThreadId()
+        other = u.GetWindowThreadProcessId(vp(fg), None) if fg else 0
+        target = u.GetWindowThreadProcessId(vp(hwnd), None)
+        try:
+            for t in {other, target} - {0, me}:
+                u.AttachThreadInput(me, t, True)
+            u.keybd_event(0x12, 0, 0, 0)  # a tap of Alt unlocks SetForegroundWindow
+            u.keybd_event(0x12, 0, 2, 0)
+            u.BringWindowToTop(vp(hwnd))
+            u.SetForegroundWindow(vp(hwnd))
+            u.SetFocus(vp(hwnd))
+        finally:
+            for t in {other, target} - {0, me}:
+                u.AttachThreadInput(me, t, False)
 
     # -- commands
     def run(self, c):
@@ -785,8 +823,7 @@ class Link:
                     self.hwnd = int(c['window'])
                     self.title = next(w['title'] for w in self.windows() if w['id'] == c['window'])
                     if self.allowed():
-                        self.u.ShowWindow(ctypes.c_void_p(self.hwnd), 9)
-                        self.u.SetForegroundWindow(ctypes.c_void_p(self.hwnd))
+                        self.bring_to_front(self.hwnd)
                 return self.result(cid, True, 'Showing ' + (self.title or ''))
             if t == 'hd_http':
                 return self.hd_http(c)
@@ -815,7 +852,7 @@ class Link:
         if not box:
             return
         if u.GetForegroundWindow() != self.hwnd:
-            u.SetForegroundWindow(ctypes.c_void_p(self.hwnd))
+            self.bring_to_front(self.hwnd)
         k = e['k']
         if k in ('move', 'down', 'up', 'wheel'):
             x = int(box[0] + e['x'] * (box[2] - box[0]))
@@ -1187,6 +1224,7 @@ class Link:
 
 
 LOCAL_PORT = 47811
+CONTROL_FILE = os.path.join(os.path.expanduser('~'), 'DukeForger', '.control')
 LOCAL_KEY = os.path.join(os.path.expanduser('~'), 'DukeForger', '.local_key')
 ADDON_MARK = os.path.join(os.path.expanduser('~'), 'DukeForger', '.blender_addon')
 

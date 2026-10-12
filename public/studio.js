@@ -228,7 +228,7 @@ function agentBlock(){
   const ag=S.rm.agent,m=ag?.machine,seen=ag?.seenAt&&Date.now()-Date.parse(ag.seenAt)<10*60e3;
   return {ag,m,seen};
 }
-const AGENT_VERSION='3.4.0';
+const AGENT_VERSION='3.6.0';
 const verLess=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)<(y[i]||0);}return false;};
 function machineHtml(){
   const {ag,m,seen}=agentBlock();const t=m?.tools||{};
@@ -579,7 +579,7 @@ function renderLink(){
         ${LS.control?'<div class="ctlNote">You are controlling your PC. Press Esc twice to stop.</div>':''}</div>
       <button class="btn sm ghost" id="stopLive" style="margin-top:8px">Hide live view</button>`}
       ${linkModeNote(st,tool)}
-      ${st.control===false?'<p class="badText small">Control was declined on your PC. Restart the Duke agent to be asked again.</p>':'<p class="muted small">The first time you use it here, your PC asks you to allow it. Only Unreal, Blender, Character Creator and Visual Studio windows are ever shown.</p>'}`}
+      ${st.control===false?'<p class="badText small">Control was turned down on your PC. To be asked again, delete the file <b>.control</b> in your <b>DukeForger</b> folder (in your user folder), then restart the Duke app.</p>':LS.control&&st.control==null?'<div class="banner gold small"><b>Look at your PC:</b> a "Duke Link" box is asking to let Duke use your tools. Click <b>Yes</b> once and Duke remembers it.</div>':'<p class="muted small">Turn on <b>Use it here</b> to click and type in the picture. Only Unreal, Blender, Character Creator and Visual Studio windows are ever shown. If you are sitting at that PC, your first click brings the real app to the front.</p>'}`}
     </div>
     <div class="sticky">
       <div class="card"><button class="linkish small" data-popguide style="float:right;font-size:12px">Pop out ↗</button><span class="eyebrow">STEP ${s.n} · ${ev.progress}% DONE</span><h3 style="margin:4px 0 8px">${esc(s.title)}</h3><ol class="how small">${s.how.map(h=>`<li>${terms(h,new Set(),2)}</li>`).join('')}</ol>
