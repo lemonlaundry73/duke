@@ -553,26 +553,31 @@ function renderLink(){
   const st=LS.status||{tools:S.road.tools,windows:[]};const s=stepDef(S.rm.current);const ev=stepEv(S.rm.current);
   const proofs=s.checks.filter(c=>c.t==='proof');const tool=st.windows?.find(w=>w.title===st.window)?.tool;
   const acts=S.road.actions.filter(a=>!tool||!a.tool||a.tool===tool);
-  const hd=LS.hd??(!!st.pixel&&(tool==='ue'||!tool));
+  const hd=LS.live&&(LS.hd??(!!st.pixel&&(tool==='ue'||!tool)));
   $('#stage').innerHTML=`<div class="stepHead"><div><span class="eyebrow">DUKE LINK</span><h1>Your tools, live in Duke</h1>
-      <p class="muted">Your tools run on your own PC, and Duke shows them here. Open one, then turn on <b>Use it here</b> to click and type in the picture as if you were sitting at your PC.</p></div>
-      <div class="row gap6 wrap"><a class="btn sm ghost" href="/api/agent/DukeForger.py" download>Get the Duke app</a><button class="btn sm ghost" data-go="${S.rm.current}">← Back to step ${S.rm.current}</button></div></div>
+      <p class="muted">Your tools run on your own PC. At the PC, use them in their own windows with Duke beside you. From a laptop, tablet or phone, show them live here.</p></div>
+      <div class="row gap6 wrap"><a class="btn sm ghost" href="/api/agent/DukeForger.py" download>Get the Duke app</a><button class="btn sm ghost" id="copyStart" title="For when double-clicking opens an editor like Cursor">Copy start command</button><button class="btn sm ghost" data-go="${S.rm.current}">← Back to step ${S.rm.current}</button></div></div>
     ${!st.online?`<div class="banner gold"><b>Your PC is not connected.</b> Duke Link uses the Duke agent on your PC. ${S.rm.agent?.seenAt?'Turn your PC on and double-click DukeForger.py.':`Download <a href="/api/agent/DukeForger.py" download>DukeForger.py</a> and double-click it (step 9 walks you through it).`}</div>`:''}
     <div class="toolRow">${st.tools.map(t=>`<div class="toolCard ${t.open?'open':''} ${LS.want===t.id?'want':''}"><b>${esc(t.name)}</b><p>${esc(t.does)}</p>
       <div class="row gap6 wrap"><span class="chip ${t.installed?'ok':''}">${t.installed?'✓ Installed':'Not installed'}</span>${t.open?'<span class="chip ok">● Open</span>':''}</div>
       <div class="row gap6" style="margin-top:8px">${t.open?`<button class="btn sm gold" data-showtool="${t.id}">Show here</button>`:`<button class="btn sm ${t.installed?'gold':''}" data-launch="${t.id}" ${st.online&&t.installed?'':'disabled'}>Open</button>`}</div></div>`).join('')}</div>
     <div class="linkGrid"><div>
-      <div class="liveBar"><select id="winPick" aria-label="Window">${(st.windows||[]).length?st.windows.map(w=>`<option value="${esc(w.id)}" ${w.title===st.window?'selected':''}>${esc(w.title)}</option>`).join(''):'<option>No tool windows open yet</option>'}</select>
+      ${LS.live?`<div class="liveBar"><select id="winPick" aria-label="Window">${(st.windows||[]).length?st.windows.map(w=>`<option value="${esc(w.id)}" ${w.title===st.window?'selected':''}>${esc(w.title)}</option>`).join(''):'<option>No tool windows open yet</option>'}</select>
         <label class="switch"><input type="checkbox" id="ctlToggle" ${LS.control?'checked':''} ${st.online?'':'disabled'}/><span></span>Use it here</label>
         <span class="muted small">${st.online&&st.frameAge!=null&&st.frameAge<5000?`Live · ${st.fps||0} fps`:''}</span>
         <label class="switch" title="Unreal at full quality using Epic's Pixel Streaming"><input type="checkbox" id="hdToggle" ${hd?'checked':''} ${st.online?'':'disabled'}/><span></span>HD mode</label>
-        <button class="btn sm" id="liveFull">Full screen</button></div>
+        <button class="btn sm" id="liveFull">Full screen</button></div>`:''}
       ${hd&&!st.pixel?.url?`<div class="banner gold small"><b>HD mode is not running yet.</b> Tap <b>Turn on HD mode</b> and Duke reopens Unreal with Epic's Pixel Streaming switched on (about a minute). <button class="btn sm gold" data-act="ue_pixel_streaming" ${st.online?'':'disabled'}>Turn on HD mode</button></div>`:''}
       ${hd&&st.pixel?.url?`<div class="liveWrap hd" id="hdWrap"><iframe id="hdFrame" src="${esc(st.pixel.relay||st.pixel.url)}" title="Unreal in HD" allow="autoplay; fullscreen; gamepad; clipboard-read; clipboard-write"></iframe></div>
         <p class="muted small"><b>HD mode:</b> Unreal at full quality and full speed through Epic's Pixel Streaming. It works on this PC, a laptop, a tablet or your phone. Click the picture and use Unreal as normal.
         Blank picture? <a href="${esc(st.pixel.relay||st.pixel.url)}" target="_blank" rel="noopener">Open HD mode in its own tab</a>${st.pixel.relay?` · on the PC itself, <a href="${esc(st.pixel.url)}" target="_blank" rel="noopener">the direct link</a> is the very fastest`:''}.</p>`:`
+      ${!LS.live?`<div class="liveChoice"><div class="card"><h3>I'm sitting at this PC</h3><p class="muted small">Use Unreal, Blender and Character Creator in their own windows. That's full speed. Duke follows along: your exports go into your game by themselves, and your step and checklist sit beside you.</p>
+          <button class="btn gold" data-popguide>Pop out my step guide</button></div>
+        <div class="card"><h3>I'm on another device</h3><p class="muted small">On a laptop, tablet or phone, see and control your PC's tools from here.${st.pixel?' Unreal shows in HD.':''}</p>
+          <button class="btn" id="startLive" ${st.online&&(st.windows||[]).length?'':'disabled'}>Show live view</button>${st.online&&!(st.windows||[]).length?'<p class="muted small" style="margin-top:6px">Open a tool above first.</p>':''}</div></div>`:`
       <div class="liveWrap ${LS.control?'ctl':''}" id="liveWrap" tabindex="0">${st.online&&(st.windows||[]).length?`<img id="liveImg" alt="Live view of ${esc(st.window||'your tool')}" draggable="false"/>`:`<div class="liveEmpty">${st.online?'Open Unreal, Blender or Character Creator above. It appears here.':'Waiting for your PC…'}</div>`}
         ${LS.control?'<div class="ctlNote">You are controlling your PC. Press Esc twice to stop.</div>':''}</div>
+      <button class="btn sm ghost" id="stopLive" style="margin-top:8px">Hide live view</button>`}
       ${linkModeNote(st,tool)}
       ${st.control===false?'<p class="badText small">Control was declined on your PC. Restart the Duke agent to be asked again.</p>':'<p class="muted small">The first time you use it here, your PC asks you to allow it. Only Unreal, Blender, Character Creator and Visual Studio windows are ever shown.</p>'}`}
     </div>
@@ -586,7 +591,7 @@ function renderLink(){
       ${exportsHtml(st)}
     </div></div>`;
   bindLink();
-  const img=$('#liveImg');if(img&&!img.src.includes('/api/link/stream'))img.src=`/api/link/stream?t=${Date.now()}`;
+  const img=$('#liveImg');if(LS.live&&img&&!img.src.includes('/api/link/stream'))img.src=`/api/link/stream?t=${Date.now()}`;
   if(!LS.timer)LS.timer=setInterval(async()=>{if(S.view!=='link'||document.hidden)return;const sig=()=>JSON.stringify([LS.status?.online,LS.status?.windows,LS.status?.window,LS.status?.control,LS.status?.pixel,(LS.status?.exports||[]).map(f=>f.path+f.mtime+f.imported+f.proof),LS.status?.blender,LS.status?.autoImport]);const before=sig();await linkStatus();
     if(sig()!==before&&!$('#liveWrap')?.matches(':focus')&&!document.activeElement?.closest?.('.exportRow'))renderLink();
     else{const f=$('.liveBar .muted');if(f)f.textContent=LS.status.online&&LS.status.frameAge<5000?`Live · ${LS.status.fps||0} fps`:'';}},3000);
@@ -607,6 +612,9 @@ function bindLink(){
   $$('[data-act]').forEach(b=>b.onclick=()=>{const a=S.road.actions.find(x=>x.id===b.dataset.act)||{id:b.dataset.act,label:b.textContent.trim()};linkCmd({type:'action',action:a.id,project:proj},a.label);});
   $$('[data-snap]').forEach(b=>b.onclick=async()=>{const r=await post(`/api/projects/${pid()}/link/snap`,{key:b.dataset.snap});await refreshRm(true);
     toast(r.completed?.length?`Saved. Step ${r.completed.at(-1)} complete!`:`Saved as proof (${r.count}).`);render();});
+  $('#startLive')?.addEventListener('click',()=>{LS.live=true;renderLink();});
+  $('#stopLive')?.addEventListener('click',()=>{LS.live=false;LS.control=false;stopStream();renderLink();});
+  $('#copyStart')?.addEventListener('click',async()=>{try{await navigator.clipboard.writeText('py "$HOME\\Downloads\\DukeForger.py"');toast('Copied. Paste it into Terminal on your PC and press Enter.');}catch{toast('Copy this: py "$HOME\\Downloads\\DukeForger.py"');}});
   $('#hdToggle')?.addEventListener('change',e=>{LS.hd=e.target.checked;LS.control=false;stopStream();renderLink();});
   $('#autoImp')?.addEventListener('change',async e=>{try{await post('/api/link/settings',{autoImport:e.target.checked});await linkStatus();toast(e.target.checked?'New exports go into your game automatically.':'Automatic import is off. Use the buttons to bring files in.');}catch(x){toast(x.message,true);}});
   $$('[data-popguide]').forEach(b=>b.onclick=()=>window.open('/companion','dukeGuide','width=430,height=860'));

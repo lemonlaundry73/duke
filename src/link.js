@@ -106,7 +106,7 @@ export function registerLink(r){
   r.get('/api/link/status',async({req})=>{
     const user=await requireUser(req);const db=await load();const agent=agentFor(db,user.id);
     if(!agent)return {online:false,pcName:null,windows:[],window:null,tools:TOOLS.map(t=>({...t,installed:false,open:false})),frameAge:null,fps:0,size:[0,0],control:null,capture:false,noAgent:true};
-    const {s,a}=await userLink(req);s.watchUntil=Math.max(s.watchUntil,Date.now()+30000);
+    const {s,a}=await userLink(req);
     const m=a.machine||{};
     return {online:online(s),pcName:m.host||null,windows:s.windows,window:s.window,tools:TOOLS.map(t=>({...t,installed:t.id==='ue'?(m.engines||[]).length>0:t.id==='vs'?!!m.visualStudio:!!m.tools?.[t.id],open:s.windows.some(w=>w.tool===t.id)})),
       frameAge:s.frameAt?Date.now()-s.frameAt:null,fps:s.fps,size:[s.w,s.h],control:s.control,capture:!!s.capture,pixel:s.pixel?{...s.pixel,relay:`/api/link/hd/${hdTokenFor(s,a.token)}/`}:null,exports:s.exports||[],autoImport:a.autoImport!==false,blender:s.blender||null};
@@ -132,8 +132,8 @@ export function registerLink(r){
   });
   r.get('/api/link/frame.jpg',async({res})=>{throw new HttpError(404,'Use /api/link/stream');});
   r.post('/api/link/command',async({req,body})=>{
-    const {s}=await userLink(req);s.watchUntil=Date.now()+30000;
-    const type=String(body.type||'');
+    const {s}=await userLink(req);
+    const type=String(body.type||'');if(type==='input')s.watchUntil=Math.max(s.watchUntil,Date.now()+30000);
     if(!['launch','focus','input','action','python','capture'].includes(type))throw new HttpError(400,'Unknown command');
     if(!online(s))throw new HttpError(409,'Your PC is offline. Turn it on and make sure the Duke agent is running.');
     const cmd={type};

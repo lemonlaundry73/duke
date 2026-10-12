@@ -14,7 +14,7 @@ Only the Python standard library is used.
 """
 import argparse, base64, ctypes, http.server, io, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
-VERSION = '3.4.0'
+VERSION = '3.5.0'
 # Filled in when you download DukeForger.py from your Duke Forger studio, so a double-click is enough.
 DEFAULT_SERVER = ''
 DEFAULT_TOKEN = ''
@@ -496,6 +496,9 @@ def probe_pixel_streaming():
     return None
 
 
+NOT_TOOLS = {'chrome.exe', 'msedge.exe', 'firefox.exe', 'brave.exe', 'opera.exe', 'opera_gx.exe', 'arc.exe', 'vivaldi.exe', 'explorer.exe',
+             'cursor.exe', 'code.exe', 'notepad.exe', 'python.exe', 'pythonw.exe', 'py.exe', 'windowsterminal.exe', 'powershell.exe', 'pwsh.exe',
+             'cmd.exe', 'conhost.exe', 'claude.exe', 'discord.exe', 'slack.exe', 'spotify.exe'}
 TOOL_TITLES = [('ue', ('Unreal Editor',)), ('cc5', ('Character Creator',)), ('blender', ('Blender',)), ('vs', ('Microsoft Visual Studio',))]
 VK = {'Enter': 0x0D, 'Escape': 0x1B, 'Backspace': 0x08, 'Tab': 0x09, 'Space': 0x20, ' ': 0x20, 'Delete': 0x2E, 'Insert': 0x2D, 'Home': 0x24, 'End': 0x23,
       'PageUp': 0x21, 'PageDown': 0x22, 'ArrowLeft': 0x25, 'ArrowUp': 0x26, 'ArrowRight': 0x27, 'ArrowDown': 0x28, 'Shift': 0x10, 'Control': 0x11, 'Alt': 0x12,
@@ -621,11 +624,81 @@ class Link:
                     t = buf.value
                     for tool, keys in TOOL_TITLES:
                         if any(k in t for k in keys):
-                            out.append({'id': str(h), 'title': t, 'tool': tool})
+                            if self.exe_of(h) not in NOT_TOOLS:
+                                out.append({'id': str(h), 'title': t, 'tool': tool})
                             break
             return True
         self.u.EnumWindows(PROC(cb), 0)
         return out
+
+    def exe_of(self, h):
+        try:
+            k = ctypes.windll.kernel32
+            k.OpenProcess.restype = ctypes.c_void_p
+            k.QueryFullProcessImageNameW.argtypes = [ctypes.c_void_p, ctypes.c_ulong, ctypes.c_wchar_p, ctypes.POINTER(ctypes.c_ulong)]
+            k.CloseHandle.argtypes = [ctypes.c_void_p]
+            pid = ctypes.c_ulong()
+            self.u.GetWindowThreadProcessId(ctypes.c_void_p(h), ctypes.byref(pid))
+            hp = k.OpenProcess(0x1000, False, pid.value)
+            if not hp:
+                return ''
+            try:
+                buf, n = ctypes.create_unicode_buffer(520), ctypes.c_ulong(520)
+                if k.QueryFullProcessImageNameW(hp, 0, buf, ctypes.byref(n)):
+                    return os.path.basename(buf.value).lower()
+            finally:
+                k.CloseHandle(hp)
+        except Exception:
+            pass
+        return ''
+
+    def window_image(self, hwnd):
+        """The window's own pixels, even when other windows (like the browser showing Duke) are on top of it.
+        Grabbing the screen instead would photograph Duke itself and repeat forever like two facing mirrors."""
+        Image = self.pil[1]
+        u, g = self.u, ctypes.windll.gdi32
+        vp = ctypes.c_void_p
+        u.GetWindowDC.restype, u.GetWindowDC.argtypes = vp, [vp]
+        u.ReleaseDC.argtypes = [vp, vp]
+        u.PrintWindow.argtypes = [vp, vp, ctypes.c_uint]
+        g.CreateCompatibleDC.restype, g.CreateCompatibleDC.argtypes = vp, [vp]
+        g.CreateCompatibleBitmap.restype, g.CreateCompatibleBitmap.argtypes = vp, [vp, ctypes.c_int, ctypes.c_int]
+        g.SelectObject.restype, g.SelectObject.argtypes = vp, [vp, vp]
+        g.DeleteObject.argtypes = [vp]
+        g.DeleteDC.argtypes = [vp]
+        g.GetDIBits.argtypes = [vp, vp, ctypes.c_uint, ctypes.c_uint, vp, vp, ctypes.c_uint]
+        r = ctypes.wintypes.RECT()
+        if not u.GetWindowRect(vp(hwnd), ctypes.byref(r)) or u.IsIconic(vp(hwnd)):
+            return None
+        w, h = r.right - r.left, r.bottom - r.top
+        if w < 50 or h < 50:
+            return None
+
+        class BIH(ctypes.Structure):
+            _fields_ = [('biSize', ctypes.c_uint32), ('biWidth', ctypes.c_int32), ('biHeight', ctypes.c_int32), ('biPlanes', ctypes.c_uint16),
+                        ('biBitCount', ctypes.c_uint16), ('biCompression', ctypes.c_uint32), ('biSizeImage', ctypes.c_uint32),
+                        ('biXPelsPerMeter', ctypes.c_int32), ('biYPelsPerMeter', ctypes.c_int32), ('biClrUsed', ctypes.c_uint32), ('biClrImportant', ctypes.c_uint32)]
+        wdc = u.GetWindowDC(vp(hwnd))
+        mdc = g.CreateCompatibleDC(wdc)
+        bmp = g.CreateCompatibleBitmap(wdc, w, h)
+        old = g.SelectObject(mdc, bmp)
+        img = None
+        try:
+            if u.PrintWindow(vp(hwnd), mdc, 2):  # 2 = PW_RENDERFULLCONTENT, works for DirectX/OpenGL apps
+                bi = BIH(ctypes.sizeof(BIH), w, -h, 1, 32, 0, 0, 0, 0, 0, 0)
+                buf = ctypes.create_string_buffer(w * h * 4)
+                if g.GetDIBits(mdc, bmp, 0, h, buf, ctypes.byref(bi), 0) == h:
+                    img = Image.frombuffer('RGB', (w, h), buf, 'raw', 'BGRX', 0, 1)
+        finally:
+            g.SelectObject(mdc, old)
+            g.DeleteObject(bmp)
+            g.DeleteDC(mdc)
+            u.ReleaseDC(vp(hwnd), wdc)
+        if img is not None and img.getbbox() is None:
+            img = None  # all black: this app can't be copied this way
+        if img is None and u.GetForegroundWindow() == hwnd:
+            img = self.pil[0].grab(bbox=(r.left, r.top, r.right, r.bottom), all_screens=True).convert('RGB')
+        return img
 
     def rect(self):
         r = ctypes.wintypes.RECT()
@@ -657,13 +730,17 @@ class Link:
                 continue
             t0 = time.time()
             try:
-                box = self.rect()
-                if box and box[2] - box[0] > 50 and not self.u.IsIconic(ctypes.c_void_p(self.hwnd)):
-                    img = self.pil[0].grab(bbox=box, all_screens=True).convert('RGB')
+                img = self.window_image(self.hwnd)
+                if img is not None:
+                    sig = img.resize((48, 27)).tobytes()
+                    if sig == getattr(self, 'last_sig', None) and time.time() - getattr(self, 'last_sent', 0) < 2:
+                        time.sleep(0.05)
+                        continue
+                    self.last_sig, self.last_sent = sig, time.time()
                     if img.width > 1280:
                         img = img.resize((1280, int(img.height * 1280 / img.width)))
                     b = io.BytesIO()
-                    img.save(b, 'JPEG', quality=62)
+                    img.save(b, 'JPEG', quality=70)
                     data = b.getvalue()
                     req = urllib.request.Request(self.duke.server + '/api/agent/link/frame', data=data, method='POST',
                                                  headers={'x-duke-agent': self.duke.token, 'content-type': 'image/jpeg', 'x-frame-w': str(img.width),
@@ -672,7 +749,7 @@ class Link:
                         self.watch = bool(json.loads(resp.read() or b'{}').get('watch'))
             except Exception:
                 time.sleep(1)
-            time.sleep(max(0.0, 0.12 - (time.time() - t0)))
+            time.sleep(max(0.0, 0.08 - (time.time() - t0)))
 
     def poll_loop(self):
         while True:
@@ -920,10 +997,9 @@ class Link:
     def save_window_proof(self, hwnd, key, label):
         if not (self.pil and self.u):
             return False
-        r = ctypes.wintypes.RECT()
-        if not self.u.GetWindowRect(ctypes.c_void_p(hwnd), ctypes.byref(r)) or self.u.IsIconic(ctypes.c_void_p(hwnd)):
+        img = self.window_image(hwnd)
+        if img is None:
             return False
-        img = self.pil[0].grab(bbox=(r.left, r.top, r.right, r.bottom), all_screens=True).convert('RGB')
         b = io.BytesIO()
         img.save(b, 'PNG')
         return bool(self.upload_proof(b.getvalue(), key, label, 'duke-agent'))
