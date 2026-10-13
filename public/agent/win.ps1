@@ -11,7 +11,9 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
   return
 }
 
-$common = @('-e', '--accept-package-agreements', '--accept-source-agreements', '--disable-interactivity')
+$common = @('-e', '--source', 'winget', '--accept-package-agreements', '--accept-source-agreements')
+Write-Host ('winget ' + (winget --version))
+winget source update | Out-Null
 
 Say 'Git (with Git LFS)'
 winget install --id Git.Git @common --silent
