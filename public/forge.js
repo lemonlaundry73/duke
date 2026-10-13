@@ -74,6 +74,7 @@ function rCommand(){
       ${S.state.hasModel?'':'<p class="muted small" style="margin-top:8px">No AI model connected: Duke Forger\'s built-in interpreter handles rooms (floor, walls, lights, player start, colored cube, a door that opens on approach). Connect a model in AI Team for anything else.</p>'}</div>
     <div class="card"><h2>Status</h2><div class="agents">${ROLES.map(r=>`<span>${r}</span><span>${st[r]}</span>`).join('')}
       <span>Current build</span><span>${lastBuild?`#${String(lastBuild.number).padStart(5,'0')}`:'none yet'}</span><span>Problems</span><span>${problems}</span></div></div></div>
+    ${p.status!=='ready'&&jobs[0]&&['BLOCKED','STOPPED'].includes(jobs[0].state)?`<div class="card"><b>Setting up the project stopped.</b> <span class="muted">Fix what the job below says, then</span> <button class="btn gold sm" data-job="create_retry">Try again</button></div>`:''}
     <h2 style="margin-top:6px">Jobs</h2>${jobs.length?jobs.map((j,i)=>jobCard(j,i===0)).join(''):'<p class="muted">No jobs yet.</p>'}`;
   $('#cmdGo')?.addEventListener('click',async()=>{const t=$('#cmdText').value.trim();if(!t)return toast('Type a command first',true);try{await post(`/api/forge/projects/${S.pid}/jobs`,{kind:'command',prompt:t});await refresh();render();}catch(e){toast(e.message,true);}});
   bindCommon();

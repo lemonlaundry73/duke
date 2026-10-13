@@ -228,7 +228,7 @@ function agentBlock(){
   const ag=S.rm.agent,m=ag?.machine,seen=ag?.seenAt&&Date.now()-Date.parse(ag.seenAt)<10*60e3;
   return {ag,m,seen};
 }
-const AGENT_VERSION='4.0.0';
+const AGENT_VERSION='4.0.1';
 const verLess=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)<(y[i]||0);}return false;};
 function machineHtml(){
   const {ag,m,seen}=agentBlock();const t=m?.tools||{};

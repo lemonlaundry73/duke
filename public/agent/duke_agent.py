@@ -14,7 +14,7 @@ Only the Python standard library is used.
 """
 import argparse, base64, ctypes, traceback, http.server, io, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
-VERSION = '4.0.0'
+VERSION = '4.0.1'
 # Filled in when you download DukeForger.py from your Duke Forger studio, so a double-click is enough.
 DEFAULT_SERVER = ''
 DEFAULT_TOKEN = ''
@@ -1520,6 +1520,18 @@ class Forge:
             data.setdefault('Plugins', []).append({'Name': ps, 'Enabled': True, 'TargetAllowList': ['Editor']})
             json.dump(data, open(uproject, 'w', encoding='utf-8'), indent='\t')
             self.log(ctx, 'Enabled %s for Live Unreal (editor only)' % ps)
+        # Light mode for PCs without a graphics card: Unreal still runs, without the heaviest features.
+        try:
+            gpus = machine_info().get('gpus') or []
+        except Exception:
+            gpus = []
+        vram = max([g.get('vramGB') or 0 for g in gpus] or [0])
+        if vram < 4:
+            self.step_ini_set({'file': 'Config/DefaultEngine.ini', 'section': '/Script/Engine.RendererSettings',
+                               'values': {'r.DynamicGlobalIlluminationMethod': '0', 'r.ReflectionMethod': '2', 'r.Shadow.Virtual.Enable': '0',
+                                          'r.GenerateMeshDistanceFields': 'False', 'r.Nanite.ProjectEnabled': 'False'}}, {'root': root, 'uproject': uproject, 'name': name}, ctx)
+            self.log(ctx, 'No graphics card with 4 GB or more found (%s): project set to light mode (no Lumen, Nanite or virtual shadow maps).' % (
+                ', '.join(g.get('name', '?') for g in gpus) or 'none'))
         cv = self.pixel_cvars(eng, ps)
         if cv:
             self.step_ini_set({'file': 'Config/DefaultEngine.ini', 'section': 'ConsoleVariables', 'values': cv}, {'root': root, 'uproject': uproject, 'name': name}, ctx)
@@ -1554,6 +1566,8 @@ class Forge:
 
     def step_git_init(self, args, proj, ctx):
         root, _, _ = self.need(proj)
+        if not shutil.which('git'):
+            raise StepFailed('Git is not installed on this PC. Install it (paste in Terminal: winget install -e --id Git.Git ), restart the Duke app, then create the project again.')
         if not os.path.isdir(os.path.join(root, '.git')):
             self.git(root, 'init', '-b', 'main')
         lfs = subprocess.run(['git', '-C', root, 'lfs', 'install', '--local'], capture_output=True, text=True)

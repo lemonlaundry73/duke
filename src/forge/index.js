@@ -332,7 +332,8 @@ export function registerForge(r){
     const {p,db}=await ownProject(req,params.fid);const kind=String(body.kind||'');
     if(p.status!=='ready'&&kind!=='create_retry')throw new HttpError(409,'The project is still being created. Wait for it to be ready.');
     let j;
-    if(kind==='actor_test')j=newJob(p,'actor_test','Acceptance test: add an actor through the bridge, compile, Play-In-Editor',pipelineActorTest());
+    if(kind==='create_retry'){if(p.status==='ready')throw new HttpError(400,'This project is already set up.');j=newJob(p,'create_project',`Create ${p.name} (again)`,pipelineCreate(p));}
+    else if(kind==='actor_test')j=newJob(p,'actor_test','Acceptance test: add an actor through the bridge, compile, Play-In-Editor',pipelineActorTest());
     else if(kind==='command'){
       const prompt=String(body.prompt||'').trim().slice(0,2000);if(!prompt)throw new HttpError(400,'Type what you want Duke Forger to do');
       const plan=await planCommand(db,p,prompt);
