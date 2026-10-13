@@ -1520,8 +1520,37 @@ class Forge:
             data.setdefault('Plugins', []).append({'Name': ps, 'Enabled': True, 'TargetAllowList': ['Editor']})
             json.dump(data, open(uproject, 'w', encoding='utf-8'), indent='\t')
             self.log(ctx, 'Enabled %s for Live Unreal (editor only)' % ps)
+        cv = self.pixel_cvars(eng, ps)
+        if cv:
+            self.step_ini_set({'file': 'Config/DefaultEngine.ini', 'section': 'ConsoleVariables', 'values': cv}, {'root': root, 'uproject': uproject, 'name': name}, ctx)
+            self.log(ctx, 'Pixel Streaming starts with the editor: ' + ', '.join('%s=%s' % kv for kv in cv.items()))
         proj.update(root=root, uproject=uproject, engine=eng['version'])
-        return {'root': root, 'uproject': uproject, 'engine': eng['version'], 'pixelStreaming': ps, 'summary': 'Unreal %s project at %s' % (eng['version'], root)}
+        return {'root': root, 'uproject': uproject, 'engine': eng['version'], 'pixelStreaming': ps, 'pixelSettings': cv, 'summary': 'Unreal %s project at %s' % (eng['version'], root)}
+
+    def pixel_cvars(self, eng, ps):
+        """Reads the editor-streaming console variable names from the engine's own Pixel Streaming source, so the
+        project starts streaming with the editor on whatever Unreal version is installed."""
+        if not ps:
+            return {}
+        names = set()
+        for f in glob.glob(os.path.join(eng['path'], 'Engine', 'Plugins', 'Media', ps, '**', '*.*'), recursive=True):
+            if os.path.splitext(f)[1].lower() not in ('.h', '.cpp', '.ini'):
+                continue
+            try:
+                txt = open(f, encoding='utf-8', errors='ignore').read()
+            except OSError:
+                continue
+            names.update(re.findall(r'"(%s\.Editor\.[A-Za-z]+)"' % re.escape(ps), txt))
+        want = {}
+        for n in names:
+            key = n.rsplit('.', 1)[1].lower()
+            if key == 'startonlaunch':
+                want[n] = '1'
+            elif key in ('useremotesignallingserver', 'useexternalsignallingserver'):
+                want[n] = '0'
+            elif key == 'source':
+                want[n] = 'Editor'
+        return want
 
     def step_git_init(self, args, proj, ctx):
         root, _, _ = self.need(proj)

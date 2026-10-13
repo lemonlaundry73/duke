@@ -26,7 +26,7 @@ function workerBox(){
   const w=S.state?.worker;
   $('#workerBox').innerHTML=!w?'<span class="dot"></span>No Unreal worker yet. <a href="/api/agent/DukeForger.py">Get the Duke app</a> for your Windows PC.'
     :w.online?`<span class="dot on"></span><b>Unreal worker online</b><br>${w.hello?.engine?`Unreal ${esc(w.hello.engine)} · `:''}app ${esc(w.hello?.version||'?')}`
-    :`<span class="dot"></span><b>Unreal worker offline</b><br>Start DukeForger.py on your PC. Jobs wait for it.`;
+    :`<span class="dot"></span><b>Unreal worker offline</b><br>Start DukeForger.py on your PC (version 4.0 or newer: <a href="/api/agent/DukeForger.py">download</a>). Jobs wait for it.`;
 }
 async function refresh(){
   S.state=await api('/api/forge/state');
