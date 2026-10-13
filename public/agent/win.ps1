@@ -24,7 +24,10 @@ function Refresh-Path { $env:Path = [Environment]::GetEnvironmentVariable('Path'
 
 $gitOk = { [bool](Get-Command git -ErrorAction SilentlyContinue) }
 $pyOk = { [bool](Get-Command py -ErrorAction SilentlyContinue) }
-$epicExe = "${env:ProgramFiles(x86)}\Epic Games\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe"
+$epicExe = @("${env:ProgramFiles(x86)}\Epic Games\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe",
+  "${env:ProgramFiles(x86)}\Epic Games\Launcher\Portal\Binaries\Win32\EpicGamesLauncher.exe",
+  "$env:ProgramFiles\Epic Games\Launcher\Portal\Binaries\Win64\EpicGamesLauncher.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+function Epic-Ok { [bool](@("${env:ProgramFiles(x86)}\Epic Games\Launcher", "$env:ProgramFiles\Epic Games\Launcher") | Where-Object { Test-Path $_ }) }
 $vsDir = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC"
 
 Say 'Git (with Git LFS)'
@@ -42,7 +45,7 @@ if (& $pyOk) { Write-Host '  already installed' } else {
 }
 
 Say 'Epic Games Launcher'
-if (Test-Path $epicExe) { Write-Host '  already installed' } else {
+if (Epic-Ok) { Write-Host '  already installed' } else {
   $msi = Get-File 'https://launcher-public-service-prod06.ol.epicgames.com/launcher/api/installer/download/EpicGamesLauncherInstaller.msi' 'epic.msi'
   if ($msi) { Run 'msiexec.exe' "/i `"$msi`" /qn /norestart" }
 }
@@ -65,7 +68,7 @@ Say 'Done'
 $check = @(
   @('Git', (& $gitOk)),
   @('Python', (& $pyOk)),
-  @('Epic Games Launcher', (Test-Path $epicExe)),
+  @('Epic Games Launcher', (Epic-Ok)),
   @('VS Build Tools', (Test-Path $vsDir))
 )
 foreach ($c in $check) { if ($c[1]) { Write-Host ("  OK       " + $c[0]) -ForegroundColor Green } else { Write-Host ("  MISSING  " + $c[0]) -ForegroundColor Yellow } }
@@ -73,5 +76,6 @@ foreach ($c in $check) { if ($c[1]) { Write-Host ("  OK       " + $c[0]) -Foregr
 Write-Host "`nNext:" -ForegroundColor Cyan
 Write-Host '  1. Epic Games Launcher: sign in, then Unreal Engine > Library > + > install 5.8.'
 Write-Host '  2. dukeforger.com: log in and download the Duke app (step 9), then double-click DukeForger.py.'
-if (Test-Path $epicExe) { Start-Process $epicExe }
+$epicExe = Get-ChildItem "${env:ProgramFiles(x86)}\Epic Games\Launcher", "$env:ProgramFiles\Epic Games\Launcher" -Recurse -Filter EpicGamesLauncher.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($epicExe) { Start-Process $epicExe.FullName }
 Start-Process 'https://dukeforger.com/studio'
