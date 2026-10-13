@@ -14,7 +14,8 @@ Only the Python standard library is used.
 """
 import argparse, base64, ctypes, traceback, http.server, io, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
-VERSION = '4.0.1'
+VERSION = '4.1.0'
+MACHINE_ID = (os.environ.get('COMPUTERNAME') or socket.gethostname() or 'pc')[:80]
 # Filled in when you download DukeForger.py from your Duke Forger studio, so a double-click is enough.
 DEFAULT_SERVER = ''
 DEFAULT_TOKEN = ''
@@ -233,7 +234,7 @@ class Duke:
 
     def _req(self, method, path, body=None, raw=None, ctype='application/json', timeout=120):
         data = None
-        headers = {'x-duke-agent': self.token}
+        headers = {'x-duke-agent': self.token, 'x-duke-machine': MACHINE_ID}
         if raw is not None:
             data = raw
             headers['content-type'] = ctype
@@ -262,7 +263,7 @@ class Duke:
         return self._req('POST', path, body or {})
 
     def download(self, path, dest):
-        req = urllib.request.Request(self.server + path, headers={'x-duke-agent': self.token})
+        req = urllib.request.Request(self.server + path, headers={'x-duke-agent': self.token, 'x-duke-machine': MACHINE_ID})
         with urllib.request.urlopen(req, timeout=600) as r, open(dest, 'wb') as f:
             shutil.copyfileobj(r, f, 1024 * 1024)
 
@@ -270,7 +271,7 @@ class Duke:
         size = os.path.getsize(file)
         with open(file, 'rb') as f:
             req = urllib.request.Request(self.server + path, data=f, method='POST',
-                                         headers={'x-duke-agent': self.token, 'content-type': 'application/zip', 'content-length': str(size)})
+                                         headers={'x-duke-agent': self.token, 'x-duke-machine': MACHINE_ID, 'content-type': 'application/zip', 'content-length': str(size)})
             with urllib.request.urlopen(req, timeout=3600) as r:
                 return json.loads(r.read().decode('utf-8') or '{}')
 
@@ -743,7 +744,7 @@ class Link:
                     img.save(b, 'JPEG', quality=70)
                     data = b.getvalue()
                     req = urllib.request.Request(self.duke.server + '/api/agent/link/frame', data=data, method='POST',
-                                                 headers={'x-duke-agent': self.duke.token, 'content-type': 'image/jpeg', 'x-frame-w': str(img.width),
+                                                 headers={'x-duke-agent': self.duke.token, 'x-duke-machine': MACHINE_ID, 'content-type': 'image/jpeg', 'x-frame-w': str(img.width),
                                                           'x-frame-h': str(img.height), 'x-window': (self.title or '')[:150].encode('ascii', 'ignore').decode()})
                     with urllib.request.urlopen(req, timeout=10) as resp:
                         self.watch = bool(json.loads(resp.read() or b'{}').get('watch'))
@@ -1047,7 +1048,7 @@ class Link:
         if not (pid and key):
             return None
         req = urllib.request.Request(self.duke.server + '/api/agent/proof', data=data, method='POST', headers={
-            'x-duke-agent': self.duke.token, 'content-type': 'application/octet-stream', 'x-project': pid, 'x-key': key,
+            'x-duke-agent': self.duke.token, 'x-duke-machine': MACHINE_ID, 'content-type': 'application/octet-stream', 'x-project': pid, 'x-key': key,
             'x-label': urllib.parse.quote(label[:80]), 'x-source': source})
         with urllib.request.urlopen(req, timeout=120) as r:
             out = json.loads(r.read() or b'{}')
@@ -1131,7 +1132,7 @@ class Link:
             except Exception as e:
                 data = str(e).encode()
         req = urllib.request.Request(self.duke.server + '/api/agent/link/hd/http/' + c['id'], data=data, method='POST', headers={
-            'x-duke-agent': self.duke.token, 'content-type': 'application/octet-stream', 'x-status': str(status), 'x-type': ctype})
+            'x-duke-agent': self.duke.token, 'x-duke-machine': MACHINE_ID, 'content-type': 'application/octet-stream', 'x-status': str(status), 'x-type': ctype})
         try:
             urllib.request.urlopen(req, timeout=60).read()
         except Exception:
@@ -1199,7 +1200,7 @@ class Link:
             with open(src, 'rb') as f:
                 data = f.read()
             req = urllib.request.Request(self.duke.server + '/api/agent/link/upload', data=data, method='POST', headers={
-                'x-duke-agent': self.duke.token, 'content-type': 'application/octet-stream', 'x-project': c['projectId'], 'x-collection': c['collection'],
+                'x-duke-agent': self.duke.token, 'x-duke-machine': MACHINE_ID, 'content-type': 'application/octet-stream', 'x-project': c['projectId'], 'x-collection': c['collection'],
                 'x-entity': c['entityId'], 'x-slot': c.get('slot', 'model'), 'x-filename': urllib.parse.quote(os.path.basename(src))})
             with urllib.request.urlopen(req, timeout=600) as r:
                 json.loads(r.read() or b'{}')
@@ -1393,15 +1394,33 @@ class Forge:
         boot, busy = True, threading.Event()
         while True:
             try:
-                body = {'boot': boot}
+                body = {'boot': boot, 'busy': busy.is_set()}
                 if boot:
                     e = find_engines(self.args.engine)
                     body['hello'] = {'version': VERSION, 'engine': e[0]['version'] if e else '', 'root': FORGE_ROOT}
+                    try:
+                        gpus = machine_info().get('gpus') or []
+                    except Exception:
+                        gpus = []
+                    best = max(gpus, key=lambda g: g.get('vramGB') or 0) if gpus else {}
+                    self.machine = {'host': MACHINE_ID, 'gpu': best.get('name', ''), 'vramGB': best.get('vramGB') or 0,
+                                    'engine': e[0]['version'] if e else ''}
+                body['machine'] = getattr(self, 'machine', {'host': MACHINE_ID})
                 r = self.duke._req('POST', '/api/agent/forge/poll', body, timeout=45)
                 boot = False
+                sb = r.get('standby')
+                if sb and sb != getattr(self, '_standby', None):
+                    print('Duke is using your other PC (%s) for Unreal work. This PC is on standby.' % (sb if isinstance(sb, str) else 'another PC'))
+                elif not sb and getattr(self, '_standby', None):
+                    print('This PC is now doing the Unreal work for Duke.')
+                self._standby = sb
                 for c in r.get('rpc', []):
                     threading.Thread(target=self.do_rpc, args=(c,), daemon=True).start()
-                if r.get('step') and not busy.is_set():
+                if r.get('step'):
+                    for _ in range(300):  # the last step is just wrapping up; never drop a step Duke handed us
+                        if not busy.is_set():
+                            break
+                        time.sleep(0.1)
                     busy.set()
 
                     def run(st):
@@ -1731,7 +1750,7 @@ class Forge:
             q = 'job=%s&kind=%s&name=%s%s' % (st['jobId'], kind, urllib.parse.quote(os.path.basename(path)), extra)
             with open(path, 'rb') as f:
                 req = urllib.request.Request(self.duke.server + '/api/agent/forge/upload?' + q, data=f, method='POST', headers={
-                    'x-duke-agent': self.duke.token, 'content-type': 'application/octet-stream', 'content-length': str(os.path.getsize(path))})
+                    'x-duke-agent': self.duke.token, 'x-duke-machine': MACHINE_ID, 'content-type': 'application/octet-stream', 'content-length': str(os.path.getsize(path))})
                 with urllib.request.urlopen(req, timeout=3600) as r:
                     out = json.loads(r.read() or b'{}')
             return out.get('url') if kind == 'evidence' else out

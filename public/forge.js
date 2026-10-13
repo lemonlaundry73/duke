@@ -22,10 +22,11 @@ function nav(){
   $$('#sections button').forEach(b=>b.onclick=()=>go(b.dataset.s));
 }
 function go(s){S.section=s;location.hash=s;nav();render();}
+document.addEventListener('change',async e=>{if(e.target.id!=='pcPick')return;try{await post('/api/forge/worker',{machine:e.target.value});toast(e.target.value?`Duke will use ${e.target.selectedOptions[0].textContent.split(' · ')[0]} for Unreal work.`:'Duke will use your strongest PC automatically.');S.state=await api('/api/forge/state');workerBox();}catch(err){toast(err.message,true);}});
 function workerBox(){
   const w=S.state?.worker;
   $('#workerBox').innerHTML=!w?'<span class="dot"></span>No Unreal worker yet. <a href="/api/agent/DukeForger.py">Get the Duke app</a> for your Windows PC.'
-    :w.online?`<span class="dot on"></span><b>Unreal worker online</b><br>${w.hello?.engine?`Unreal ${esc(w.hello.engine)} · `:''}app ${esc(w.hello?.version||'?')}`
+    :w.online?`<span class="dot on"></span><b>Unreal worker online</b><br>${w.machine?`<b>${esc(w.machine.host)}</b>${w.machine.gpu?` · ${esc(w.machine.gpu)}${w.machine.vramGB?` ${w.machine.vramGB} GB`:''}`:''}<br>`:''}${w.hello?.engine?`Unreal ${esc(w.hello.engine)} · `:''}app ${esc(w.hello?.version||'?')}${(w.machines||[]).length>1?`<br><select id="pcPick" class="in" style="margin-top:6px;padding:4px"><option value="">Automatic (strongest PC)</option>${w.machines.map(m=>`<option value="${esc(m.id)}" ${w.picked===m.id?'selected':''}>${esc(m.host)}${m.vramGB?` · ${m.vramGB} GB`:''}${m.online?'':' (offline)'}</option>`).join('')}</select>`:''}`
     :`<span class="dot"></span><b>Unreal worker offline</b><br>Start DukeForger.py on your PC (version 4.0 or newer: <a href="/api/agent/DukeForger.py">download</a>). Jobs wait for it.`;
 }
 async function refresh(){

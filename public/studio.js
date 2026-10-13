@@ -84,6 +84,12 @@ $('#newProject').onclick=()=>modal(`<span class="eyebrow">NEW GAME</span><h2 sty
   <div class="field"><input id="npName" placeholder="Working title (you can change it later)"/></div>
   <div class="row gap10" style="margin-top:16px;justify-content:flex-end"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="npGo">Start at step 1</button></div>`,()=>{
   $('#npName').focus();$('#npGo').onclick=async()=>{const p=await post('/api/projects',{name:$('#npName').value.trim()||'Untitled Game'});S.projects.push({id:p.id,title:p.name});closeModal();await openProject(p.id);toast('New game created. Start with step 1.');};});
+$('#delProject').onclick=()=>{const name=D().vision?.title||P().name;modal(`<span class="eyebrow">DELETE GAME</span><h2 style="margin:6px 0 10px">Delete “${esc(name)}”?</h2>
+  <p class="muted">This removes the game's design, steps, art and builds from Duke for good. Files already on your PC are not touched.</p>
+  <div class="row gap10" style="margin-top:16px;justify-content:flex-end"><button class="btn ghost" data-close>Keep it</button><button class="btn danger" id="dpGo">Delete game</button></div>`,()=>{
+  $('#dpGo').onclick=async()=>{const id=pid();await del(`/api/projects/${id}`);S.projects=S.projects.filter(p=>p.id!==id);closeModal();
+    if(S.projects.length)await openProject(S.projects[0].id);else{const p=await post('/api/projects',{name:'Untitled Game'});S.projects.push({id:p.id,title:p.name});await openProject(p.id);}
+    toast(`Deleted “${name}”.`);};});};
 $$('.modeSwitch button').forEach(b=>b.onclick=async()=>{
   if(b.dataset.mode==='course'&&!feat('course')){plansModal('academy');return;}
   apply(await post(`/api/projects/${pid()}/mode`,{mode:b.dataset.mode}));S.tab=firstCourseTab(S.step);render();
@@ -228,7 +234,7 @@ function agentBlock(){
   const ag=S.rm.agent,m=ag?.machine,seen=ag?.seenAt&&Date.now()-Date.parse(ag.seenAt)<10*60e3;
   return {ag,m,seen};
 }
-const AGENT_VERSION='4.0.1';
+const AGENT_VERSION='4.1.0';
 const verLess=(a,b)=>{const x=String(a).split('.').map(Number),y=String(b).split('.').map(Number);for(let i=0;i<3;i++){if((x[i]||0)!==(y[i]||0))return (x[i]||0)<(y[i]||0);}return false;};
 function machineHtml(){
   const {ag,m,seen}=agentBlock();const t=m?.tools||{};

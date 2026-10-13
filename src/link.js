@@ -12,6 +12,7 @@ import { agentFor, settle, ctxFor, ownerPlan } from './ctx.js';
 import { evaluate } from './progress.js';
 import { STEPS } from './roadmap.js';
 import { UPLOAD_DIR } from './paths.js';
+import { machineId, seen, isActive } from './machines.js';
 
 const now=()=>new Date().toISOString();
 const PROOF_DIR=path.join(UPLOAD_DIR,'private');
@@ -49,8 +50,10 @@ export const TOOLS=[
 
 export function registerLink(r){
   // ---------------- agent side ----------------
+  // Only the PC Duke uses for Unreal work (see machines.js) feeds Live Unreal and Duke Link; others wait.
+  const standby=async(req,tok,db)=>{const mid=machineId(req);seen(tok,mid);return !isActive(db,tok,mid);};
   r.post('/api/agent/link/state',async({req,body})=>{
-    const {tok}=await agentTok(req);const s=L(tok);s.stateAt=Date.now();
+    const {tok,db}=await agentTok(req);if(await standby(req,tok,db))return {watch:false,standby:true};const s=L(tok);s.stateAt=Date.now();
     s.windows=(Array.isArray(body.windows)?body.windows:[]).slice(0,60).map(w=>({id:String(w.id),title:String(w.title||'').slice(0,160),tool:String(w.tool||'').slice(0,20)}));
     s.window=body.window?String(body.window):null;s.tools=body.tools||{};s.control=body.control??s.control;s.capture=!!body.capture;
     s.pixel=body.pixel&&/^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?\/?$/.test(String(body.pixel.url||''))?{url:String(body.pixel.url),port:Number(/:(\d+)/.exec(String(body.pixel.url).slice(6))?.[1])||80}:null;
@@ -60,14 +63,17 @@ export function registerLink(r){
     return {watch:Date.now()<s.watchUntil};
   });
   r.post('/api/agent/link/poll',async({req,res})=>{
-    const {tok}=await agentTok(req);const s=L(tok);s.stateAt=Date.now();
+    const {tok,db}=await agentTok(req);
+    if(await standby(req,tok,db)){await new Promise(done=>{const t=setTimeout(done,20000);req.on('close',()=>{clearTimeout(t);done();});});return {commands:[],watch:false,standby:true};}
+    const s=L(tok);s.stateAt=Date.now();
     if(!s.queue.length)await new Promise(done=>{const t=setTimeout(done,20000);s.waiters.push(()=>{clearTimeout(t);done();});req.on('close',()=>{clearTimeout(t);done();});});
     const cmds=s.queue.splice(0,100);
     return {commands:cmds,watch:Date.now()<s.watchUntil};
   });
   r.post('/api/agent/link/frame',async({req})=>{
-    const {tok}=await agentTok(req);const s=L(tok);
+    const {tok,db}=await agentTok(req);const s=L(tok);
     const buf=await readBody(req,MAX_FRAME);
+    if(await standby(req,tok,db))return {watch:false,standby:true};
     if(buf.length<4||buf[0]!==0xff||buf[1]!==0xd8)throw new HttpError(400,'Expected a JPEG frame');
     s.frame=buf;s.seq++;s.frameAt=Date.now();s.stateAt=Date.now();
     s.w=Number(req.headers['x-frame-w'])||0;s.h=Number(req.headers['x-frame-h'])||0;s.window=String(req.headers['x-window']||s.window||'');
@@ -188,7 +194,9 @@ export function registerLink(r){
     return {ok:true};
   });
   r.post('/api/agent/link/hdws/poll',async({req,res})=>{
-    const {tok}=await agentTok(req);const s=L(tok);const W=hdWs(s);
+    const {tok,db}=await agentTok(req);
+    if(await standby(req,tok,db)){await new Promise(done=>{const t=setTimeout(done,20000);req.on('close',()=>{clearTimeout(t);done();});});return {msgs:[]};}
+    const s=L(tok);const W=hdWs(s);
     if(!W.out.length)await new Promise(done=>{const t=setTimeout(done,20000);W.waiters.push(()=>{clearTimeout(t);done();});req.on('close',()=>{clearTimeout(t);done();});});
     return {msgs:W.out.splice(0,200)};
   });

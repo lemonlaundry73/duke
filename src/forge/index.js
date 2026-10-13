@@ -8,6 +8,7 @@
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
+import { machineId, seen, isActive, activeMachine, machinesOf } from '../machines.js';
 import { fileURLToPath } from 'node:url';
 import { load, mutate } from '../store.js';
 import { HttpError, id as nanoid, readBody, readMultipart } from '../http.js';
@@ -168,6 +169,7 @@ function knownRepair(j,s,res){
   return null;
 }
 async function onStepResult(tok,jid,sid,body){
+  if(!body.progress){chan(tok).freedAt=Date.now();setTimeout(()=>wake(tok),50);} // the worker finished a step: hand it the next one now
   let followUp=null;
   await mutate(async db=>{
     const f=ensure(db);const j=f.jobs[jid];if(!j)return null;const s=j.steps.find(x=>x.id===sid);if(!s||s.state!=='running')return null;
@@ -239,8 +241,16 @@ export function registerForge(r){
 
   // ---- worker side
   r.post('/api/agent/forge/poll',async({req,body})=>{
-    const {tok,agent}=await agentTok(req);const c=chan(tok);c.seenAt=Date.now();
-    if(body.hello)c.hello={version:String(body.hello.version||''),engine:String(body.hello.engine||''),editor:body.hello.editor||null,root:String(body.hello.root||'').slice(0,300),at:now()};
+    const {tok,agent,db:db0}=await agentTok(req);const c=chan(tok);const mid=machineId(req);
+    const hello=body.hello?{version:String(body.hello.version||''),engine:String(body.hello.engine||''),editor:body.hello.editor||null,root:String(body.hello.root||'').slice(0,300),at:now()}:undefined;
+    seen(tok,mid,{...(body.machine||{}),...(hello?{hello,engine:hello.engine}:{}),...(body.editor!==undefined?{editor:body.editor}:{})});
+    // Another of this creator's PCs is doing the Unreal work: stay on standby.
+    if(!isActive(db0,tok,mid)){
+      await new Promise(done=>{const t=setTimeout(done,20000);req.on('close',()=>{clearTimeout(t);done();});});
+      seen(tok,mid);const a=activeMachine(await load(),tok);return {standby:a?a.host:true};
+    }
+    c.seenAt=Date.now();
+    if(hello)c.hello=hello;
     if(body.editor!==undefined)c.editor=body.editor;
     if(body.boot){ // the worker restarted: anything it was running must run again
       await mutate(db=>{const f=ensure(db);for(const j of Object.values(f.jobs))if(j.ownerId===agent.userId)for(const s of j.steps)if(s.state==='running'){s.state='pending';s.log.push('Worker restarted; running this step again.');touch(db,j);}return true;});
@@ -248,7 +258,8 @@ export function registerForge(r){
     const t0=Date.now();
     for(;;){
       if(c.rpc.length)return {rpc:c.rpc.splice(0,20)};
-      const db=await load();const f=ensure(db);const n=nextStep(f,agent.userId);
+      const db=await load();if(!isActive(db,tok,mid))return {standby:true};
+      const f=ensure(db);const n=body.busy&&!(c.freedAt>t0)?null:nextStep(f,agent.userId);
       if(n){
         const p=f.projects[n.j.projectId];
         const out=await mutate(db2=>{const f2=ensure(db2);const j=f2.jobs[n.j.id];const s=j?.steps.find(x=>x.id===n.s.id);if(!s||s.state!=='pending')return null;
@@ -258,7 +269,7 @@ export function registerForge(r){
       if(Date.now()-t0>20000)return {};
       await new Promise(done=>{const t=setTimeout(done,20000-(Date.now()-t0));c.waiters.push(()=>{clearTimeout(t);done();});req.on('close',()=>{clearTimeout(t);done();});});
       if(req.destroyed)return {};
-      c.seenAt=Date.now();
+      c.seenAt=Date.now();seen(tok,mid);
     }
   });
   r.post('/api/agent/forge/rpc/:id',async({req,params,body})=>{const {tok}=await agentTok(req);const fn=chan(tok).replies.get(params.id);if(fn){chan(tok).replies.delete(params.id);fn(body);}return {ok:true};});
@@ -296,7 +307,9 @@ export function registerForge(r){
   r.get('/api/forge/state',async({req})=>{
     const user=await requireUser(req);const db=await load();const f=ensure(db);const tok=workerOf(db,user.id);const c=tok?chan(tok):null;
     const projects=Object.values(f.projects).filter(p=>p.ownerId===user.id).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
-    return {worker:tok?{online:workerOnline(tok),hello:c.hello,editor:c.editor||null}:null,hasModel:!!llmFor(db,user.id),
+    const act=tok?activeMachine(db,tok):null;
+    const machines=tok?machinesOf(tok).filter(m=>m.online||Date.now()-m.seenAt<6*3600e3).map(m=>({id:m.id,host:m.host,gpu:m.gpu||'',vramGB:m.vramGB||0,engine:m.engine||'',online:m.online,active:act?.id===m.id})):[];
+    return {worker:tok?{online:workerOnline(tok),hello:act?.hello||c.hello,editor:(act?act.editor:c.editor)||null,machine:act?{id:act.id,host:act.host,gpu:act.gpu||'',vramGB:act.vramGB||0}:null,machines,picked:db.agents?.[tok]?.forgeMachine||null}:null,hasModel:!!llmFor(db,user.id),
       projects:projects.map(p=>({id:p.id,name:p.name,status:p.status,root:p.root||null,updatedAt:p.updatedAt,createdAt:p.createdAt}))};
   });
   r.get('/api/forge/events',async({req,res})=>{
@@ -305,6 +318,12 @@ export function registerForge(r){
     let set=listeners.get(user.id);if(!set){set=new Set();listeners.set(user.id,set);}set.add(res);
     const ping=setInterval(()=>{try{res.write(': ping\n\n');}catch{}},20000);
     await new Promise(done=>req.on('close',done));clearInterval(ping);set.delete(res);
+  });
+  // Pick which PC does the Unreal work (empty = automatic: the strongest one online).
+  r.post('/api/forge/worker',async({req,body})=>{
+    const user=await requireUser(req);
+    const tok=await mutate(db=>{const a=agentFor(db,user.id);if(!a)throw new HttpError(409,'Start the Duke app on a PC first.');a.forgeMachine=body.machine?String(body.machine).slice(0,80):null;return a.token;});
+    wake(tok);return {ok:true};
   });
   r.post('/api/forge/projects',async({req,body})=>{
     const user=await requireUser(req);const name=gen.safeName(body.name);

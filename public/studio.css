@@ -288,3 +288,5 @@ small.kind.auto{background:#123536;color:var(--green)}small.kind.proof{backgroun
 .banner ul.tight{margin:6px 0 0;padding-left:18px}.banner ul.tight li{margin:2px 0}
 .linkish{background:none;border:0;padding:0;color:var(--gold2,#ff9a7d);text-decoration:underline;cursor:pointer;font:inherit}
 .liveChoice{display:grid;grid-template-columns:1fr 1fr;gap:12px}.liveChoice .card{margin:0}.liveChoice h3{margin:0 0 6px}@media(max-width:760px){.liveChoice{grid-template-columns:1fr}}
+
+.newGameBtn{width:100%;margin:2px 0 4px;justify-content:center}

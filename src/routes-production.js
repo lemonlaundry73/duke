@@ -1,4 +1,5 @@
 // HTTP routes for the production pipeline, Director, asset jobs, builds and the PC build agent.
+import { machineId, seen, isActive } from './machines.js';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
@@ -233,6 +234,9 @@ export function registerProduction(r){
   r.post('/api/agent/hello',async({req,body})=>{
     const auth=await agentAuth(req);
     if(auth.cloud)return {ok:true,cloud:true,watch:[]};
+    const mid=machineId(req);const gp=(Array.isArray(body.gpus)?body.gpus:[]).slice().sort((x,y)=>(Number(y.vramGB)||0)-(Number(x.vramGB)||0))[0]||{};
+    seen(auth.tok,mid,{host:body.host,gpu:gp.name||'',vramGB:gp.vramGB||0,engine:(body.engines||[])[0]||''});
+    if(!isActive(auth.db||await load(),auth.tok,mid))return {ok:true,standby:true,watch:[]};
     return mutate(db=>{const a=db.agents[auth.tok];a.seenAt=now();
       const t=body.tools||{};
       a.machine={host:str(body.host,80),os:str(body.os,80),engines:(body.engines||[]).slice(0,8).map(x=>str(x,12)),visualStudio:!!body.visualStudio,python:str(body.python,20),version:str(body.version,20),
