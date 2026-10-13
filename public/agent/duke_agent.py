@@ -1531,6 +1531,8 @@ class Forge:
                 if not os.listdir(os.path.join(root, d)):
                     open(keep, 'w').close()
             self.log(ctx, 'Created ' + uproject)
+            if args.get('starter') == 'fps':
+                self.apply_starter(eng, root, uproject, 'TP_FirstPersonBP', ctx)
         # Pixel Streaming for Live Unreal, editor only (never inside the packaged game)
         ps = 'PixelStreaming2' if os.path.isdir(os.path.join(eng['path'], 'Engine', 'Plugins', 'Media', 'PixelStreaming2')) else (
             'PixelStreaming' if os.path.isdir(os.path.join(eng['path'], 'Engine', 'Plugins', 'Media', 'PixelStreaming')) else None)
@@ -1557,6 +1559,56 @@ class Forge:
             self.log(ctx, 'Pixel Streaming starts with the editor: ' + ', '.join('%s=%s' % kv for kv in cv.items()))
         proj.update(root=root, uproject=uproject, engine=eng['version'])
         return {'root': root, 'uproject': uproject, 'engine': eng['version'], 'pixelStreaming': ps, 'pixelSettings': cv, 'summary': 'Unreal %s project at %s' % (eng['version'], root)}
+
+    def apply_starter(self, eng, root, uproject, template, ctx):
+        """Copy one of Epic's own project templates that ship with the engine (content, maps, input, game mode)
+        into the new project, so it starts as a playable game rather than an empty world."""
+        tdir = os.path.join(eng['path'], 'Templates', template)
+        if not os.path.isdir(os.path.join(tdir, 'Content')):
+            self.log(ctx, 'Epic template %s not found in this Unreal install; starting from a blank world.' % template)
+            return
+        shutil.copytree(os.path.join(tdir, 'Content'), os.path.join(root, 'Content'), dirs_exist_ok=True)
+        # plugins the template needs
+        try:
+            tu = next((os.path.join(tdir, f) for f in os.listdir(tdir) if f.endswith('.uproject')), None)
+            tplugins = json.load(open(tu, encoding='utf-8-sig')).get('Plugins', []) if tu else []
+            data = json.load(open(uproject, encoding='utf-8-sig'))
+            have = {p.get('Name') for p in data.get('Plugins', [])}
+            for p in tplugins:
+                if p.get('Name') not in have and p.get('Enabled', True):
+                    data.setdefault('Plugins', []).append({'Name': p['Name'], 'Enabled': True})
+            json.dump(data, open(uproject, 'w', encoding='utf-8'), indent='\t')
+        except Exception as e:
+            self.log(ctx, 'Could not read the template plugin list: %s' % e)
+        # the template's start map, game mode and input settings
+        ini = os.path.join(tdir, 'Config', 'DefaultEngine.ini')
+        keep = {}
+        if os.path.isfile(ini):
+            sec = None
+            for line in open(ini, encoding='utf-8-sig', errors='replace'):
+                line = line.strip()
+                if line.startswith('[') and line.endswith(']'):
+                    sec = line[1:-1]
+                elif sec == '/Script/EngineSettings.GameMapsSettings' and '=' in line and not line.startswith(('+', '-', ';')):
+                    k, v = line.split('=', 1)
+                    if k in ('EditorStartupMap', 'GameDefaultMap', 'GlobalDefaultGameMode', 'TransitionMap'):
+                        keep[k] = v
+        if keep:
+            self.step_ini_set({'file': 'Config/DefaultEngine.ini', 'section': '/Script/EngineSettings.GameMapsSettings', 'values': keep},
+                              {'root': root, 'uproject': uproject, 'name': os.path.basename(root)}, ctx)
+        for extra in ('DefaultInput.ini',):
+            src = os.path.join(tdir, 'Config', extra)
+            if os.path.isfile(src):
+                shutil.copyfile(src, os.path.join(root, 'Config', extra))
+        m = keep.get('GameDefaultMap', '')
+        if m:
+            gi = os.path.join(root, 'Config', 'DefaultGame.ini')
+            txt = open(gi, encoding='utf-8').read() if os.path.isfile(gi) else ''
+            entry = '+MapsToCook=(FilePath="%s")' % m.split('.')[0]
+            if entry not in txt:
+                txt = txt.replace('[/Script/UnrealEd.ProjectPackagingSettings]', '[/Script/UnrealEd.ProjectPackagingSettings]\n' + entry, 1) if '[/Script/UnrealEd.ProjectPackagingSettings]' in txt else txt + '\n[/Script/UnrealEd.ProjectPackagingSettings]\n' + entry + '\n'
+                open(gi, 'w', encoding='utf-8').write(txt)
+        self.log(ctx, "Started from Epic's first-person shooter template: player, weapon, shooting and the shooter map%s." % (' (' + m + ')' if m else ''))
 
     def pixel_cvars(self, eng, ps):
         """Reads the editor-streaming console variable names from the engine's own Pixel Streaming source, so the

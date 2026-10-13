@@ -32,16 +32,18 @@ function workerBox(){
 async function refresh(){
   S.state=await api('/api/forge/state');
   const ps=S.state.projects;if(!S.pid||!ps.some(p=>p.id===S.pid))S.pid=ps[0]?.id||null;
-  $('#projPick').innerHTML=ps.length?ps.map(p=>`<option value="${p.id}" ${p.id===S.pid?'selected':''}>${esc(p.name)}${p.status!=='ready'?' (creating)':''}</option>`).join(''):'<option>No projects yet</option>';
+  $('#projPick').innerHTML=ps.length?ps.map(p=>`<option value="${p.id}" ${p.id===S.pid?'selected':''}>${esc(p.title||p.name)}${p.status!=='ready'?' (creating)':''}</option>`).join(''):'<option>No projects yet</option>';
   workerBox();
   if(S.pid){S.proj=await api(`/api/forge/projects/${S.pid}`);localStorage.setItem('forge.pid',S.pid);}else S.proj=null;
 }
 $('#projPick').onchange=async e=>{S.pid=e.target.value;S.tree=null;S.file=null;await refresh();render();};
 
 function needProject(){if(S.proj)return false;$('#main').innerHTML=`<div class="head"><div><h1>Start a project</h1><p class="muted">Duke Forger creates a real Unreal Engine 5 C++ project on your Unreal worker.</p></div></div>${newProjectCard()}`;bindNew();return true;}
-function newProjectCard(){return `<div class="card"><h2>New Unreal project</h2><div class="row"><input type="text" id="npName" placeholder="Project name, for example GalacticGame" maxlength="30" style="max-width:340px"/><button class="btn gold" id="npGo">Create project</button></div>
+function newProjectCard(){return `<div class="card"><h2>New Unreal project</h2><div class="row"><input type="text" id="npName" placeholder="Game name, for example One Nation Under God" maxlength="60" style="max-width:340px"/>
+  <select id="npStarter" class="in" style="width:auto"><option value="fps">First-person shooter (Epic's FPS template: player, gun, shooting)</option><option value="blank">Blank (empty world)</option></select>
+  <button class="btn gold" id="npGo">Create project</button></div>
   <p class="muted small" style="margin-top:8px">Creates the project from the Duke Forger template, adds the Duke Forger Unreal plugin, turns on Git with LFS, compiles it, opens it in Unreal Editor with Pixel Streaming, builds a start map and commits. The first editor start compiles shaders, which can take 10 to 40 minutes.</p></div>`;}
-function bindNew(){$('#npGo')?.addEventListener('click',async()=>{try{const r=await post('/api/forge/projects',{name:$('#npName').value});S.pid=r.project.id;await refresh();go('command');toast('Project created. Your Unreal worker is setting it up.');}catch(e){toast(e.message,true);}});}
+function bindNew(){$('#npGo')?.addEventListener('click',async()=>{try{const r=await post('/api/forge/projects',{name:$('#npName').value,title:$('#npName').value,starter:$('#npStarter').value});S.pid=r.project.id;await refresh();go('command');toast('Project created. Your Unreal worker is setting it up.');}catch(e){toast(e.message,true);}});}
 
 // ---------------------------------------------------------------- Command Center
 const ROLES=['Director','World builder','Gameplay engineer','Build engineer','QA'];

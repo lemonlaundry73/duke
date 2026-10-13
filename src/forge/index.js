@@ -106,9 +106,11 @@ function newJob(p,kind,title,steps,extra={}){
   return {id:nanoid(10),projectId:p.id,ownerId:p.ownerId,kind,title,steps,state:'PLANNED',createdAt:now(),updatedAt:now(),evidence:[],tests:[],repairs:0,...extra};
 }
 function pipelineCreate(p){
-  return [step('kit.install',{name:p.name}),step('git.init'),step('ubt.build',{target:'Editor'}),step('editor.start',{pixel:true}),
-    step('bridge',{cmd:'python',args:{code:gen.startMapScript()}},{label:'Build the start map (ground, sun, sky, player start)',role:'World builder'}),
-    step('git.commit',{message:'Duke Forger: new project'})];
+  const fps=p.starter==='fps';
+  return [step('kit.install',{name:p.name,starter:p.starter||'blank'},fps?{label:"Create the Unreal project from Epic's first-person shooter template",role:'Unreal Engine architect'}:{}),
+    step('git.init'),step('ubt.build',{target:'Editor'}),step('editor.start',{pixel:true}),
+    ...(fps?[]:[step('bridge',{cmd:'python',args:{code:gen.startMapScript()}},{label:'Build the start map (ground, sun, sky, player start)',role:'World builder'})]),
+    step('git.commit',{message:fps?'Duke Forger: new first-person shooter project':'Duke Forger: new project'})];
 }
 function pipelineActorTest(){
   return [step('editor.start',{pixel:true}),
@@ -310,7 +312,7 @@ export function registerForge(r){
     const act=tok?activeMachine(db,tok):null;
     const machines=tok?machinesOf(tok).filter(m=>m.online||Date.now()-m.seenAt<6*3600e3).map(m=>({id:m.id,host:m.host,gpu:m.gpu||'',vramGB:m.vramGB||0,engine:m.engine||'',online:m.online,active:act?.id===m.id})):[];
     return {worker:tok?{online:workerOnline(tok),hello:act?.hello||c.hello,editor:(act?act.editor:c.editor)||null,machine:act?{id:act.id,host:act.host,gpu:act.gpu||'',vramGB:act.vramGB||0}:null,machines,picked:db.agents?.[tok]?.forgeMachine||null}:null,hasModel:!!llmFor(db,user.id),
-      projects:projects.map(p=>({id:p.id,name:p.name,status:p.status,root:p.root||null,updatedAt:p.updatedAt,createdAt:p.createdAt}))};
+      projects:projects.map(p=>({id:p.id,name:p.name,title:p.title||null,starter:p.starter||'blank',status:p.status,root:p.root||null,updatedAt:p.updatedAt,createdAt:p.createdAt}))};
   });
   r.get('/api/forge/events',async({req,res})=>{
     const user=await requireUser(req);
@@ -329,7 +331,7 @@ export function registerForge(r){
     const user=await requireUser(req);const name=gen.safeName(body.name);
     const out=await mutate(db=>{
       const f=ensure(db);if(Object.values(f.projects).some(p=>p.ownerId===user.id&&p.name.toLowerCase()===name.toLowerCase()))throw new HttpError(409,`You already have a project called ${name}.`);
-      const p={id:nanoid(10),ownerId:user.id,name,status:'creating',settings:structuredClone(DEFAULT_SETTINGS),createdAt:now(),updatedAt:now()};f.projects[p.id]=p;
+      const p={id:nanoid(10),ownerId:user.id,name,title:String(body.title||'').trim().slice(0,80)||null,starter:body.starter==='fps'?'fps':'blank',status:'creating',settings:structuredClone(DEFAULT_SETTINGS),createdAt:now(),updatedAt:now()};f.projects[p.id]=p;
       const j=newJob(p,'create_project',`Create ${name}`,pipelineCreate(p));f.jobs[j.id]=j;touch(db,j);return {project:p,job:jobView(j)};
     });
     const db=await load();const tok=workerOf(db,user.id);if(tok)wake(tok);return out;
