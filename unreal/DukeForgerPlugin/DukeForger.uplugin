@@ -1,0 +1,17 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0.0",
+  "FriendlyName": "Duke Forger",
+  "Description": "Duke Forger automation bridge: lets the Duke Forger worker build levels, place actors, run Play-In-Editor tests, capture screenshots and read results inside the running Unreal Editor.",
+  "Category": "Duke Forger",
+  "CreatedBy": "Duke Forger",
+  "CreatedByURL": "https://www.dukeforger.com",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "EnabledByDefault": true,
+  "Plugins": [
+    {"Name": "PythonScriptPlugin", "Enabled": true},
+    {"Name": "EditorScriptingUtilities", "Enabled": true}
+  ]
+}

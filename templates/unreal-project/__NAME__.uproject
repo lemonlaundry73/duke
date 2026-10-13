@@ -1,0 +1,19 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "__ENGINE__",
+	"Category": "",
+	"Description": "Created by Duke Forger",
+	"Modules": [
+		{
+			"Name": "__NAME__",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": ["Engine"]
+		}
+	],
+	"Plugins": [
+		{"Name": "PythonScriptPlugin", "Enabled": true},
+		{"Name": "EditorScriptingUtilities", "Enabled": true},
+		{"Name": "DukeForger", "Enabled": true}
+	]
+}

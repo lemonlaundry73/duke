@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+# TEST HARNESS ONLY: a stand-in "editor" that speaks the Duke Forger bridge file protocol.
+import json, os, sys, time, glob
+proj = sys.argv[1]; root = os.path.dirname(proj); name = os.path.splitext(os.path.basename(proj))[0]
+base = os.path.join(root, 'Saved', 'DukeForger'); inbox = os.path.join(base, 'inbox'); outbox = os.path.join(base, 'outbox')
+for d in (inbox, outbox, os.path.join(root, 'Saved', 'Logs'), os.path.join(root, 'Content', 'Maps')): os.makedirs(d, exist_ok=True)
+log = open(os.path.join(root, 'Saved', 'Logs', name + '.log'), 'a'); log.write('LogInit: harness editor started\n'); log.flush()
+def ans(i, ok, **kw):
+    json.dump(dict(kw, id=i, ok=ok), open(os.path.join(outbox, i + '.json.tmp'), 'w')); os.replace(os.path.join(outbox, i + '.json.tmp'), os.path.join(outbox, i + '.json'))
+while True:
+    json.dump({'time': time.time(), 'pid': os.getpid(), 'version': 'harness', 'engine': '5.8.0-harness', 'map': '/Game/Maps/DukeStart', 'pie': False}, open(os.path.join(base, 'heartbeat.json'), 'w'))
+    for f in sorted(glob.glob(os.path.join(inbox, '*.json'))):
+        m = json.load(open(f)); os.remove(f); c = m['cmd']
+        if c == 'quit': log.write('quit\n'); sys.exit(0)
+        if c == 'python':
+            code = m['args']['code']
+            if 'DukeRoom' in code: open(os.path.join(root, 'Content', 'Maps', 'DukeRoom.umap'), 'w').write('x')
+            if 'DukeStart' in code: open(os.path.join(root, 'Content', 'Maps', 'DukeStart.umap'), 'w').write('x')
+            ans(m['id'], True, result={'result': {'actors': [{'label': 'Floor'}, {'label': 'Door'}]} if 'DukeRoom' in code else True, 'stdout': 'ok'})
+        elif c == 'run_test':
+            hdr = open(glob.glob(os.path.join(root, 'Source', '*', 'DukeDoor.h'))[0]).read() if glob.glob(os.path.join(root, 'Source', '*', 'DukeDoor.h')) else ''
+            near = '450.f' in hdr or 'Door' not in json.dumps(m['args'])
+            vars_ = {'cube_count': 1, 'door_closed_at_start': 0.0, 'player_near': near, 'door_open_near': 1.0 if near else 0.0, 'door_after_leaving': 0.0}
+            checks = [{'expr': e, 'ok': bool(eval(e, {'__builtins__': {}}, dict(vars_)))} for e in m['args'].get('asserts', [])]
+            shot = os.path.join(base, 'evidence', 'shot.png'); os.makedirs(os.path.dirname(shot), exist_ok=True)
+            open(shot, 'wb').write(b'\x89PNG\r\n\x1a\n' + b'0' * 40)
+            ans(m['id'], True, result={'name': m['args']['name'], 'passed': all(x['ok'] for x in checks), 'checks': checks, 'vars': vars_, 'screenshots': [shot], 'log': ['harness test']})
+        else: ans(m['id'], True, result={'ok': True})
+    time.sleep(0.2)

@@ -12,9 +12,9 @@ Usage:
 
 Only the Python standard library is used.
 """
-import argparse, base64, ctypes, http.server, io, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
+import argparse, base64, ctypes, traceback, http.server, io, ctypes.wintypes, glob, urllib.parse, json, os, platform, re, shutil, socket, subprocess, sys, tempfile, threading, time, urllib.error, urllib.request, zipfile
 
-VERSION = '3.6.0'
+VERSION = '4.0.0'
 # Filled in when you download DukeForger.py from your Duke Forger studio, so a double-click is enough.
 DEFAULT_SERVER = ''
 DEFAULT_TOKEN = ''
@@ -1338,6 +1338,590 @@ class LocalWS:
             pass
 
 
+# ---------------------------------------------------------------- Duke Forger V1 worker
+# Runs the orchestrator's job steps on this PC for real: creates the Unreal project, compiles it with
+# Unreal Build Tool, runs the Unreal Editor with the Duke Forger plugin (the automation bridge), drives
+# Play-In-Editor tests, commits with Git, packages with AutomationTool, and serves the File Vault.
+FORGE_ROOT = os.path.join(os.path.expanduser('~'), 'DukeForger', 'Projects')
+SKIP_DIRS = {'.git', 'Intermediate', 'Binaries', 'DerivedDataCache', '.vs', '__pycache__'}
+TEXT_EXT = {'.cpp', '.h', '.hpp', '.inl', '.cs', '.ini', '.json', '.uproject', '.uplugin', '.py', '.md', '.txt', '.log', '.csv', '.xml', '.yaml', '.yml',
+            '.usf', '.ush', '.gitignore', '.gitattributes', '.bat', '.sh', '.html', '.css', '.js'}
+ERR_RE = re.compile(r'(error [A-Z]{1,4}\d{3,5}|: error|error LNK\d+|\bERROR:|Error: |Fatal error|LogPython: Error|Unhandled Exception)', re.I)
+
+
+def _pid_alive(pid):
+    if not pid:
+        return False
+    if platform.system() != 'Windows':
+        try:
+            os.kill(pid, 0)
+            return True
+        except OSError:
+            return False
+    k = ctypes.windll.kernel32
+    k.OpenProcess.restype = ctypes.c_void_p
+    h = k.OpenProcess(0x1000, False, int(pid))
+    if not h:
+        return False
+    code = ctypes.c_ulong()
+    k.GetExitCodeProcess(ctypes.c_void_p(h), ctypes.byref(code))
+    k.CloseHandle(ctypes.c_void_p(h))
+    return code.value == 259
+
+
+class StepFailed(Exception):
+    pass
+
+
+class Forge:
+    def __init__(self, duke, args):
+        self.duke, self.args = duke, args
+        self.editors = {}  # uproject -> Popen we started
+
+    def start(self):
+        os.makedirs(FORGE_ROOT, exist_ok=True)
+        threading.Thread(target=self.loop, daemon=True).start()
+
+    def engine(self):
+        e = find_engines(self.args.engine)
+        if not e:
+            raise StepFailed('Unreal Engine 5 is not installed on this PC. Install it from the Epic Games Launcher.')
+        return e[0]
+
+    # ---- the polling loop: RPCs (File Vault) run at once, job steps one at a time in the background
+    def loop(self):
+        boot, busy = True, threading.Event()
+        while True:
+            try:
+                body = {'boot': boot}
+                if boot:
+                    e = find_engines(self.args.engine)
+                    body['hello'] = {'version': VERSION, 'engine': e[0]['version'] if e else '', 'root': FORGE_ROOT}
+                r = self.duke._req('POST', '/api/agent/forge/poll', body, timeout=45)
+                boot = False
+                for c in r.get('rpc', []):
+                    threading.Thread(target=self.do_rpc, args=(c,), daemon=True).start()
+                if r.get('step') and not busy.is_set():
+                    busy.set()
+
+                    def run(st):
+                        try:
+                            self.do_step(st)
+                        finally:
+                            busy.clear()
+                    threading.Thread(target=run, args=(r['step'],), daemon=True).start()
+            except urllib.error.HTTPError as e:
+                time.sleep(5 if e.code != 401 else 30)
+            except Exception:
+                time.sleep(5)
+
+    # ---- job steps
+    def do_step(self, st):
+        ctx = {'log': [], 'evidence': [], 'last': time.time(), 'st': st}
+        proj = dict(st.get('project') or {})
+        out = {'ok': False}
+        try:
+            fn = getattr(self, 'step_' + st['kind'].replace('.', '_'))
+            res = fn(st.get('args') or {}, proj, ctx)
+            out = {'ok': True, 'result': res}
+            if isinstance(res, dict) and res.get('summary'):
+                out['summary'] = res['summary']
+        except StepFailed as e:
+            out = {'ok': False, 'error': str(e)}
+        except Exception as e:
+            out = {'ok': False, 'error': '%s: %s' % (type(e).__name__, e)}
+            ctx['log'].append(traceback.format_exc()[-3000:])
+        out.update({'log': ctx['log'][-300:], 'evidence': ctx['evidence'], 'project': {k: proj.get(k) for k in ('root', 'uproject', 'engine') if proj.get(k)}})
+        for attempt in range(20):
+            try:
+                self.duke.post('/api/agent/forge/step/%s/%s' % (st['jobId'], st['stepId']), out)
+                return
+            except Exception:
+                time.sleep(10)
+
+    def log(self, ctx, line):
+        ctx['log'].append(str(line)[:2000])
+        if time.time() - ctx['last'] > 8:
+            ctx['last'] = time.time()
+            st = ctx['st']
+            try:
+                self.duke.post('/api/agent/forge/step/%s/%s' % (st['jobId'], st['stepId']), {'progress': True, 'log': ctx['log'][-30:]})
+                ctx['log'] = ctx['log'][-30:] if len(ctx['log']) > 300 else ctx['log']
+            except Exception:
+                pass
+
+    def need(self, proj):
+        if not proj.get('uproject') or not os.path.isfile(proj['uproject']):
+            raise StepFailed('The project files are not on this PC yet: %s' % proj.get('uproject'))
+        return proj['root'], proj['uproject'], proj['name']
+
+    def run_logged(self, cmd, ctx, cwd=None, timeout=4 * 3600):
+        self.log(ctx, '> ' + ' '.join('"%s"' % c if ' ' in c else c for c in cmd))
+        p = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, encoding='utf-8', errors='replace', bufsize=1)
+        errors, t0 = [], time.time()
+        for line in p.stdout:
+            line = line.rstrip()
+            if not line:
+                continue
+            if ERR_RE.search(line):
+                errors.append(line[:600])
+            self.log(ctx, line)
+            if time.time() - t0 > timeout:
+                p.kill()
+                raise StepFailed('Timed out after %d minutes' % (timeout // 60))
+        p.wait()
+        return p.returncode, errors
+
+    def git(self, root, *a, check=True):
+        r = subprocess.run(['git', '-C', root, '-c', 'user.name=Duke Forger', '-c', 'user.email=forge@dukeforger.com', '-c', 'core.autocrlf=false'] + list(a),
+                           capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=600)
+        if check and r.returncode != 0:
+            raise StepFailed('git %s failed: %s' % (a[0], (r.stderr or r.stdout).strip()[-800:]))
+        return r.stdout
+
+    def step_kit_install(self, args, proj, ctx):
+        name = re.sub(r'[^A-Za-z0-9]', '', args.get('name') or proj.get('name') or 'DukeGame')[:30]
+        eng = self.engine()
+        root = os.path.join(FORGE_ROOT, name)
+        uproject = os.path.join(root, name + '.uproject')
+        if os.path.isfile(uproject):
+            self.log(ctx, 'Project already exists at ' + root)
+        else:
+            tmp = os.path.join(tempfile.gettempdir(), 'duke_forger_kit.zip')
+            self.duke.download('/api/agent/forge/kit.zip', tmp)
+            with zipfile.ZipFile(tmp) as z:
+                for info in z.infolist():
+                    if info.is_dir():
+                        continue
+                    if info.filename.startswith('template/'):
+                        rel = info.filename[len('template/'):].replace('__NAME__', name)
+                        dest = os.path.join(root, rel)
+                    elif info.filename.startswith('plugin/'):
+                        dest = os.path.join(root, 'Plugins', 'DukeForger', info.filename[len('plugin/'):])
+                    else:
+                        continue
+                    data = z.read(info)
+                    if os.path.splitext(dest)[1].lower() in TEXT_EXT or os.path.basename(dest).startswith('.'):
+                        data = data.decode('utf-8').replace('__NAME__', name).replace('__ENGINE__', eng['version']).encode('utf-8')
+                    os.makedirs(os.path.dirname(dest), exist_ok=True)
+                    with open(dest, 'wb') as f:
+                        f.write(data)
+            for d in ('Content', 'Concepts', 'RawAssets', 'Docs'):
+                os.makedirs(os.path.join(root, d), exist_ok=True)
+                keep = os.path.join(root, d, '.gitkeep')
+                if not os.listdir(os.path.join(root, d)):
+                    open(keep, 'w').close()
+            self.log(ctx, 'Created ' + uproject)
+        # Pixel Streaming for Live Unreal, editor only (never inside the packaged game)
+        ps = 'PixelStreaming2' if os.path.isdir(os.path.join(eng['path'], 'Engine', 'Plugins', 'Media', 'PixelStreaming2')) else (
+            'PixelStreaming' if os.path.isdir(os.path.join(eng['path'], 'Engine', 'Plugins', 'Media', 'PixelStreaming')) else None)
+        data = json.load(open(uproject, encoding='utf-8-sig'))
+        if ps and not any(p.get('Name') == ps for p in data.get('Plugins', [])):
+            data.setdefault('Plugins', []).append({'Name': ps, 'Enabled': True, 'TargetAllowList': ['Editor']})
+            json.dump(data, open(uproject, 'w', encoding='utf-8'), indent='\t')
+            self.log(ctx, 'Enabled %s for Live Unreal (editor only)' % ps)
+        proj.update(root=root, uproject=uproject, engine=eng['version'])
+        return {'root': root, 'uproject': uproject, 'engine': eng['version'], 'pixelStreaming': ps, 'summary': 'Unreal %s project at %s' % (eng['version'], root)}
+
+    def step_git_init(self, args, proj, ctx):
+        root, _, _ = self.need(proj)
+        if not os.path.isdir(os.path.join(root, '.git')):
+            self.git(root, 'init', '-b', 'main')
+        lfs = subprocess.run(['git', '-C', root, 'lfs', 'install', '--local'], capture_output=True, text=True)
+        self.log(ctx, 'Git LFS: ' + ('on' if lfs.returncode == 0 else 'not available (%s)' % lfs.stderr.strip()[:200]))
+        self.git(root, 'add', '-A')
+        if self.git(root, 'status', '--porcelain').strip():
+            self.git(root, 'commit', '-m', 'Duke Forger: project created from template')
+        return {'sha': self.git(root, 'rev-parse', 'HEAD').strip(), 'lfs': lfs.returncode == 0}
+
+    # ---- Unreal Editor session with the Duke Forger bridge
+    def bridge_dir(self, root):
+        return os.path.join(root, 'Saved', 'DukeForger')
+
+    def heartbeat(self, root):
+        try:
+            hb = json.load(open(os.path.join(self.bridge_dir(root), 'heartbeat.json')))
+            if time.time() - hb.get('time', 0) < 10 and _pid_alive(hb.get('pid')):
+                return hb
+        except Exception:
+            pass
+        return None
+
+    def editor_log(self, root, name, lines=60):
+        f = os.path.join(root, 'Saved', 'Logs', name + '.log')
+        try:
+            with open(f, encoding='utf-8', errors='replace') as fh:
+                return fh.readlines()[-lines:]
+        except OSError:
+            return []
+
+    def step_editor_start(self, args, proj, ctx):
+        root, uproject, name = self.need(proj)
+        hb = self.heartbeat(root)
+        if hb:
+            return {'pid': hb['pid'], 'map': hb.get('map'), 'summary': 'Unreal Editor already running'}
+        eng = self.engine()
+        exe = os.path.join(eng['path'], 'Engine', 'Binaries', 'Win64', 'UnrealEditor.exe')
+        cmd = [exe, uproject, '-NoSplash']
+        if args.get('pixel', True):
+            cmd += ['-EditorPixelStreamingStartOnLaunch=true', '-EditorPixelStreamingUseRemoteSignallingServer=false', '-EditorPixelStreamingSource=Editor',
+                    '-EditorPixelStreaming2StartOnLaunch=true', '-EditorPixelStreaming2UseRemoteSignallingServer=false', '-EditorPixelStreaming2Source=Editor',
+                    '-PixelStreamingURL=ws://127.0.0.1:8888']
+        try:
+            os.remove(os.path.join(self.bridge_dir(root), 'heartbeat.json'))
+        except OSError:
+            pass
+        self.log(ctx, 'Starting Unreal Editor (the first start compiles shaders and can take 10 to 40 minutes)')
+        p = subprocess.Popen(cmd)
+        self.editors[uproject] = p
+        t0, last = time.time(), ''
+        while time.time() - t0 < 110 * 60:
+            hb = self.heartbeat(root)
+            if hb:
+                self.log(ctx, 'Unreal Editor is up (%s), Duke Forger bridge %s' % (hb.get('engine'), hb.get('version')))
+                return {'pid': hb['pid'], 'engine': hb.get('engine'), 'map': hb.get('map'), 'summary': 'Unreal Editor running with the Duke Forger bridge'}
+            if p.poll() is not None:
+                tail = ''.join(self.editor_log(root, name, 80))
+                raise StepFailed('Unreal Editor closed while starting (exit code %s). Last log lines:\n%s' % (p.returncode, tail[-4000:]))
+            tail = self.editor_log(root, name, 3)
+            if tail and tail[-1] != last:
+                last = tail[-1]
+                self.log(ctx, last.strip()[:300])
+            time.sleep(3)
+        raise StepFailed('Unreal Editor did not finish starting in 110 minutes')
+
+    def step_editor_stop(self, args, proj, ctx):
+        root, uproject, _ = self.need(proj)
+        return {'summary': 'Unreal Editor closed' if self.stop_editor(root, uproject, ctx) else 'Unreal Editor was not running'}
+
+    def stop_editor(self, root, uproject, ctx):
+        hb = self.heartbeat(root)
+        if not hb:
+            return False
+        self.log(ctx, 'Closing Unreal Editor')
+        try:
+            self.bridge(root, 'quit', {}, timeout=20)
+        except Exception:
+            pass
+        mine = self.editors.get(uproject)
+
+        def alive():
+            return mine.poll() is None if mine is not None and mine.pid == hb['pid'] else _pid_alive(hb['pid'])
+        t0 = time.time()
+        while alive() and time.time() - t0 < 90:
+            time.sleep(1)
+        if alive():
+            self.log(ctx, 'Unreal Editor did not close by itself; ending it')
+            if platform.system() == 'Windows':
+                subprocess.run(['taskkill', '/PID', str(hb['pid']), '/F'], capture_output=True)
+            else:
+                os.kill(hb['pid'], 9)
+            time.sleep(3)
+        try:
+            os.remove(os.path.join(self.bridge_dir(root), 'heartbeat.json'))
+        except OSError:
+            pass
+        return True
+
+    def bridge(self, root, cmd, args, timeout=600):
+        if not self.heartbeat(root):
+            raise StepFailed('Unreal Editor is not running with the Duke Forger plugin')
+        mid = uuid_hex()
+        inbox = os.path.join(self.bridge_dir(root), 'inbox')
+        os.makedirs(inbox, exist_ok=True)
+        tmp = os.path.join(inbox, mid + '.tmp')
+        with open(tmp, 'w') as f:
+            json.dump({'id': mid, 'cmd': cmd, 'args': args}, f)
+        os.replace(tmp, os.path.join(inbox, mid + '.json'))
+        out = os.path.join(self.bridge_dir(root), 'outbox', mid + '.json')
+        t0 = time.time()
+        while time.time() - t0 < timeout:
+            if os.path.exists(out):
+                time.sleep(0.05)
+                with open(out) as f:
+                    ans = json.load(f)
+                os.remove(out)
+                if not ans.get('ok'):
+                    raise StepFailed('%s\n%s' % (ans.get('error'), (ans.get('trace') or '')[-2500:]))
+                return ans.get('result')
+            if not self.heartbeat(root):
+                time.sleep(3)
+                if not self.heartbeat(root):
+                    raise StepFailed('Unreal Editor stopped while running "%s"' % cmd)
+            time.sleep(0.2)
+        raise StepFailed('Unreal Editor did not answer "%s" within %d seconds' % (cmd, timeout))
+
+    def step_bridge(self, args, proj, ctx):
+        root, _, name = self.need(proj)
+        before = len(self.editor_log(root, name, 100000))
+        try:
+            res = self.bridge(root, args['cmd'], args.get('args') or {}, timeout=args.get('timeout', 900))
+        finally:
+            new = self.editor_log(root, name, 100000)[before:]
+            errs = [l.strip() for l in new if ERR_RE.search(l)]
+            for l in errs[-40:]:
+                self.log(ctx, 'LOG ' + l[:500])
+        if isinstance(res, dict) and res.get('stdout'):
+            for l in res['stdout'].splitlines()[-60:]:
+                self.log(ctx, l)
+        return {'result': res, 'summary': ('%d actors' % len(res['result']['actors'])) if isinstance(res, dict) and isinstance(res.get('result'), dict) and 'actors' in res['result'] else None}
+
+    def step_test(self, args, proj, ctx):
+        root, _, name = self.need(proj)
+        res = self.bridge(root, 'run_test', args, timeout=300)
+        for l in res.get('log', []):
+            self.log(ctx, l)
+        for c in res.get('checks', []):
+            self.log(ctx, '%s  %s' % ('PASS' if c['ok'] else 'FAIL', c['expr']))
+        for shot in res.get('screenshots', []):
+            url = self.upload(ctx, shot, 'evidence')
+            if url:
+                ctx['evidence'].append({'type': 'screenshot', 'url': url, 'name': os.path.basename(shot)})
+        errs = [l.strip() for l in self.editor_log(root, name, 400) if ERR_RE.search(l)]
+        res['logErrors'] = errs[-30:]
+        res['summary'] = '%s: %d/%d checks passed' % (args.get('name'), sum(1 for c in res.get('checks', []) if c['ok']), len(res.get('checks', [])))
+        return res
+
+    def upload(self, ctx, path, kind, extra=''):
+        st = ctx['st']
+        try:
+            q = 'job=%s&kind=%s&name=%s%s' % (st['jobId'], kind, urllib.parse.quote(os.path.basename(path)), extra)
+            with open(path, 'rb') as f:
+                req = urllib.request.Request(self.duke.server + '/api/agent/forge/upload?' + q, data=f, method='POST', headers={
+                    'x-duke-agent': self.duke.token, 'content-type': 'application/octet-stream', 'content-length': str(os.path.getsize(path))})
+                with urllib.request.urlopen(req, timeout=3600) as r:
+                    out = json.loads(r.read() or b'{}')
+            return out.get('url') if kind == 'evidence' else out
+        except Exception as e:
+            self.log(ctx, 'Upload failed: %s' % e)
+            return None
+
+    # ---- compile
+    def step_ubt_build(self, args, proj, ctx):
+        root, uproject, name = self.need(proj)
+        was_running = self.stop_editor(root, uproject, ctx)
+        eng = self.engine()
+        bat = os.path.join(eng['path'], 'Engine', 'Build', 'BatchFiles', 'Build.bat')
+        target = name + ('Editor' if args.get('target', 'Editor') == 'Editor' else '')
+        code, errors = self.run_logged([bat, target, 'Win64', args.get('config', 'Development'), '-Project=' + uproject, '-WaitMutex', '-NoHotReloadFromIDE'], ctx, cwd=root, timeout=90 * 60)
+        if code != 0:
+            raise StepFailed('Compile failed (exit code %s):\n%s' % (code, '\n'.join(errors[-25:]) or 'see the log'))
+        if was_running or args.get('restart'):
+            self.step_editor_start({'pixel': True}, proj, ctx)
+        return {'summary': 'Compiled %s Win64 %s' % (target, args.get('config', 'Development')), 'warnings': len([e for e in errors if 'warning' in e.lower()])}
+
+    # ---- files and settings
+    def safe(self, root, rel):
+        rel = str(rel).replace('\\', '/').lstrip('/')
+        full = os.path.normpath(os.path.join(root, rel))
+        if not full.startswith(os.path.normpath(root) + os.sep) or '/.git/' in '/' + rel + '/':
+            raise StepFailed('Not allowed: ' + rel)
+        return full
+
+    def step_file_write(self, args, proj, ctx):
+        root, _, _ = self.need(proj)
+        done = []
+        for rel, text in (args.get('files') or {}).items():
+            full = self.safe(root, rel)
+            os.makedirs(os.path.dirname(full), exist_ok=True)
+            with open(full, 'w', encoding='utf-8', newline='\n') as f:
+                f.write(text)
+            done.append(rel)
+            self.log(ctx, 'Wrote ' + rel)
+        for e in args.get('edits') or []:
+            full = self.safe(root, e['path'])
+            text = open(full, encoding='utf-8').read()
+            if e['from'] not in text:
+                raise StepFailed('Could not find the text to change in %s' % e['path'])
+            open(full, 'w', encoding='utf-8', newline='\n').write(text.replace(e['from'], e['to'], 1))
+            done.append(e['path'])
+            self.log(ctx, 'Edited %s: %s -> %s' % (e['path'], e['from'], e['to']))
+        return {'files': done, 'summary': '%d file(s) written' % len(done)}
+
+    def step_ini_set(self, args, proj, ctx):
+        root, _, _ = self.need(proj)
+        full = self.safe(root, args['file'])
+        lines = open(full, encoding='utf-8').read().splitlines() if os.path.exists(full) else []
+        head = '[%s]' % args['section']
+        if head not in lines:
+            lines += ['', head]
+        i = lines.index(head) + 1
+        j = i
+        while j < len(lines) and not lines[j].startswith('['):
+            j += 1
+        sec = lines[i:j]
+        for k, v in (args.get('values') or {}).items():
+            sec = [l for l in sec if not re.match(r'^[+\-.!]?%s=' % re.escape(k), l)] + ['%s=%s' % (k, v)]
+        for k, v in (args.get('add') or {}).items():
+            if '+%s=%s' % (k, v) not in sec:
+                sec.append('+%s=%s' % (k, v))
+        lines[i:j] = [l for l in sec if l.strip()] + ['']
+        open(full, 'w', encoding='utf-8', newline='\n').write('\n'.join(lines).rstrip() + '\n')
+        self.log(ctx, 'Updated %s [%s]' % (args['file'], args['section']))
+        return {'summary': 'Updated ' + args['file']}
+
+    def step_git_commit(self, args, proj, ctx):
+        root, _, _ = self.need(proj)
+        return self.commit(root, args.get('message') or 'Duke Forger change', args.get('paths'))
+
+    def commit(self, root, message, paths=None):
+        if paths:
+            self.git(root, 'add', '--', *paths)
+        else:
+            self.git(root, 'add', '-A')
+        changed = self.git(root, 'diff', '--cached', '--name-status').strip()
+        if changed:
+            self.git(root, 'commit', '-m', message)
+        sha = self.git(root, 'rev-parse', 'HEAD').strip()
+        return {'sha': sha, 'changed': changed.splitlines()[:300], 'summary': ('Committed %s' % sha[:8]) if changed else 'Nothing new to commit (%s)' % sha[:8]}
+
+    def step_live_show(self, args, proj, ctx):
+        root, _, _ = self.need(proj)
+        if args.get('map'):
+            self.bridge(root, 'python', {'code': 'bridge.load_level(%s)\nresult = True' % json.dumps(args['map'])}, timeout=120)
+        if args.get('play'):
+            self.bridge(root, 'pie_start', {}, timeout=120)
+        return {'summary': 'Showing in Live Unreal' + (' (playing)' if args.get('play') else '')}
+
+    # ---- packaging
+    def step_uat_package(self, args, proj, ctx):
+        root, uproject, name = self.need(proj)
+        eng = self.engine()
+        uat = os.path.join(eng['path'], 'Engine', 'Build', 'BatchFiles', 'RunUAT.bat')
+        out_dir = os.path.join(root, 'Build')
+        shutil.rmtree(out_dir, ignore_errors=True)
+        cfg = args.get('config', 'Development')
+        code, errors = self.run_logged([uat, 'BuildCookRun', '-project=' + uproject, '-noP4', '-platform=Win64', '-clientconfig=' + cfg, '-build', '-cook',
+                                        '-stage', '-pak', '-archive', '-archivedirectory=' + out_dir, '-utf8output', '-unattended'], ctx, cwd=root, timeout=4 * 3600)
+        if code != 0:
+            raise StepFailed('Packaging failed (exit code %s):\n%s' % (code, '\n'.join(errors[-25:]) or 'see the log'))
+        exes = glob.glob(os.path.join(out_dir, '**', '*.exe'), recursive=True)
+        if not exes:
+            raise StepFailed('Packaging finished but no .exe was produced in ' + out_dir)
+        zpath = os.path.join(tempfile.gettempdir(), '%s-Win64-%s.zip' % (name, cfg))
+        zip_dir(out_dir, zpath)
+        self.log(ctx, 'Uploading %.1f MB' % (os.path.getsize(zpath) / 1048576))
+        up = self.upload(ctx, zpath, 'build', '&config=' + cfg)
+        if not up or not up.get('buildId'):
+            raise StepFailed('The build could not be uploaded to Duke Forger')
+        log_file = os.path.join(tempfile.gettempdir(), '%s-package-log.txt' % name)
+        open(log_file, 'w', encoding='utf-8').write('\n'.join(ctx['log']))
+        url = self.upload(ctx, log_file, 'evidence')
+        if url:
+            ctx['evidence'].append({'type': 'log', 'url': url, 'name': 'Packaging log'})
+        return {'buildId': up['buildId'], 'size': up.get('size'), 'exe': os.path.relpath(exes[0], out_dir), 'summary': 'Packaged %s (%s)' % (os.path.basename(exes[0]), cfg)}
+
+    # ---- RPCs for the File Vault, Source Editor, History and Live Unreal controls
+    def do_rpc(self, c):
+        try:
+            fn = getattr(self, 'rpc_' + c['op'].replace('.', '_'))
+            out = {'ok': True, 'result': fn(**(c.get('args') or {}))}
+        except Exception as e:
+            out = {'ok': False, 'error': str(e)[:3000]}
+        try:
+            self.duke.post('/api/agent/forge/rpc/' + c['id'], out)
+        except Exception:
+            pass
+
+    def rpc_vault_tree(self, root):
+        files = []
+        for dirpath, dirs, names in os.walk(root):
+            rel_dir = os.path.relpath(dirpath, root).replace('\\', '/')
+            rel_dir = '' if rel_dir == '.' else rel_dir
+            keep = []
+            for d in dirs:
+                rp = (rel_dir + '/' + d).lstrip('/')
+                if d in SKIP_DIRS or rp in ('Saved/Autosaves', 'Saved/Intermediate', 'Saved/Crashes', 'Saved/ShaderDebugInfo', 'Saved/StagedBuilds', 'Saved/Cooked'):
+                    continue
+                keep.append(d)
+            dirs[:] = keep
+            for n in names:
+                full = os.path.join(dirpath, n)
+                try:
+                    stt = os.stat(full)
+                except OSError:
+                    continue
+                files.append({'p': (rel_dir + '/' + n).lstrip('/'), 's': stt.st_size, 'm': int(stt.st_mtime * 1000)})
+                if len(files) >= 20000:
+                    return {'files': files, 'truncated': True}
+        return {'files': files}
+
+    def rpc_file_read(self, root, path):
+        full = self.safe(root, path)
+        size = os.path.getsize(full)
+        ext = os.path.splitext(full)[1].lower()
+        if ext in ('.png', '.jpg', '.jpeg', '.webp') and size <= 8 * 1024 * 1024:
+            return {'path': path, 'size': size, 'image': base64.b64encode(open(full, 'rb').read()).decode(), 'mime': 'image/png' if ext == '.png' else 'image/jpeg' if ext in ('.jpg', '.jpeg') else 'image/webp'}
+        data = open(full, 'rb').read(2 * 1024 * 1024 + 1)
+        if b'\0' in data[:8000] or len(data) > 2 * 1024 * 1024:
+            return {'path': path, 'size': size, 'binary': True}
+        try:
+            return {'path': path, 'size': size, 'text': data.decode('utf-8'), 'editable': ext in TEXT_EXT or os.path.basename(full).startswith('.')}
+        except UnicodeDecodeError:
+            return {'path': path, 'size': size, 'binary': True}
+
+    def rpc_file_write(self, root, path, content):
+        full = self.safe(root, path)
+        if os.path.splitext(full)[1].lower() not in TEXT_EXT and not os.path.basename(full).startswith('.'):
+            raise StepFailed('Only text files can be edited in the browser')
+        os.makedirs(os.path.dirname(full), exist_ok=True)
+        with open(full, 'w', encoding='utf-8', newline='') as f:
+            f.write(content)
+        return {'path': path, 'size': os.path.getsize(full), 'diff': self.git(root, 'diff', '--', path, check=False)[-200000:]}
+
+    def rpc_git_commit(self, root, message, paths=None):
+        return self.commit(root, message, paths)
+
+    def rpc_git_status(self, root):
+        return {'status': self.git(root, 'status', '--porcelain').splitlines()[:2000], 'head': self.git(root, 'rev-parse', 'HEAD', check=False).strip()}
+
+    def rpc_git_log(self, root, path=None):
+        a = ['log', '-n', '200', '--date=iso-strict', '--pretty=format:%H%x09%an%x09%ad%x09%s']
+        if path:
+            a += ['--', path]
+        rows = [l.split('\t', 3) for l in self.git(root, *a, check=False).splitlines() if l.count('\t') >= 3]
+        return {'commits': [{'sha': r[0], 'author': r[1], 'date': r[2], 'message': r[3]} for r in rows]}
+
+    def rpc_git_diff(self, root, rev=None, path=None):
+        if rev:
+            a = ['show', '--stat', '--patch', '--format=%H%n%an%n%ad%n%s%n', rev]
+        else:
+            a = ['diff', 'HEAD']
+        if path:
+            a += ['--', path]
+        return {'diff': self.git(root, *a, check=False)[:400000]}
+
+    def rpc_git_rollback(self, root, rev, path=None):
+        if not re.match(r'^[0-9a-f]{7,40}$', rev or ''):
+            raise StepFailed('Pick a revision')
+        if path:
+            self.safe(root, path)
+            self.git(root, 'checkout', rev, '--', path)
+            return self.commit(root, 'Duke Forger: restore %s to %s' % (path, rev[:8]), [path])
+        if self.git(root, 'status', '--porcelain').strip():
+            self.commit(root, 'Duke Forger: save work before rollback')
+        self.git(root, 'revert', '--no-edit', rev)
+        return {'sha': self.git(root, 'rev-parse', 'HEAD').strip(), 'summary': 'Reverted %s' % rev[:8]}
+
+    def rpc_logs_tail(self, root, lines=400):
+        name = os.path.splitext(os.path.basename((glob.glob(os.path.join(root, '*.uproject')) or ['x'])[0]))[0]
+        out = []
+        for l in self.editor_log(root, name, lines):
+            l = l.rstrip()
+            lvl = 'CRASH' if re.search(r'Fatal|Unhandled Exception|Assertion failed', l) else 'BUILD ERROR' if re.search(r'error C\d|error LNK|: error', l) else \
+                'ASSET ERROR' if re.search(r'Error:.*(asset|package|LoadPackage|Failed to load)', l, re.I) else 'RUNTIME ERROR' if 'Error:' in l else \
+                'PERFORMANCE WARNING' if re.search(r'hitch|Hitch|slow frame', l) else 'WARNING' if 'Warning:' in l else 'INFO'
+            out.append({'level': lvl, 'text': l[:1000]})
+        return {'lines': out, 'editor': self.heartbeat(root)}
+
+    def rpc_bridge_call(self, root, cmd, args=None):
+        return self.bridge(root, cmd, args or {}, timeout=120)
+
+
+def uuid_hex():
+    return base64.b32encode(os.urandom(10)).decode().lower().rstrip('=')
+
+
 def ue_python(code):
     """Runs Python inside the open Unreal editor through Unreal's own remote execution."""
     engines = find_engines(None)
@@ -1430,6 +2014,9 @@ def main():
     if not args.no_link and not args.once:
         Link(duke, args).start()
         print('Duke Link is on: your Unreal, Blender and Character Creator windows can appear inside Duke.')
+    if not args.once:
+        Forge(duke, args).start()
+        print('Duke Forger worker is on: Unreal projects live in %s' % FORGE_ROOT)
     os.makedirs(WORK, exist_ok=True)
     last_hello = time.time()
     while True:
