@@ -6,7 +6,7 @@ import { randomBytes } from 'node:crypto';
 
 const MIME = {
   '.html':'text/html; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.mjs':'text/javascript; charset=utf-8',
-  '.css':'text/css; charset=utf-8', '.json':'application/json; charset=utf-8', '.svg':'image/svg+xml',
+  '.css':'text/css; charset=utf-8', '.ps1':'text/plain; charset=utf-8', '.py':'text/plain; charset=utf-8', '.json':'application/json; charset=utf-8', '.svg':'image/svg+xml',
   '.png':'image/png', '.jpg':'image/jpeg', '.jpeg':'image/jpeg', '.gif':'image/gif', '.webp':'image/webp',
   '.ico':'image/x-icon', '.glb':'model/gltf-binary', '.gltf':'model/gltf+json', '.zip':'application/zip',
   '.txt':'text/plain; charset=utf-8'

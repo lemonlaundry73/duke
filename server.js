@@ -96,7 +96,7 @@ async function guard(req,pathname){
   if(jm){const j=db.jobs?.[decodeURIComponent(jm[1])];if(!j||db.projects[j.projectId]?.ownerId!==u.id)throw new HttpError(404,'not found');}
 }
 
-const PAGES={'/studio':'/studio.html','/login':'/login.html','/signup':'/login.html','/admin':'/admin.html','/companion':'/companion.html','/forge':'/forge.html','/reset':'/login.html','/forgot':'/login.html'};
+const PAGES={'/win':'/agent/win.ps1','/studio':'/studio.html','/login':'/login.html','/signup':'/login.html','/admin':'/admin.html','/companion':'/companion.html','/forge':'/forge.html','/reset':'/login.html','/forgot':'/login.html'};
 const server=http.createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');
   const pathname=url.pathname;
