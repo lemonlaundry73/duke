@@ -82,8 +82,9 @@ function renderProjects(){$('#projectSelect').innerHTML=S.projects.map(p=>`<opti
 $('#projectSelect').onchange=e=>openProject(e.target.value);
 $('#newProject').onclick=()=>modal(`<span class="eyebrow">NEW GAME</span><h2 style="margin:6px 0 14px">What's your game called?</h2>
   <div class="field"><input id="npName" placeholder="Working title (you can change it later)"/></div>
+  <div class="field"><label class="muted small">Start from</label><select id="npBrief"><option value="">A blank plan</option><option value="valor">Valor: One Nation Under God (your design, prefilled)</option></select></div>
   <div class="row gap10" style="margin-top:16px;justify-content:flex-end"><button class="btn ghost" data-close>Cancel</button><button class="btn gold" id="npGo">Start at step 1</button></div>`,()=>{
-  $('#npName').focus();$('#npGo').onclick=async()=>{const p=await post('/api/projects',{name:$('#npName').value.trim()||'Untitled Game'});S.projects.push({id:p.id,title:p.name});closeModal();await openProject(p.id);toast('New game created. Start with step 1.');};});
+  $('#npName').focus();$('#npGo').onclick=async()=>{const brief=$('#npBrief').value;const p=await post('/api/projects',{name:$('#npName').value.trim()||(brief?'Valor: One Nation Under God':'Untitled Game')});if(brief)await post(`/api/projects/${p.id}/brief`,{brief});S.projects.push({id:p.id,title:brief?'Valor: One Nation Under God':p.name});closeModal();await openProject(p.id);toast(brief?'Plan prefilled from your design. Review each step and upload your reference images in step 2.':'New game created. Start with step 1.');};});
 $('#delProject').onclick=()=>{const name=D().vision?.title||P().name;modal(`<span class="eyebrow">DELETE GAME</span><h2 style="margin:6px 0 10px">Delete “${esc(name)}”?</h2>
   <p class="muted">This removes the game's design, steps, art and builds from Duke for good. Files already on your PC are not touched.</p>
   <div class="row gap10" style="margin-top:16px;justify-content:flex-end"><button class="btn ghost" data-close>Keep it</button><button class="btn danger" id="dpGo">Delete game</button></div>`,()=>{

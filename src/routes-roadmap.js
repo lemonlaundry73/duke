@@ -1,5 +1,6 @@
 // Routes for the 67-step roadmap: answers, self-checks, proof uploads, asset list, requirements,
 // the expansion loop, Course mode (lessons, quizzes, certificates) and the showcase.
+import { BRIEFS } from './briefs/valor.js';
 import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
@@ -69,6 +70,11 @@ export function registerRoadmap(r){
     settle(db,p);return roadmapView(db,p);
   });
 
+  // ---- prefill a project from a built-in design brief (fills only empty fields) ----
+  r.post('/api/projects/:id/brief',async({req,params,body})=>{
+    const b=BRIEFS[String(body.brief||'')];if(!b)nf('brief not found');
+    return own(req,params.id,p=>{ensureDesign(p);b.apply(p);});
+  });
   // ---- step answers, self-checks ----
   r.patch('/api/projects/:id/steps/:n/answers',async({req,params,body})=>{
     const step=stepOr404(params.n);
