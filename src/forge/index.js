@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { machineId, seen, isActive, activeMachine, machinesOf } from '../machines.js';
+import { registerGen3d } from '../gen3d/index.js';
 import { fileURLToPath } from 'node:url';
 import { load, mutate } from '../store.js';
 import { HttpError, id as nanoid, readBody, readMultipart } from '../http.js';
@@ -49,10 +50,13 @@ const STEP={
   'ini.set':{phase:'IMPLEMENTING',min:5,label:'Update project settings'},
   'git.commit':{phase:'IMPLEMENTING',min:20,label:'Commit to Git'},
   'uat.package':{phase:'COMPILING',min:240,label:'Package a Windows build (AutomationTool)'},
-  'live.show':{phase:'IMPLEMENTING',min:10,label:'Show it in Live Unreal'}
+  'live.show':{phase:'IMPLEMENTING',min:10,label:'Show it in Live Unreal'},
+  'gen3d.finish':{phase:'OPTIMIZING',min:90,label:'AAA finishing of a generated 3D model'},
+  'gen3d.import':{phase:'IMPLEMENTING',min:30,label:'Import a generated 3D model into Unreal'}
 };
 
 // ---------------------------------------------------------------- worker channel (in memory)
+let gen3dHooks=null;
 const chans=new Map(); // agent token -> {rpc:[], waiters:[], replies:Map, seenAt}
 function chan(tok){let c=chans.get(tok);if(!c){c={rpc:[],waiters:[],replies:new Map(),seenAt:0,hello:null};chans.set(tok,c);}return c;}
 function wake(tok){const c=chan(tok);for(const fn of c.waiters.splice(0))fn();}
@@ -73,7 +77,7 @@ async function agentTok(req){
   const tok=String(req.headers['x-duke-agent']||'');const db=await load();const a=db.agents?.[tok];
   if(!tok||!a)throw new HttpError(401,'Invalid agent token');return {tok,agent:a,db};
 }
-function ensure(db){db.forge ||= {projects:{},jobs:{},assets:{},concepts:{},builds:{}};for(const k of ['projects','jobs','assets','concepts','builds'])db.forge[k] ||= {};return db.forge;}
+function ensure(db){db.forge ||= {projects:{},jobs:{},assets:{},concepts:{},builds:{}};for(const k of ['projects','jobs','assets','concepts','builds','cast','gen3d'])db.forge[k] ||= {};return db.forge;}
 async function ownProject(req,fid){
   const user=await requireUser(req);const db=await load();const f=ensure(db);const p=f.projects[fid];
   if(!p||p.ownerId!==user.id)nf('project not found');return {user,db,p,f};
@@ -172,7 +176,7 @@ function knownRepair(j,s,res){
 }
 async function onStepResult(tok,jid,sid,body){
   if(!body.progress){chan(tok).freedAt=Date.now();setTimeout(()=>wake(tok),50);} // the worker finished a step: hand it the next one now
-  let followUp=null;
+  let followUp=null;const gen3dFail=[];
   await mutate(async db=>{
     const f=ensure(db);const j=f.jobs[jid];if(!j)return null;const s=j.steps.find(x=>x.id===sid);if(!s||s.state!=='running')return null;
     if(Array.isArray(body.log))s.log.push(...body.log.map(x=>String(x).slice(0,2000)));s.log=s.log.slice(-400);
@@ -186,6 +190,10 @@ async function onStepResult(tok,jid,sid,body){
     if(!failed){s.state='done';s.error=null;}
     else{
       s.state='failed';s.error=String(body.error||(s.kind==='test'?'Test assertions failed':'Step failed')).slice(0,4000);
+      if(s.kind.startsWith('gen3d.')){ // a 3D model that could not be finished: report it on the model, keep going with the others
+        s.state='skipped';gen3dFail.push([s.args.gen,s.args.provider,s.error]);
+        finishIfDone(f,j);if(j.steps.every(x=>['done','skipped'].includes(x.state))&&j.steps.some(x=>x.error)){j.state='BLOCKED';j.reason=`${s.label}: ${s.error}`;j.finishedAt=now();}
+        touch(db,j);return true;}
       const settings=f.projects[j.projectId]?.settings||DEFAULT_SETTINGS;const max=settings.autonomy?.max_repair_attempts??12;
       if(settings.autonomy?.auto_fix!==false&&(j.repairs||0)<max){followUp={jid,sid,res:body.result,error:s.error,log:s.log.slice(-80).join('\n')};}
       else{j.state='BLOCKED';j.reason=`${s.label} failed: ${s.error}`;j.finishedAt=now();}
@@ -194,6 +202,7 @@ async function onStepResult(tok,jid,sid,body){
     touch(db,j);return true;
   });
   if(followUp)await repair(followUp);
+  for(const [g,pr,e] of gen3dFail)await gen3dHooks?.onFinishFailed(g,pr,e);
   wake(tok);
 }
 function finishIfDone(f,j){
@@ -239,6 +248,7 @@ function nextStep(f,userId){
 
 // ---------------------------------------------------------------- routes
 export function registerForge(r){
+  gen3dHooks=registerGen3d(r,{ensure,newJob,step,touch,wake,workerOf,ownProject,agentTok,emit,FORGE_DIR});
   fs.mkdirSync(path.join(FORGE_DIR,'evidence'),{recursive:true});fs.mkdirSync(path.join(FORGE_DIR,'builds'),{recursive:true});fs.mkdirSync(path.join(FORGE_DIR,'concepts'),{recursive:true});
 
   // ---- worker side

@@ -262,6 +262,9 @@ class Duke:
     def post(self, path, body=None):
         return self._req('POST', path, body or {})
 
+    def get(self, path):
+        return self._req('GET', path)
+
     def download(self, path, dest):
         req = urllib.request.Request(self.server + path, headers={'x-duke-agent': self.token, 'x-duke-machine': MACHINE_ID})
         with urllib.request.urlopen(req, timeout=600) as r, open(dest, 'wb') as f:
@@ -1238,6 +1241,35 @@ def local_key():
     return open(LOCAL_KEY).read().strip()
 
 
+IMPORT_FBX = """
+import unreal, os
+tools = unreal.AssetToolsHelpers.get_asset_tools()
+def task(fn, dest, opts=None):
+    t = unreal.AssetImportTask(); t.filename = fn; t.destination_path = dest; t.automated = True; t.save = True; t.replace_existing = True
+    if opts: t.options = opts
+    return t
+ui = unreal.FbxImportUI()
+ui.import_mesh = True; ui.import_textures = True; ui.import_materials = True; ui.import_as_skeletal = %(sk)s
+ui.mesh_type_to_import = unreal.FBXImportType.FBXIT_SKELETAL_MESH if %(sk)s else unreal.FBXImportType.FBXIT_STATIC_MESH
+if not %(sk)s:
+    ui.static_mesh_import_data.combine_meshes = True
+    ui.static_mesh_import_data.auto_generate_collision = False
+main = task(%(fbx)s, %(dest)s, ui)
+texs = [task(os.path.join(%(tex)s, f), %(dest)s + '/Textures') for f in sorted(os.listdir(%(tex)s)) if f.lower().endswith('.png')] if os.path.isdir(%(tex)s) else []
+tools.import_asset_tasks([main] + texs)
+paths = list(main.imported_object_paths)
+lods = 0
+if paths and not %(sk)s:
+    mesh = unreal.EditorAssetLibrary.load_asset(paths[0])
+    sub = unreal.get_editor_subsystem(unreal.StaticMeshEditorSubsystem)
+    for i, l in enumerate(%(lods)s, start=1):
+        if sub.import_lod(mesh, i, l) >= 0:
+            lods += 1
+    unreal.EditorAssetLibrary.save_loaded_asset(mesh)
+result = {'assets': paths, 'lods': lods, 'textures': sum(len(t.imported_object_paths) for t in texs)}
+"""
+
+
 def blender_exe():
     found = shutil.which('blender')
     if found:
@@ -1888,6 +1920,73 @@ class Forge:
             self.git(root, 'commit', '-m', message)
         sha = self.git(root, 'rev-parse', 'HEAD').strip()
         return {'sha': sha, 'changed': changed.splitlines()[:300], 'summary': ('Committed %s' % sha[:8]) if changed else 'Nothing new to commit (%s)' % sha[:8]}
+
+    # ---- Duke 3D Generator: AAA finishing in Blender, and import into Unreal
+    def step_gen3d_finish(self, args, proj, ctx):
+        exe = blender_exe()
+        if not exe:
+            raise StepFailed('Blender is not installed on this PC. Run  irm dukeforger.com/win | iex  (it installs Blender) or get it from blender.org, then press "Finish again".')
+        gid, prov = args['gen'], args['provider']
+        work = os.path.join(FORGE_ROOT, '_gen3d', gid, prov)
+        shutil.rmtree(work, ignore_errors=True)
+        jobdir, outdir = os.path.join(work, 'job'), os.path.join(work, 'out')
+        os.makedirs(jobdir, exist_ok=True)
+        zpath = os.path.join(work, 'raw.zip')
+        self.duke.download('/api/agent/forge/gen3d/%s/%s/raw.zip' % (gid, prov), zpath)
+        with zipfile.ZipFile(zpath) as z:
+            for info in z.infolist():
+                dest = os.path.normpath(os.path.join(jobdir, info.filename))
+                if not dest.startswith(os.path.normpath(jobdir)):
+                    continue
+                if not info.is_dir():
+                    os.makedirs(os.path.dirname(dest), exist_ok=True)
+                    with open(dest, 'wb') as f:
+                        f.write(z.read(info))
+        script = os.path.join(work, 'gen3d_finish.py')
+        self.duke.download('/agent/gen3d_finish.py', script)
+        self.log(ctx, 'Finishing with %s' % exe)
+        code, _ = self.run_logged([exe, '-b', '--factory-startup', '-P', script, '--', jobdir, outdir], ctx, cwd=work, timeout=3 * 3600)
+        rep = os.path.join(outdir, 'report.json')
+        if code != 0 or not os.path.isfile(rep):
+            raise StepFailed('Blender finishing failed (exit code %s). The log above shows where.' % code)
+        report = json.load(open(rep, encoding='utf-8'))
+        sent = 0
+        for base, _, names in os.walk(outdir):
+            for n in names:
+                fp = os.path.join(base, n)
+                with open(fp, 'rb') as f:
+                    req = urllib.request.Request('%s/api/agent/forge/gen3d/%s/%s/file?name=%s' % (self.duke.server, gid, prov, urllib.parse.quote(n)), data=f, method='POST', headers={
+                        'x-duke-agent': self.duke.token, 'x-duke-machine': MACHINE_ID, 'content-type': 'application/octet-stream', 'content-length': str(os.path.getsize(fp))})
+                    urllib.request.urlopen(req, timeout=3600).read()
+                sent += 1
+        verdict = self.duke.post('/api/agent/forge/gen3d/%s/%s/report' % (gid, prov), {'report': report}).get('verdict') or {}
+        for line in verdict.get('fails', []):
+            self.log(ctx, 'FAIL  ' + line)
+        for line in verdict.get('passes', []):
+            self.log(ctx, 'PASS  ' + line)
+        return {'summary': '%s: %s' % (prov, 'AAA checks passed' if verdict.get('aaa') else 'below AAA (%d check(s) failed)' % len(verdict.get('fails', []))), 'files': sent}
+
+    def step_gen3d_import(self, args, proj, ctx):
+        root, _, _ = self.need(proj)
+        gid, prov = args['gen'], args['provider']
+        safe = re.sub(r'[^A-Za-z0-9]+', '', args.get('name') or 'Asset')[:40] or 'Asset'
+        dest = os.path.join(root, 'RawAssets', 'Generated', safe)
+        os.makedirs(os.path.join(dest, 'Textures'), exist_ok=True)
+        files = self.duke.get('/api/agent/forge/gen3d/%s/%s/final' % (gid, prov)).get('files', [])
+        for n in files:
+            sub = 'Textures' if n.startswith('T_') else ''
+            self.duke.download('/api/agent/forge/gen3d/%s/%s/final/%s' % (gid, prov, urllib.parse.quote(n)), os.path.join(dest, sub, n))
+        fbx = sorted(f for f in files if f.endswith('.fbx') and '_LOD' not in f and f.startswith(('SK_', 'SM_')))
+        if not fbx:
+            raise StepFailed('No FBX in the finished files')
+        main = os.path.join(dest, fbx[0])
+        lods = sorted(os.path.join(dest, f) for f in files if re.search(r'_LOD\d+\.fbx$', f))
+        skeletal = fbx[0].startswith('SK_')
+        code = IMPORT_FBX % {'fbx': json.dumps(main.replace('\\', '/')), 'dest': json.dumps('/Game/Generated/' + safe), 'sk': 'True' if skeletal else 'False',
+                             'lods': json.dumps([l.replace('\\', '/') for l in lods]), 'tex': json.dumps(os.path.join(dest, 'Textures').replace('\\', '/'))}
+        res = self.bridge(root, 'python', {'code': code}, timeout=1800) or {}
+        self.log(ctx, 'Imported: %s' % res)
+        return {'summary': 'Imported %s into /Game/Generated/%s' % (fbx[0], safe), 'assets': res}
 
     def step_live_show(self, args, proj, ctx):
         root, _, _ = self.need(proj)

@@ -13,10 +13,11 @@ function toast(m,bad){const t=$('#toast');t.textContent=m;t.className='show'+(ba
 
 const SECTIONS=[['Build',[['command','Command Center'],['projects','Projects'],['live','Live Unreal']]],
   ['Project',[['files','File Vault'],['source','Source Editor'],['history','History']]],
-  ['Content',[['concepts','Concept Studio'],['assets','Asset Library'],['world','World Browser'],['characters','Characters'],['vehicles','Vehicles & Ships'],['quests','Quests']]],
+  ['Content',[['characters','Characters'],['gen3d','3D Generator'],['concepts','Concept Studio'],['assets','Asset Library'],['world','World Browser'],['vehicles','Vehicles & Ships'],['quests','Quests']]],
   ['Ship',[['builds','Builds'],['tests','Tests'],['logs','Logs'],['settings','Settings']]]];
 const S={section:location.hash.slice(1)||'command',state:null,pid:localStorage.getItem('forge.pid')||null,proj:null,tree:null,file:null,concept:null};
 
+Object.assign(window,{$,$$,esc,api,post,toast,S,go,fmtB,ago}); // shared with forge-3d.js
 function nav(){
   $('#sections').innerHTML=SECTIONS.map(([g,items])=>`<div class="grp">${g}</div>`+items.map(([id,l])=>`<button data-s="${id}" class="${S.section===id?'on':''}">${l}</button>`).join('')).join('');
   $$('#sections button').forEach(b=>b.onclick=()=>go(b.dataset.s));
@@ -172,7 +173,7 @@ function rConcepts(){
   if(needProject())return;
   const cs=S.proj.concepts;const c=S.concept&&cs.find(x=>x.id===S.concept);
   if(c)return conceptDetail(c);
-  $('#main').innerHTML=`<div class="head"><div><h1>Concept Studio</h1><p class="muted">Concept art for every part of the game. Edits are never destructive: every version is kept, compared and approved.</p></div></div>
+  $('#main').innerHTML=`<div class="head"><div><h1>Concept Studio</h1><p class="muted">Concept art for every part of the game. Edits are never destructive: every version is kept, compared and approved.</p></div><div class="row"><a class="btn gold" href="#gen3d">Turn photos into AAA 3D →</a></div></div>
     <div class="card"><h2>New concept</h2><div class="grid3"><input type="text" id="ncName" placeholder="Name, for example Rebel armor"/><select id="ncCat" class="in">${CATS.map(x=>`<option>${x}</option>`).join('')}</select><input type="file" id="ncFile" accept="image/png,image/jpeg,image/webp"/></div>
       <input type="text" id="ncNote" placeholder="Description or the prompt it was made from (kept as provenance)" style="margin-top:8px"/><div class="row" style="margin-top:8px"><button class="btn gold" id="ncGo">Add concept</button></div></div>
     <div class="concepts">${cs.map(x=>{const rv=x.revisions.find(r=>r.n===x.approved)||x.revisions.at(-1);return `<div class="c" data-c="${x.id}"><img src="${esc(rv.url)}" alt=""/><div><b>${esc(x.name)}</b><div class="muted small">${x.category} · ${x.revisions.length} version(s) ${x.approved?'<span class="badge ok">approved</span>':''}</div></div></div>`;}).join('')||'<p class="muted">No concepts yet.</p>'}</div>`;
@@ -291,7 +292,7 @@ function rSettings(){
 
 function render(){
   const f={command:rCommand,projects:rProjects,files:rFiles,source:rSource,history:rHistory,concepts:rConcepts,assets:()=>rAssets(),live:rLive,builds:rBuilds,tests:rTests,logs:rLogs,settings:rSettings,world:rWorld,
-    characters:()=>rFolderBrowser('character','Characters',/^Content\/.*(Characters?|Heroes|NPCs?)\/.*\.uasset$/i,['character','creature']),
+    characters:()=>rCast().catch(e=>toast(e.message,true)),gen3d:()=>rGen3d().catch(e=>toast(e.message,true)),
     vehicles:()=>rFolderBrowser('vehicle and ship','Vehicles & Ships',/^Content\/.*(Vehicles?|Ships?|Spacecraft)\/.*\.uasset$/i,['vehicle','ship']),
     quests:()=>rFolderBrowser('quest','Quests',/^(Content\/.*(Quests?|Missions?)\/.*\.uasset|Content\/Data\/Quests\/.*\.json)$/i,[])}[S.section]||rCommand;
   f();

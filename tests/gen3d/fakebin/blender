@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+# Stand-in for Blender in the protocol test: produces the files and report the real finishing script produces.
+import sys, os, json
+a = sys.argv[sys.argv.index('--') + 1:]
+job, out = a[0], a[1]
+os.makedirs(os.path.join(out, 'Textures'), exist_ok=True)
+spec = json.load(open(os.path.join(job, 'job.json')))
+print('[duke] Imported raw model'); print('[duke] DONE')
+name = 'SM_Test'
+for f in [name + '.fbx', name + '.glb', name + '_LOD1.fbx', 'render_front.png', 'render_left.png', 'render_back.png', 'render_right.png', 'Textures/T_Test_BaseColor.png']:
+    open(os.path.join(out, f), 'wb').write(b'x')
+lods = [{'lod': i, 'tris': t} for i, t in enumerate(spec['spec']['lods'])]
+rep = {'lods': lods, 'texture_max': spec['spec']['texture'], 'has_uv': True, 'uv_out_of_bounds_pct': 0, 'pbr': {'base_color': True, 'normal': True, 'roughness': True, 'metallic': True},
+       'non_manifold_pct': 0.1, 'loose_parts': 1, 'size_m': spec['size_m'], 'collision': 'convex hull', 'renders': ['render_front.png'] * 4, 'steps': ['fake'], 'warnings': []}
+json.dump(rep, open(os.path.join(out, 'report.json'), 'w'))

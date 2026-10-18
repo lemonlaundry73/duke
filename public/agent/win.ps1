@@ -1,6 +1,6 @@
 # Duke Forger: set up a Windows PC (or cloud PC) for building Unreal games with Duke.
 # Run in PowerShell (Admin):   irm dukeforger.com/win | iex
-# Installs: Git (with Git LFS), Python 3.12, Epic Games Launcher, Visual Studio 2022 Build Tools (C++ for Unreal).
+# Installs: Git (with Git LFS), Python 3.12, Epic Games Launcher, Visual Studio 2022 Build Tools (C++ for Unreal), Blender.
 # Every installer is downloaded straight from its official site (github.com/git-for-windows, python.org,
 # epicgames.com, aka.ms -> microsoft.com) and run with its own documented silent switches.
 
@@ -61,6 +61,19 @@ if (Test-Path $vsDir) { Write-Host '  already installed' } else {
     '--includeRecommended')
 }
 
+Say 'Blender (used by the Duke 3D Generator for AAA finishing)'
+$blOk = [bool](Get-ChildItem "$env:ProgramFiles\Blender Foundation" -Recurse -Filter blender.exe -ErrorAction SilentlyContinue | Select-Object -First 1)
+if ($blOk) { Write-Host '  already installed' } else {
+  try {
+    $idx = (Invoke-WebRequest -Uri 'https://download.blender.org/release/' -UseBasicParsing).Links.href | Where-Object { $_ -match '^Blender(\d+)\.(\d+)/$' } |
+      Sort-Object { [version](($_ -replace '^Blender','') -replace '/$','') } | Select-Object -Last 1
+    $page = (Invoke-WebRequest -Uri "https://download.blender.org/release/$idx" -UseBasicParsing).Links.href | Where-Object { $_ -match '^blender-[\d.]+-windows-x64\.msi$' } |
+      Sort-Object { [version]($_ -replace '^blender-','' -replace '-windows-x64\.msi$','') } | Select-Object -Last 1
+    $msi = Get-File "https://download.blender.org/release/$idx$page" 'blender.msi'
+    if ($msi) { Run 'msiexec.exe' "/i `"$msi`" /qn /norestart ALLUSERS=1" }
+  } catch { Write-Host "  Could not download Blender: $($_.Exception.Message)" -ForegroundColor Red }
+}
+
 Refresh-Path
 if (& $gitOk) { git lfs install | Out-Null }
 
@@ -69,7 +82,8 @@ $check = @(
   @('Git', (& $gitOk)),
   @('Python', (& $pyOk)),
   @('Epic Games Launcher', (Epic-Ok)),
-  @('VS Build Tools', (Test-Path $vsDir))
+  @('VS Build Tools', (Test-Path $vsDir)),
+  @('Blender', [bool](Get-ChildItem "$env:ProgramFiles\Blender Foundation" -Recurse -Filter blender.exe -ErrorAction SilentlyContinue | Select-Object -First 1))
 )
 foreach ($c in $check) { if ($c[1]) { Write-Host ("  OK       " + $c[0]) -ForegroundColor Green } else { Write-Host ("  MISSING  " + $c[0]) -ForegroundColor Yellow } }
 
