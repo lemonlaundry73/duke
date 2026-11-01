@@ -1,0 +1,388 @@
+{
+ "fbx_bones": 74,
+ "fbx_bone_names_sample": [
+  "root",
+  "pelvis",
+  "spine_01",
+  "spine_02",
+  "spine_03",
+  "neck_01",
+  "head",
+  "clavicle_l",
+  "upperarm_l",
+  "lowerarm_l",
+  "hand_l",
+  "index_01_l"
+ ],
+ "fbx_meshes": {
+  "SK_Trooper": {
+   "tris": 83861,
+   "groups": 62,
+   "mats": [
+    "MI_Trooper"
+   ]
+  },
+  "SK_Trooper_Blaster": {
+   "tris": 19996,
+   "groups": 1,
+   "mats": [
+    "MI_Blaster"
+   ]
+  }
+ },
+ "fbx_height_m": 1.83,
+ "fbx_images": [
+  [
+   "T_Trooper_BaseColor",
+   [
+    0,
+    0
+   ]
+  ],
+  [
+   "T_Trooper_BaseColor.001",
+   [
+    0,
+    0
+   ]
+  ],
+  [
+   "T_Trooper_BaseColor.002",
+   [
+    0,
+    0
+   ]
+  ]
+ ],
+ "has_muzzle_socket_bone": true,
+ "fbx_anims": {
+  "A_Trooper_aim.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     91
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_aim_down.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_aim_left.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_aim_right.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_aim_strafe_l.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     28
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_aim_strafe_r.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     28
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_aim_up.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_aim_walk_bwd.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     29
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_aim_walk_fwd.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     29
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_crouch_aim.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     91
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_crouch_shoot.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     10
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_crouch_walk.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     34
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_die.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     61
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_hit_back.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     22
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_hit_front.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     22
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_idle.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     121
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_jump.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     28
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_melee.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     28
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_patrol_look.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     181
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_reload.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     67
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_run.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     21
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_shoot.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     10
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_shoot_burst.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     19
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_shoot_hip.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     10
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_signal_halt.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     49
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_signal_moveup.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     46
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_sprint.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     18
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_walk.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     29
+    ]
+   ],
+   "curves": 749
+  }
+ },
+ "glb_actions": [
+  "aim",
+  "aim_down",
+  "aim_left",
+  "aim_right",
+  "aim_strafe_l",
+  "aim_strafe_r",
+  "aim_up",
+  "aim_walk_bwd",
+  "aim_walk_fwd",
+  "crouch_aim",
+  "crouch_shoot",
+  "crouch_walk",
+  "die",
+  "hit_back",
+  "hit_front",
+  "idle",
+  "jump",
+  "melee",
+  "patrol_look",
+  "reload",
+  "run",
+  "shoot",
+  "shoot_burst",
+  "shoot_hip",
+  "signal_halt",
+  "signal_moveup",
+  "sprint",
+  "walk"
+ ],
+ "glb_objects": [
+  [
+   "Armature",
+   "ARMATURE"
+  ],
+  [
+   "Icosphere",
+   "MESH"
+  ],
+  [
+   "SK_Trooper",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Blaster",
+   "MESH"
+  ]
+ ]
+}

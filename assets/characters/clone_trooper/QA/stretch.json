@@ -1,0 +1,114 @@
+{
+ "aim": {
+  "stretched_edges": 2,
+  "worst_extra_cm": 5.6
+ },
+ "aim_down": {
+  "stretched_edges": 84,
+  "worst_extra_cm": 25.7
+ },
+ "aim_left": {
+  "stretched_edges": 8,
+  "worst_extra_cm": 5.1
+ },
+ "aim_right": {
+  "stretched_edges": 30,
+  "worst_extra_cm": 8.0
+ },
+ "aim_strafe_l": {
+  "stretched_edges": 3,
+  "worst_extra_cm": 5.6
+ },
+ "aim_strafe_r": {
+  "stretched_edges": 3,
+  "worst_extra_cm": 5.6
+ },
+ "aim_up": {
+  "stretched_edges": 36,
+  "worst_extra_cm": 15.7
+ },
+ "aim_walk_bwd": {
+  "stretched_edges": 3,
+  "worst_extra_cm": 5.7
+ },
+ "aim_walk_fwd": {
+  "stretched_edges": 9,
+  "worst_extra_cm": 6.8
+ },
+ "crouch_aim": {
+  "stretched_edges": 11,
+  "worst_extra_cm": 6.3
+ },
+ "crouch_shoot": {
+  "stretched_edges": 12,
+  "worst_extra_cm": 5.7
+ },
+ "crouch_walk": {
+  "stretched_edges": 25,
+  "worst_extra_cm": 11.3
+ },
+ "die": {
+  "stretched_edges": 94,
+  "worst_extra_cm": 17.8
+ },
+ "hit_back": {
+  "stretched_edges": 34,
+  "worst_extra_cm": 17.1
+ },
+ "hit_front": {
+  "stretched_edges": 34,
+  "worst_extra_cm": 13.2
+ },
+ "idle": {
+  "stretched_edges": 0,
+  "worst_extra_cm": 1.5
+ },
+ "jump": {
+  "stretched_edges": 19,
+  "worst_extra_cm": 12.0
+ },
+ "melee": {
+  "stretched_edges": 51,
+  "worst_extra_cm": 12.4
+ },
+ "patrol_look": {
+  "stretched_edges": 2,
+  "worst_extra_cm": 2.7
+ },
+ "reload": {
+  "stretched_edges": 2,
+  "worst_extra_cm": 5.6
+ },
+ "run": {
+  "stretched_edges": 55,
+  "worst_extra_cm": 15.0
+ },
+ "shoot": {
+  "stretched_edges": 4,
+  "worst_extra_cm": 5.6
+ },
+ "shoot_burst": {
+  "stretched_edges": 7,
+  "worst_extra_cm": 5.6
+ },
+ "shoot_hip": {
+  "stretched_edges": 4,
+  "worst_extra_cm": 4.3
+ },
+ "signal_halt": {
+  "stretched_edges": 6,
+  "worst_extra_cm": 10.4
+ },
+ "signal_moveup": {
+  "stretched_edges": 0,
+  "worst_extra_cm": 4.3
+ },
+ "sprint": {
+  "stretched_edges": 84,
+  "worst_extra_cm": 22.5
+ },
+ "walk": {
+  "stretched_edges": 0,
+  "worst_extra_cm": 2.7
+ }
+}

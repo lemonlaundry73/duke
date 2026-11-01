@@ -4,6 +4,7 @@
 #include "DukeGameMode.h"
 #include "DukeInput.h"
 #include "DukeVehicle.h"
+#include "DukeBlasterBolt.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -114,6 +115,7 @@ void ADukeCharacter::ApplyDef(const FDukeCharacterDef* Def, const FLinearColor& 
 				break;
 			}
 		}
+		if (GetMesh()->GetBoneIndex(TEXT("weapon_r")) != INDEX_NONE) HandBone = TEXT("weapon_r");
 		CurAnim.Empty();
 	}
 	else
@@ -259,6 +261,11 @@ bool ADukeCharacter::FireAt(const FVector& From, const FVector& Direction, float
 		if (W.Type == TEXT("Shotgun")) { Pellets = 6; Spread += 0.06f; Damage /= 3.f; }
 		if (W.Type == TEXT("Melee")) Range = 2.2f;
 	}
+	// Blasters fire visible bolts (the trace below still decides the hit, so HUD markers and damage are unchanged)
+	const bool bBlaster = GI && Slot >= 0 && GI->Weapons[Owned[Slot]].Type.Contains(TEXT("Blaster"));
+	FVector BoltStart = From;
+	if (bBlaster && GetMesh()->DoesSocketExist(TEXT("muzzle"))) BoltStart = GetMesh()->GetSocketLocation(TEXT("muzzle"));
+	else if (bBlaster && WeaponMesh) BoltStart = WeaponMesh->GetComponentLocation() + WeaponMesh->GetForwardVector() * 40.f;
 	FCollisionQueryParams Params(SCENE_QUERY_STAT(DukeShot), true, this);
 	Params.AddIgnoredActor(this);
 	bool bHitAny = false;
@@ -267,7 +274,9 @@ bool ADukeCharacter::FireAt(const FVector& From, const FVector& Direction, float
 		const FVector Dir = FMath::VRandCone(Direction.GetSafeNormal(), Spread);
 		const FVector End = From + Dir * Range * 100.f;
 		FHitResult Hit;
-		if (GetWorld()->LineTraceSingleByObjectType(Hit, From, End, FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllObjects), Params))
+		const bool bHit = GetWorld()->LineTraceSingleByObjectType(Hit, From, End, FCollisionObjectQueryParams(FCollisionObjectQueryParams::AllObjects), Params);
+		if (bBlaster) ADukeBlasterBolt::Fire(GetWorld(), this, BoltStart, (bHit ? Hit.ImpactPoint : End) - BoltStart, 0.f, 9000.f);
+		if (bHit)
 		{
 			if (AActor* A = Hit.GetActor())
 			{

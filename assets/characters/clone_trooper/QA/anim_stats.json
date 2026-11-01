@@ -1,0 +1,282 @@
+{
+ "idle": {
+  "frames": 120,
+  "seconds": 4.0,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Relaxed low-ready idle with breathing. Loop."
+ },
+ "patrol_look": {
+  "frames": 180,
+  "seconds": 6.0,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Patrol idle: scans left and right. Loop."
+ },
+ "aim": {
+  "frames": 90,
+  "seconds": 3.0,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Shouldered aim idle (weight on back foot). Loop."
+ },
+ "aim_up": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Aim offset pose."
+ },
+ "aim_down": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Aim offset pose."
+ },
+ "aim_left": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Aim offset pose."
+ },
+ "aim_right": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Aim offset pose."
+ },
+ "shoot": {
+  "frames": 9,
+  "seconds": 0.3,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "One blaster bolt: trigger squeeze, kick, settle. Muzzle bone = bolt spawn. Loop for sustained fire."
+ },
+ "shoot_burst": {
+  "frames": 18,
+  "seconds": 0.6,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Three-bolt burst."
+ },
+ "shoot_hip": {
+  "frames": 9,
+  "seconds": 0.3,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 1.09,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Hip-fire bolt."
+ },
+ "reload": {
+  "frames": 66,
+  "seconds": 2.2,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Power-cell swap: tilt, pull cell, stow on belt, seat new cell, back to aim."
+ },
+ "hit_front": {
+  "frames": 21,
+  "seconds": 0.7,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Blaster hit from the front."
+ },
+ "hit_back": {
+  "frames": 21,
+  "seconds": 0.7,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.93,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Hit from behind."
+ },
+ "die": {
+  "frames": 60,
+  "seconds": 2.0,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Shot, knees buckle, falls backward; ends lying on the ground."
+ },
+ "jump": {
+  "frames": 27,
+  "seconds": 0.9,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Jump: crouch, push, tuck, land."
+ },
+ "crouch_aim": {
+  "frames": 90,
+  "seconds": 3.0,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Crouched aim (cover). Loop."
+ },
+ "crouch_shoot": {
+  "frames": 9,
+  "seconds": 0.3,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Crouched bolt."
+ },
+ "crouch_walk": {
+  "frames": 33,
+  "seconds": 1.1,
+  "loop": true,
+  "speed_m_s": 1.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 0.02,
+  "notes": "Crouched advance, rifle up. 1.1 m/s."
+ },
+ "walk": {
+  "frames": 28,
+  "seconds": 0.933,
+  "loop": true,
+  "speed_m_s": 1.4,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 2.0,
+  "notes": "Patrol walk, low ready. 1.5 m/s."
+ },
+ "aim_walk_fwd": {
+  "frames": 28,
+  "seconds": 0.933,
+  "loop": true,
+  "speed_m_s": 1.3,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0.94,
+  "notes": "Combat walk forward while aiming. 1.4 m/s."
+ },
+ "aim_walk_bwd": {
+  "frames": 28,
+  "seconds": 0.933,
+  "loop": true,
+  "speed_m_s": 1.1,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0.81,
+  "notes": "Backpedal while aiming. 1.2 m/s."
+ },
+ "aim_strafe_l": {
+  "frames": 27,
+  "seconds": 0.9,
+  "loop": true,
+  "speed_m_s": 1.2,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0.04,
+  "notes": "Strafe left while aiming. 1.3 m/s."
+ },
+ "aim_strafe_r": {
+  "frames": 27,
+  "seconds": 0.9,
+  "loop": true,
+  "speed_m_s": 1.2,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0.02,
+  "notes": "Strafe right while aiming. 1.3 m/s."
+ },
+ "run": {
+  "frames": 20,
+  "seconds": 0.667,
+  "loop": true,
+  "speed_m_s": 4.2,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 4.18,
+  "notes": "Combat jog, rifle at port. 4.2 m/s."
+ },
+ "sprint": {
+  "frames": 17,
+  "seconds": 0.567,
+  "loop": true,
+  "speed_m_s": 6.2,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 14.62,
+  "notes": "Sprint, rifle across chest. 6.2 m/s."
+ },
+ "melee": {
+  "frames": 27,
+  "seconds": 0.9,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 4.4,
+  "max_foot_gap_cm": 1.46,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle-butt melee strike with a step."
+ },
+ "signal_halt": {
+  "frames": 48,
+  "seconds": 1.6,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Patrol hand signal: halt (raised fist)."
+ },
+ "signal_moveup": {
+  "frames": 45,
+  "seconds": 1.5,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Patrol hand signal: move up (forward point)."
+ }
+}

@@ -1,0 +1,984 @@
+{
+ "asset": "clone_trooper",
+ "title": "Blaster Trooper",
+ "height_m": 1.83,
+ "bones": 74,
+ "clips": 28,
+ "records": [
+  {
+   "id": "clone_trooper/README.md",
+   "name": "README",
+   "type": "doc",
+   "path": "assets/characters/clone_trooper/README.md",
+   "bytes": 6292,
+   "sha256": "bc8c4c1368af62b1d6cfcf8d6226a9dd5562889a8204e3fa6749601f69b9721e",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending"
+  },
+  {
+   "id": "clone_trooper/Source/blaster_source.glb",
+   "name": "blaster_source",
+   "type": "mesh",
+   "path": "assets/characters/clone_trooper/Source/blaster_source.glb",
+   "bytes": 20963244,
+   "sha256": "5c7c705ae0d10e153d97b05e36d00052cbbf5c972e651082e27dd0c2c4569287",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "creator upload",
+   "provenance": {
+    "provider": "Tripo (per node names)",
+    "packer": "gltfpack 1.2",
+    "license": "creator-supplied, not stated"
+   },
+   "status": "SOURCE"
+  },
+  {
+   "id": "clone_trooper/Source/trooper_armor_source.glb",
+   "name": "trooper_armor_source",
+   "type": "mesh",
+   "path": "assets/characters/clone_trooper/Source/trooper_armor_source.glb",
+   "bytes": 21966340,
+   "sha256": "5f7d495a89ec96eedc59224835e712b8f51123bc2985c2d0aed264b4658010a1",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "creator upload",
+   "provenance": {
+    "provider": "Tripo (per node names)",
+    "packer": "gltfpack 1.2",
+    "license": "creator-supplied, not stated"
+   },
+   "status": "SOURCE"
+  },
+  {
+   "id": "clone_trooper/Audio/S_Blaster_Fire_01.wav",
+   "name": "S_Blaster_Fire_01",
+   "type": "audio",
+   "path": "assets/characters/clone_trooper/Audio/S_Blaster_Fire_01.wav",
+   "bytes": 37088,
+   "sha256": "67bf72ecf47d3f5c5a72edac752ff5a6f6681b508764c8f639560583d7ff5ee9",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "tools/rigging/blaster_sfx.py",
+    "method": "procedural synthesis, no samples"
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Audio"
+  },
+  {
+   "id": "clone_trooper/Audio/S_Blaster_Fire_02.wav",
+   "name": "S_Blaster_Fire_02",
+   "type": "audio",
+   "path": "assets/characters/clone_trooper/Audio/S_Blaster_Fire_02.wav",
+   "bytes": 35324,
+   "sha256": "9d2a88432a68aa7bca6c4f38d5b286fc5f8570cb34689b88935eb882f13ea442",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "tools/rigging/blaster_sfx.py",
+    "method": "procedural synthesis, no samples"
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Audio"
+  },
+  {
+   "id": "clone_trooper/Audio/S_Blaster_Fire_03.wav",
+   "name": "S_Blaster_Fire_03",
+   "type": "audio",
+   "path": "assets/characters/clone_trooper/Audio/S_Blaster_Fire_03.wav",
+   "bytes": 39734,
+   "sha256": "96183d9638ad243ccdabdc58d04eeab39a0afe8727b01b38418c58f89b6b68b9",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "tools/rigging/blaster_sfx.py",
+    "method": "procedural synthesis, no samples"
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Audio"
+  },
+  {
+   "id": "clone_trooper/Audio/S_Blaster_Impact.wav",
+   "name": "S_Blaster_Impact",
+   "type": "audio",
+   "path": "assets/characters/clone_trooper/Audio/S_Blaster_Impact.wav",
+   "bytes": 26504,
+   "sha256": "720a3709f8cff314be2a5c0319896a321c4d4d698cb55b7930797ee32b81b21a",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "tools/rigging/blaster_sfx.py",
+    "method": "procedural synthesis, no samples"
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Audio"
+  },
+  {
+   "id": "clone_trooper/QA/anim_stats.json",
+   "name": "anim_stats",
+   "type": "qa-report",
+   "path": "assets/characters/clone_trooper/QA/anim_stats.json",
+   "bytes": 6212,
+   "sha256": "deba958ce6eb5a70583cc1bbf2efb554bc33ad973b3b25da839f5c3247484749",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending"
+  },
+  {
+   "id": "clone_trooper/QA/gun.json",
+   "name": "gun",
+   "type": "qa-report",
+   "path": "assets/characters/clone_trooper/QA/gun.json",
+   "bytes": 635,
+   "sha256": "84c94d9e79b5fe808f7f5ad4681311797891132fea553ceca4a3cea1e78c63f0",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending"
+  },
+  {
+   "id": "clone_trooper/QA/landmarks.json",
+   "name": "landmarks",
+   "type": "qa-report",
+   "path": "assets/characters/clone_trooper/QA/landmarks.json",
+   "bytes": 4769,
+   "sha256": "67438d915082a0d052209a701712a1a98aa54464de7c70b23fa7703398ce85a8",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending"
+  },
+  {
+   "id": "clone_trooper/QA/stretch.json",
+   "name": "stretch",
+   "type": "qa-report",
+   "path": "assets/characters/clone_trooper/QA/stretch.json",
+   "bytes": 1905,
+   "sha256": "70119c72db610eaee5c7140c5cf492832ac6ed3c5048224a60c16330a6461413",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending"
+  },
+  {
+   "id": "clone_trooper/QA/validation.json",
+   "name": "validation",
+   "type": "qa-report",
+   "path": "assets/characters/clone_trooper/QA/validation.json",
+   "bytes": 4599,
+   "sha256": "8d7a1fd0fe716c4d0dac06668553f39fcd59147ee24468e33eaff6a699dad09d",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending"
+  },
+  {
+   "id": "clone_trooper/Web/trooper.glb",
+   "name": "trooper",
+   "type": "mesh",
+   "path": "assets/characters/clone_trooper/Web/trooper.glb",
+   "bytes": 8090532,
+   "sha256": "667ac5b8c281196276ce5d720592d15b533270334e9682106a9ea3eff4bfaaaa",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending"
+  },
+  {
+   "id": "clone_trooper/Unreal/SK_Trooper.fbx",
+   "name": "SK_Trooper",
+   "type": "mesh",
+   "path": "assets/characters/clone_trooper/Unreal/SK_Trooper.fbx",
+   "bytes": 8066332,
+   "sha256": "3c3488a93fb004b3add85337ebd05fb93f04d0c95a9a52296cc21e25657ccabe",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/SM_Blaster.fbx",
+   "name": "SM_Blaster",
+   "type": "mesh",
+   "path": "assets/characters/clone_trooper/Unreal/SM_Blaster.fbx",
+   "bytes": 714940,
+   "sha256": "81ab0e19b4fad20e4a055b61ddcb20126b7e3400523c2994c22d52ebe7bea4a6",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Textures/T_Blaster_BaseColor.jpg",
+   "name": "T_Blaster_BaseColor",
+   "type": "texture",
+   "path": "assets/characters/clone_trooper/Unreal/Textures/T_Blaster_BaseColor.jpg",
+   "bytes": 2933261,
+   "sha256": "17fc8686e71e2b12851a64ebacf1c9799dc1b0eeae8cf4fa0d4d3a2d680bb03b",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Textures/T_Blaster_Normal_OpenGL.png",
+   "name": "T_Blaster_Normal_OpenGL",
+   "type": "texture",
+   "path": "assets/characters/clone_trooper/Unreal/Textures/T_Blaster_Normal_OpenGL.png",
+   "bytes": 5921372,
+   "sha256": "21241f63f0b981c69091554c878bda7fde478c0afcb08422e30036bcfeb70e65",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Textures/T_Blaster_ORM.jpg",
+   "name": "T_Blaster_ORM",
+   "type": "texture",
+   "path": "assets/characters/clone_trooper/Unreal/Textures/T_Blaster_ORM.jpg",
+   "bytes": 1861885,
+   "sha256": "9f5ca0fe06a185931c55478d1d0b70ab53da7e7fa5c3003c20d2977073ecdacc",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Textures/T_Trooper_BaseColor.jpg",
+   "name": "T_Trooper_BaseColor",
+   "type": "texture",
+   "path": "assets/characters/clone_trooper/Unreal/Textures/T_Trooper_BaseColor.jpg",
+   "bytes": 3826716,
+   "sha256": "ce314402df23020527918ebbc8f2861b5eae940ef66096c6faa608e79fc9de55",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Textures/T_Trooper_Normal_OpenGL.png",
+   "name": "T_Trooper_Normal_OpenGL",
+   "type": "texture",
+   "path": "assets/characters/clone_trooper/Unreal/Textures/T_Trooper_Normal_OpenGL.png",
+   "bytes": 5067104,
+   "sha256": "0e66b982303461d86ed16bf4ae8653c18d0d94b0d591ace3fb1a1d7ebf193e22",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Textures/T_Trooper_ORM.jpg",
+   "name": "T_Trooper_ORM",
+   "type": "texture",
+   "path": "assets/characters/clone_trooper/Unreal/Textures/T_Trooper_ORM.jpg",
+   "bytes": 2726581,
+   "sha256": "ddeaf5b80eda5c3118cef83b56f0a3495a8d01f9d5d886477c70134f0a9bb039",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Textures/textures.json",
+   "name": "textures",
+   "type": "qa-report",
+   "path": "assets/characters/clone_trooper/Unreal/Textures/textures.json",
+   "bytes": 300,
+   "sha256": "cb8e01ffcc3ac7d14b8ffc9bbcaf2585a396aeddd023eb37f5722bd1fd426f4a",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_aim.fbx",
+   "name": "A_Trooper_aim",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_aim.fbx",
+   "bytes": 866044,
+   "sha256": "fc6a05e3f34924f04c6ad09e71b984a446f9b3ca7e4b6f09d25ed7e2edf21ec0",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_aim_down.fbx",
+   "name": "A_Trooper_aim_down",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_aim_down.fbx",
+   "bytes": 442780,
+   "sha256": "1a47e7f46bf67ca607932dbc5bed1e3e346aad6e785db63ce376efd7e2dea83c",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_aim_left.fbx",
+   "name": "A_Trooper_aim_left",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_aim_left.fbx",
+   "bytes": 442780,
+   "sha256": "e6eb632e33f3bb8edb518c9c0e7585f3f0e5d3b1f1c58869f7eaf12f2ed867e7",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_aim_right.fbx",
+   "name": "A_Trooper_aim_right",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_aim_right.fbx",
+   "bytes": 442780,
+   "sha256": "95444a27aa49fd65217757ed4f3deb52581d669972896ce55f148a192f001ff6",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_aim_strafe_l.fbx",
+   "name": "A_Trooper_aim_strafe_l",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_aim_strafe_l.fbx",
+   "bytes": 623004,
+   "sha256": "43484f4ac79658fcfcf1f8480cfa07e425b85763e7e1706da3c49a2eb46e5124",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_aim_strafe_r.fbx",
+   "name": "A_Trooper_aim_strafe_r",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_aim_strafe_r.fbx",
+   "bytes": 623004,
+   "sha256": "04ad7d718dda5d73308521a916b1723198c1cf10814ba739f19ed3e455159470",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_aim_up.fbx",
+   "name": "A_Trooper_aim_up",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_aim_up.fbx",
+   "bytes": 442780,
+   "sha256": "5bcbbaa15a9a912c817dc9cf01a434da3a6609949ff6d281189d4a13165441ce",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_aim_walk_bwd.fbx",
+   "name": "A_Trooper_aim_walk_bwd",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_aim_walk_bwd.fbx",
+   "bytes": 629756,
+   "sha256": "c8a4602e89e8f314aa84cfe336bd2516bca8dee3fc57193cd1b659ce9c2a618a",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_aim_walk_fwd.fbx",
+   "name": "A_Trooper_aim_walk_fwd",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_aim_walk_fwd.fbx",
+   "bytes": 629756,
+   "sha256": "a6b001ae9ea49a25368570d01aa5761f21e23384a117d7ca4cca73c49580d6f6",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_crouch_aim.fbx",
+   "name": "A_Trooper_crouch_aim",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_crouch_aim.fbx",
+   "bytes": 865868,
+   "sha256": "dc211a182e09e6c0872f1f08ce5cf7af062d23c865c344bf87411627cb1dc29e",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_crouch_shoot.fbx",
+   "name": "A_Trooper_crouch_shoot",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_crouch_shoot.fbx",
+   "bytes": 507580,
+   "sha256": "ef06769e40981bb1b743650fe7280a4656228313b7ad158ab2c393a804aeaeb7",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_crouch_walk.fbx",
+   "name": "A_Trooper_crouch_walk",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_crouch_walk.fbx",
+   "bytes": 624012,
+   "sha256": "7c6afa99f0da8bb3a146174e52414f020971b3457fb39daab101e6404c139b8b",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_die.fbx",
+   "name": "A_Trooper_die",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_die.fbx",
+   "bytes": 737356,
+   "sha256": "0fc770adbee0a2a938582cd7f0ed6bae4556eb39909fef15d8cf165d6c59b7ed",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_hit_back.fbx",
+   "name": "A_Trooper_hit_back",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_hit_back.fbx",
+   "bytes": 581164,
+   "sha256": "7829fb341fe3cd28029dcdf69b6f5e8c9b878bb2192e9b0a39ae45ec2a31f301",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_hit_front.fbx",
+   "name": "A_Trooper_hit_front",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_hit_front.fbx",
+   "bytes": 581164,
+   "sha256": "cf16409deba8e0ece8147ec9eaef9332a3e848b19ec72571b783ebc7533b085b",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_idle.fbx",
+   "name": "A_Trooper_idle",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_idle.fbx",
+   "bytes": 987308,
+   "sha256": "0bb73882a034a879ee1d8705a2a80b405678c16d1bee0147470e667812ee274c",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_jump.fbx",
+   "name": "A_Trooper_jump",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_jump.fbx",
+   "bytes": 623004,
+   "sha256": "616c3abca98bf9a3de5ef6793c1e914e823ebb6d428670d03ccaf5dc9d30bbec",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_melee.fbx",
+   "name": "A_Trooper_melee",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_melee.fbx",
+   "bytes": 623004,
+   "sha256": "28286290fab27b8476eb0527dc8541ea4249abd84bd656b307652018f68f7392",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_patrol_look.fbx",
+   "name": "A_Trooper_patrol_look",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_patrol_look.fbx",
+   "bytes": 1198716,
+   "sha256": "de18b2417f280dc377b956621a9a6653cc7e0bc855aa214cf7b17e32a9aa9f83",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_reload.fbx",
+   "name": "A_Trooper_reload",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_reload.fbx",
+   "bytes": 750684,
+   "sha256": "37e3047f41a9bf32c6e6d34911fc95e772de2aebf6a0df67ddad47462e2447bc",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_run.fbx",
+   "name": "A_Trooper_run",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_run.fbx",
+   "bytes": 574412,
+   "sha256": "b66c0c3d2c6d655b2b79e1e74d3540ec69ab7dcb984c2ec645617a4155622740",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_shoot.fbx",
+   "name": "A_Trooper_shoot",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_shoot.fbx",
+   "bytes": 507580,
+   "sha256": "4044dd8db79ee15a4d39c6c3c4e6b98892a25a207a795c6f931d3e709fd29df5",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_shoot_burst.fbx",
+   "name": "A_Trooper_shoot_burst",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_shoot_burst.fbx",
+   "bytes": 560908,
+   "sha256": "c3f46685d9af0b6002e1808a649241deae5e866d0acb59a1f5f228fa1f9dc635",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_shoot_hip.fbx",
+   "name": "A_Trooper_shoot_hip",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_shoot_hip.fbx",
+   "bytes": 507580,
+   "sha256": "f6a621ca3a71c6738ac1798af2be3f2c512d46f0022b9e7aead56e0a2a522d0e",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_signal_halt.fbx",
+   "name": "A_Trooper_signal_halt",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_signal_halt.fbx",
+   "bytes": 651964,
+   "sha256": "1b255ebe182375c1c35dcb70b6b787e3fa895bc568e1de9d0ff3e79cccd10cc7",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_signal_moveup.fbx",
+   "name": "A_Trooper_signal_moveup",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_signal_moveup.fbx",
+   "bytes": 639980,
+   "sha256": "150c6ed6d8ddfbfeea7bbca24acba8da1129fc75d3af8639c1bfe788f2e4fe58",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_sprint.fbx",
+   "name": "A_Trooper_sprint",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_sprint.fbx",
+   "bytes": 554156,
+   "sha256": "9cf63f3ca3f2458f18a03a36ab6361e96afca01b7689746875e2a67fa821b2ec",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  },
+  {
+   "id": "clone_trooper/Unreal/Animations/A_Trooper_walk.fbx",
+   "name": "A_Trooper_walk",
+   "type": "animation",
+   "path": "assets/characters/clone_trooper/Unreal/Animations/A_Trooper_walk.fbx",
+   "bytes": 629756,
+   "sha256": "41ce466e9d8cc365ad52816a74f1e1b3592ae8b15a8b28d40bafea3c44da99f7",
+   "created": "2026-11-01",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/trooper_armor_source.glb",
+     "Source/blaster_source.glb"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
+   "unreal_path": "/Game/DukeForge/Characters/CloneTrooper"
+  }
+ ]
+}
