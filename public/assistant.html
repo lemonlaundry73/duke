@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Duke Local Assistant</title><link rel="stylesheet" href="/forge.css"><link rel="stylesheet" href="/assistant.css"></head>
+<body>
+<header class="ahead">
+  <div class="logo">DUKE <em>LOCAL</em></div>
+  <div id="badge" class="lbadge">Checking local model…</div>
+  <div class="row"><button class="btn" id="bStart">▶ Start</button><button class="btn" id="bPause">⏸ Pause</button><button class="btn danger" id="bStop">■ Stop</button></div>
+</header>
+<main class="agrid">
+  <section>
+    <div class="card"><h2>Ask Duke</h2>
+      <textarea id="req" rows="3" placeholder="For example: Create a simple two-story brick building with a front door and four windows, then render it."></textarea>
+      <div class="row" style="margin-top:8px"><label class="btn sm">Add reference images<input type="file" id="refs" accept="image/png,image/jpeg,image/webp" multiple hidden></label><span id="refN" class="muted small"></span>
+        <span style="flex:1"></span><button class="btn gold" id="send">Send</button></div>
+      <p class="muted small" id="proj"></p></div>
+    <div id="tasks"></div>
+  </section>
+  <aside>
+    <div class="card" id="sys"><h3>This PC</h3><p class="muted small">Measuring…</p></div>
+    <div class="card"><h3>Project</h3><div id="setf"></div></div>
+    <div class="card"><h3>What Blender can do here</h3><div id="caps" class="small"></div></div>
+    <div class="card"><h3>Model requests</h3><div id="mlog" class="small muted">–</div></div>
+  </aside>
+</main>
+<div id="picker" class="modal"><div class="card mcard"><h3 id="pkTitle">Choose a folder</h3><div class="row"><select id="pkDrive" class="in" style="width:auto"></select><span id="pkPath" class="mono small"></span></div>
+  <div id="pkList" class="pklist"></div><div class="row" style="justify-content:flex-end"><button class="btn" id="pkCancel">Cancel</button><button class="btn gold" id="pkOk">Use this folder</button></div></div></div>
+<div id="toast"></div>
+<script src="/assistant.js"></script>
+</body></html>

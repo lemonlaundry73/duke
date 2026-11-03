@@ -25,7 +25,7 @@ export function sessionCookie(req,token,maxAge=SESSION_DAYS*86400){
   return `${COOKIE}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure(req)?'; Secure':''}`;
 }
 
-export const isAdminEmail=email=>(process.env.ADMIN_EMAILS||'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean).includes(String(email||'').toLowerCase());
+export const isAdminEmail=email=>(process.env.DUKE_LOCAL==='1'&&email==='owner@duke.local')||(process.env.ADMIN_EMAILS||'').split(',').map(s=>s.trim().toLowerCase()).filter(Boolean).includes(String(email||'').toLowerCase());
 export const publicUser=u=>u&&({id:u.id,email:u.email,name:u.name,createdAt:u.createdAt,admin:isAdminEmail(u.email)});
 
 export async function userFromRequest(req,db){
@@ -45,7 +45,7 @@ function throttle(req){
 }
 const validEmail=e=>/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
 
-async function createSession(db,userId){
+export async function createSession(db,userId){
   const tok=randomBytes(24).toString('base64url');
   db.sessions ||= {};db.sessions[tok]={userId,exp:new Date(Date.now()+SESSION_DAYS*86400e3).toISOString()};
   for(const [k,s] of Object.entries(db.sessions))if(Date.parse(s.exp)<Date.now())delete db.sessions[k];

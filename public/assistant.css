@@ -1,0 +1,19 @@
+body{overflow:auto}
+.ahead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 20px;border-bottom:1px solid var(--line);background:#0c1424;flex-wrap:wrap}
+.lbadge{font-size:12.5px;font-weight:600;padding:6px 10px;border-radius:6px;background:#1b2840;color:var(--muted)}
+.lbadge.ok{background:#163a2a;color:var(--ok)}.lbadge.bad{background:#3b1d22;color:var(--bad)}
+.agrid{display:grid;grid-template-columns:1fr 360px;gap:16px;padding:16px 20px;max-width:1500px;margin:0 auto}
+#req{width:100%;font-size:15px}
+.task{border-left:3px solid var(--line)}.task.RUNNING{border-left-color:#9cc2ff}.task.DONE{border-left-color:var(--ok)}.task.FAILED,.task.STOPPED{border-left-color:var(--bad)}.task.NEEDS_APPROVAL,.task.PAUSED{border-left-color:var(--warn)}
+.st{display:grid;grid-template-columns:auto 1fr auto;gap:8px;padding:8px 0;border-top:1px solid var(--line);align-items:start}
+.role{font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:4px;background:#1b2840;color:#9cc2ff}
+.prev{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.prev figure{margin:0}.prev img{width:100%;border-radius:6px;border:1px solid var(--line);background:#070c16}.prev figcaption{font-size:12px;color:var(--muted)}
+.kv2{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:12.5px}.kv2 span:nth-child(odd){color:var(--muted)}
+.meter{height:6px;background:#1b2840;border-radius:4px;overflow:hidden;margin:2px 0 6px}.meter i{display:block;height:100%;background:var(--accent)}
+.modal{position:fixed;inset:0;background:#000a;display:none;place-items:center;z-index:40}.modal.open{display:grid}
+.mcard{width:min(640px,92vw);max-height:80vh;display:flex;flex-direction:column;gap:10px}
+.pklist{overflow:auto;max-height:50vh;border:1px solid var(--line);border-radius:6px}.pklist div{padding:6px 10px;cursor:pointer;font-size:13px}.pklist div:hover{background:var(--panel2)}
+.field{margin-bottom:8px}.field label{display:block;font-size:12px;color:var(--muted)}.field .row input{flex:1}
+@media (max-width:1000px){.agrid{grid-template-columns:1fr}}
+.field input,.field textarea{background:#0b1322;border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;color:var(--text);font:inherit;font-size:13px}
+.prev img{max-height:300px;object-fit:contain}

@@ -17,9 +17,14 @@ import { handleHd, handleHdUpgrade, registerLink } from './src/link.js';
 import { registerTeam, startTeamWorker } from './src/team.js';
 import { registerSupport, recordError } from './src/support.js';
 import { PUBLIC_DIR, UPLOAD_DIR } from './src/paths.js';
+import { LOCAL, LOCAL_HOST, OWNER_EMAIL, bootLocal, checkRequest, checkUpgrade, useLoginCode, newLoginCode, checkSecret } from './src/local/guard.js';
+import { registerAssistant, startAssistant } from './src/local/assistant.js';
+import { createSession, hashPassword } from './src/auth.js';
+import { randomBytes } from 'node:crypto';
 
 export const VERSION='4.0.0';
-const port=Number(process.env.PORT||3000);
+const port=Number(process.env.PORT||(process.env.DUKE_LOCAL==='1'?4310:3000));
+const firstLoginCode=bootLocal();
 await fs.mkdir(UPLOAD_DIR,{recursive:true});
 
 // Jobs that were running when the server last stopped: resume Meshy jobs that have task ids, fail the rest.
@@ -43,6 +48,7 @@ registerBilling(r);
 registerRoadmap(r);
 registerProduction(r);
 registerLink(r);
+registerAssistant(r);
 registerForge(r);
 registerTeam(r);
 registerSupport(r);
@@ -81,8 +87,21 @@ r.del('/api/projects/:id',async({params})=>{
 });
 r.get('/api/jobs/:id',async({params})=>(await load()).jobs[params.id]||notFound());
 
+// Duke Local: the launcher asks for a fresh one-time login code with the secret from this PC's data folder.
+r.post('/api/local/login-code',async({req})=>{if(!LOCAL)throw new HttpError(404,'Unknown API route');if(!checkSecret(req.headers['x-duke-local-secret']))throw new HttpError(403,'Wrong local secret');return {code:newLoginCode()};});
+// Duke Local download (from the website, for your own PC): the same app plus the setup script and launcher.
+r.get('/api/local/package.zip',async({req,res})=>{
+  if(LOCAL)throw new HttpError(404,'Already running locally');await requireUser(req);
+  const {createZip}=await import('./src/zip.js');const path=await import('node:path');const {ROOT}=await import('./src/paths.js');
+  const SKIP=new Set(['data','uploads','tests','node_modules','.git','__pycache__','exports','.env','render.yaml','Dockerfile','docs']);
+  const entries=[];
+  async function walk(d,rel=''){for(const e of await fs.readdir(d,{withFileTypes:true})){if(SKIP.has(e.name)||e.name.startsWith('.env'))continue;const p=path.join(d,e.name),q=rel?`${rel}/${e.name}`:e.name;
+    if(e.isDirectory())await walk(p,q);else entries.push({name:`DukeLocal/${q}`,data:await fs.readFile(p)});}}
+  await walk(ROOT);const zip=createZip(entries);
+  res.writeHead(200,{'content-type':'application/zip','content-length':zip.length,'content-disposition':'attachment; filename="DukeLocal.zip"'});res.end(zip);
+});
 // Routes that do not need a logged-in user (agents authenticate with their own token, Stripe with a signature).
-const OPEN_API=[/^\/api\/health$/,/^\/api\/auth\//,/^\/api\/billing\/(plans|webhook)$/,/^\/api\/roadmap$/,/^\/api\/course\/quiz\/\d+$/,/^\/api\/lessons\/\d+\/video$/,/^\/api\/pipeline$/,/^\/api\/support\/(chat|faq)$/,
+const OPEN_API=[/^\/api\/health$/,/^\/api\/local\/login-code$/,/^\/api\/auth\//,/^\/api\/billing\/(plans|webhook)$/,/^\/api\/roadmap$/,/^\/api\/course\/quiz\/\d+$/,/^\/api\/lessons\/\d+\/video$/,/^\/api\/pipeline$/,/^\/api\/support\/(chat|faq)$/,
   /^\/api\/agent\/(hello|next|inspect|setup\.ps1|guide|proof)$/,/^\/api\/agent\/builds\//,/^\/api\/agent\/link\//,/^\/api\/agent\/forge\//,/^\/api\/agent\/projects\//];
 async function guard(req,pathname){
   if(OPEN_API.some(re=>re.test(pathname)))return;
@@ -96,13 +115,21 @@ async function guard(req,pathname){
   if(jm){const j=db.jobs?.[decodeURIComponent(jm[1])];if(!j||db.projects[j.projectId]?.ownerId!==u.id)throw new HttpError(404,'not found');}
 }
 
-const PAGES={'/win':'/agent/win.ps1','/studio':'/studio.html','/login':'/login.html','/signup':'/login.html','/admin':'/admin.html','/companion':'/companion.html','/forge':'/forge.html','/reset':'/login.html','/forgot':'/login.html'};
+const PAGES={'/assistant':'/assistant.html','/win':'/agent/win.ps1','/studio':'/studio.html','/login':'/login.html','/signup':'/login.html','/admin':'/admin.html','/companion':'/companion.html','/forge':'/forge.html','/reset':'/login.html','/forgot':'/login.html'};
 const server=http.createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');
   const pathname=url.pathname;
   res.setHeader('x-content-type-options','nosniff');
   res.setHeader('referrer-policy','strict-origin-when-cross-origin');
   try{
+    checkRequest(req,pathname);
+    if(LOCAL&&pathname==='/local/login'){
+      if(!useLoginCode(url.searchParams.get('code')))throw new HttpError(403,'This login link was already used or has expired. Start Duke again with the launcher.');
+      const tok=await mutate(async db=>{let u=Object.values(db.users).find(x=>x.email===OWNER_EMAIL);
+        if(!u){u={id:nanoid(12),email:OWNER_EMAIL,name:'This PC',pass:hashPassword(randomBytes(24).toString('hex')),createdAt:now(),credits:{period:'',used:0}};db.users[u.id]=u;}
+        return createSession(db,u.id);});
+      res.writeHead(302,{'set-cookie':`duke_sid=${encodeURIComponent(tok)}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${30*86400}`,location:'/assistant','cache-control':'no-store'});return res.end();
+    }
     if(pathname.startsWith('/api/link/hd/')&&await handleHd(req,res,pathname,url.search))return;
     if(pathname.startsWith('/api/')){
       const m=r.match(req.method,pathname);
@@ -132,13 +159,14 @@ const server=http.createServer(async(req,res)=>{
     const status=err instanceof HttpError?err.status:500;
     if(!(err instanceof HttpError)){console.error(`[${req.method} ${pathname}]`,err);recordError(`${req.method} ${pathname}`,err);}
     if(pathname.startsWith('/api/')) return send(res,status,{error:status===500?'Server error':err.message||'Server error'});
+    if(status!==404&&!res.headersSent){res.writeHead(status,{'content-type':'text/plain; charset=utf-8'});return res.end(err.message||'Error');}
     const page=await renderSite('/__404',req).catch(()=>null);
     if(page&&!res.headersSent){res.writeHead(404,{'content-type':'text/html; charset=utf-8'});return res.end(page.body);}
     send(res,status,{error:err.message||'Server error'});
   }
 });
 
-server.on('upgrade',(req,socket)=>{socket.on('error',()=>{});if(req.url.startsWith('/api/link/hdws/'))handleHdUpgrade(req,socket);else socket.destroy();});
-server.listen(port,()=>{console.log(`Duke Forger v${VERSION} running on http://localhost:${port}`);void stripeAutoSetup();startForgeSweeper();if(process.env.TEAM_WORKER!=='0')startTeamWorker(Number(process.env.TEAM_TICK_MS)||4000);});
+server.on('upgrade',(req,socket)=>{socket.on('error',()=>{});if(!checkUpgrade(req))return socket.destroy();if(req.url.startsWith('/api/link/hdws/'))handleHdUpgrade(req,socket);else socket.destroy();});
+server.listen(port,LOCAL?LOCAL_HOST:undefined,()=>{console.log(LOCAL?`Duke Local v${VERSION} on http://${LOCAL_HOST}:${port} (this PC only). Open: http://127.0.0.1:${port}/local/login?code=${firstLoginCode}`:`Duke Forger v${VERSION} running on http://localhost:${port}`);if(LOCAL)startAssistant();else void stripeAutoSetup();startForgeSweeper();if(process.env.TEAM_WORKER!=='0')startTeamWorker(Number(process.env.TEAM_TICK_MS)||4000);});
 const shutdown=()=>server.close(()=>process.exit(0));
 process.on('SIGTERM',shutdown); process.on('SIGINT',shutdown);

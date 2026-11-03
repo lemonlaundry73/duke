@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+# Stand-in for Blender (protocol test only): follows the blender_runner.py job/result contract.
+import sys, json, os, re, time
+job = json.load(open(sys.argv[sys.argv.index('--') + 1]))
+res = {'ok': True, 'blender': 'fake', 'stdout': '', 'error': None, 'opened': job.get('scene') if job.get('scene') and os.path.isfile(job['scene']) else None}
+objs = json.load(open(job['scene'])).get('objects', []) if res['opened'] else []
+if job.get('script'):
+    code = open(job['script']).read()
+    if 'raise' in code:
+        res['ok'] = False; res['error'] = 'Traceback (most recent call last):\nRuntimeError: boom'
+    else:
+        objs += [{'name': n, 'type': 'MESH', 'location': [0, 0, 0], 'dimensions': [1, 1, 1]} for n in re.findall(r'\.name="(\w+)"', code)]
+        objs += [{'name': 'Window_%d' % i, 'type': 'MESH', 'location': [0, 0, 0], 'dimensions': [1, 1, 1]} for i in range(4)] if 'Window_%d' in code else []
+res['inspection'] = {'objects': objs, 'object_count': len(objs), 'meshes': len(objs), 'materials': []}
+if res['ok'] and job.get('save'):
+    os.makedirs(os.path.dirname(job['save']), exist_ok=True); json.dump({'objects': objs}, open(job['save'], 'w')); res['saved'] = job['save']
+if res['ok'] and job.get('render'):
+    os.makedirs(os.path.dirname(job['render']), exist_ok=True)
+    open(job['render'], 'wb').write(bytes.fromhex('89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000d4944415478da6364f8ffbf1e000502027fdc2a4a0f0000000049454e44ae426082'))
+    res['rendered'] = job['render']; res['render_engine'] = 'FAKE'
+json.dump(res, open(job['out'], 'w'))
