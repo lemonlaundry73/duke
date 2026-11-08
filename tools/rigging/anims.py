@@ -47,8 +47,8 @@ def foot_mat(s,off=(0,0,0),pitch=0,yaw=0,pivot='ankle'):
     base=FOOT0[s].copy()
     piv={'ankle':ANK0[s],'ball':BALL0[s].copy(),'heel':V((ANK0[s].x,ANK0[s].y+0.06,0.02))}[pivot]
     piv=V(piv)
-    Rm=(M.Rotation(R(yaw),4,'Z')@M.Rotation(R(pitch),4,'X'))
-    m=M.Translation(piv)@Rm@M.Translation(-piv)@base
+    ank=V(ANK0[s])
+    m=M.Translation(ank)@M.Rotation(R(yaw),4,'Z')@M.Translation(-ank)@M.Translation(piv)@M.Rotation(R(pitch),4,'X')@M.Translation(-piv)@base
     m.translation+=V(off); return m
 def apply(d,feet=None,ball=None,frame=None):
     K.reset(ao)
@@ -146,6 +146,84 @@ def gait(name,T,v,s,stride_dir,lift,bob,sway,yawamp,stanceKw,stanceName,lean=0,w
     for f in range(N+1):
         frame(f,sm[f%N]+0.004); key(f)
     print(name,'pelvis drop cm min/max',round(min(sm)*100,1),round(max(sm)*100,1))
+    finish(name,N,True,v,notes)
+# ---------------- human walk (reference-based, overlapping action) ----------------
+def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.018,roll='fwd',cycles=1,crouch=0.0,
+              lean=3.0,scan=0.0,gun=1.0,width=0.0,cape=0.0,notes=''):
+    """Walk built from gait reference: heel strike -> foot flat -> heel rise -> toe-off; swing foot peaks early
+    and reaches before contact; pelvis bob/list/rotation/sway/surge; spine, head, gun and cape trail the pelvis
+    (phase lags) so the motion follows through instead of moving in lockstep. Pelvis height is a constant
+    soft-knee level (no reach pumping)."""
+    new(name,direction=travel)
+    N=round(T*cycles*FPS); L=v*T*s
+    d0=stance(stanceName,**(stanceKw or {}))
+    LEG={sd:(P[f'thigh_{sd}'].bone.length+P[f'calf_{sd}'].bone.length) for sd in 'lr'}
+    dx,dy=travel
+    fwd=1.0 if roll=='fwd' else -1.0 if roll=='bwd' else 0.0
+    yawk=abs(fwd)+(0.35 if roll=='side' else 0)
+    C=lambda ph: math.cos(2*math.pi*ph); Sn=lambda ph: math.sin(2*math.pi*ph)
+    def foot(side,q):
+        asym=1.0 if side=='l' else 0.93
+        if q<s:
+            u=q/s; off=L*(0.5-u); lz=0.0; pitch=0.0; piv='ankle'; ball=0.0
+            if roll=='fwd':
+                if u<0.14: e=1-(1-u/0.14)**2; pitch=-16*(1-e); piv='heel'
+                elif u>0.55: k=(u-0.55)/0.45; pitch=28*k**1.6; piv='ball'; ball=-pitch*0.95
+            elif roll=='bwd':
+                if u<0.14: e=1-(1-u/0.14)**2; pitch=12*(1-e); piv='ball'; ball=-pitch*0.9
+                elif u>0.6: k=(u-0.6)/0.4; pitch=-14*k**1.5; piv='heel'
+        else:
+            w=(q-s)/(1-s)
+            prog=ss(min(1.0,w/0.92))*1.015-0.015*ss((w-0.92)/0.08)
+            off=-L/2+L*prog
+            lz=lift*asym*(math.sin(math.pi*w**0.7))**1.3
+            if roll=='fwd': pitch=28*(1-ss(w/0.45))-16*ss((w-0.6)/0.4)
+            elif roll=='bwd': pitch=-14*(1-ss(w/0.45))+12*ss((w-0.6)/0.4)
+            else: pitch=6*math.sin(math.pi*w)
+            piv='ankle'; ball=-max(0.0,pitch)*0.4
+        sg=1 if side=='l' else -1
+        toe=sg*(6 if roll!='side' else 3)
+        return foot_mat(side,(dx*off+sg*width,dy*off,lz),pitch=pitch,yaw=toe,pivot=piv),ball
+    def frame(f,drop):
+        g=f/N*cycles; p=g%1.0; feet={}; balls={}
+        for side,ph in (('l',0.0),('r',0.5)):
+            feet[side],balls[side]=foot(side,(p+ph)%1.0)
+        d=dict(d0)
+        surge=-0.010*Sn(2*p)                              # decelerate after contact, push off
+        d['px']=d0['px']+0.022*Sn(p-0.08)+dx*surge
+        d['py']=d0['py']+dy*surge
+        d['pz']=d0['pz']-bob*C(2*(p-0.06))-drop-crouch
+        d['pr']=d0['pr']-3.5*Sn(p-0.08)                   # pelvic list: swing hip drops
+        d['pyw']=d0['pyw']-5.0*C(p)*yawk*(1 if fwd>=0 else -1)
+        d['pp']=d0['pp']+1.0*C(2*(p-0.1))
+        # spine counter-rotates and counter-lists, each level a little later than the one below
+        y1=2.0*C(p-0.04)*yawk; y2=2.4*C(p-0.06)*yawk; y3=1.2*C(p-0.08)*yawk
+        r1=2.0*Sn(p-0.12); r2=1.0*Sn(p-0.16); r3=0.6*Sn(p-0.2)
+        d['s1y']=d0['s1y']+y1; d['s2y']=d0['s2y']+y2; d['s3y']=d0['s3y']+y3
+        d['s1r']=d0['s1r']+r1; d['s2r']=d0['s2r']+r2; d['s3r']=d0['s3r']+r3
+        d['s1p']=d0['s1p']+lean*0.4; d['s2p']=d0['s2p']+lean*0.35+0.8*C(2*(p-0.16)); d['s3p']=d0['s3p']+lean*0.25
+        # head keeps the eyes level and forward (stabilisation), plus an optional slow scan over the loop
+        yawsum=d['pyw']-d0['pyw']+y1+y2+y3; rollsum=d['pr']-d0['pr']+r1+r2+r3
+        look=scan*Sn(f/N)
+        d['ny']=d0['ny']-0.45*yawsum+0.4*look; d['hy']=d0['hy']-0.4*yawsum+0.6*look
+        d['nr']=d0['nr']-0.4*rollsum; d['hr']=d0['hr']-0.45*rollsum
+        d['hp']=d0['hp']-lean*0.5-0.9*C(2*(p-0.2))
+        # weapon trails the chest: figure-eight bob and sway
+        d['gdz']=gun*0.010*C(2*(p-0.14)); d['gdx']=gun*0.012*Sn(p-0.16); d['gdy']=gun*0.006*C(2*(p-0.2))
+        d['gdyaw']=gun*2.2*Sn(p-0.14); d['gdr']=gun*1.8*Sn(p-0.18); d['gdp']=gun*1.2*C(2*(p-0.18))
+        d['capeP']=cape+4*C(2*(p-0.3)); d['capeS']=5*Sn(p-0.3)
+        apply(d,feet,balls); return feet
+    need=[]
+    for f in range(N):
+        feet=frame(f,0.0); bpy.context.view_layer.update(); dr=0
+        for sd in 'lr':
+            hip=P[f'thigh_{sd}'].head; A=feet[sd].translation; hz=(V((A.x-hip.x,A.y-hip.y,0))).length
+            maxv=math.sqrt(max(0.0,(0.985*LEG[sd])**2-hz*hz)); dr=max(dr,(hip.z-A.z)-maxv)
+        need.append(max(0.0,dr))
+    drop=max(need)+0.004   # one constant soft-knee height: the designed bob is the only vertical motion
+    for f in range(N+1):
+        frame(f,drop); key(f)
+    print(name,'soft-knee pelvis drop cm',round(drop*100,1))
     finish(name,N,True,v,notes)
 # ---------------- clips ----------------
 def hold(name,secs,keys,loop=True,feetfn=None,notes='',lhand_on=1):
@@ -258,13 +336,13 @@ FE_CR={'l':foot_mat('l',(0.04,-0.22,0),yaw=10),'r':foot_mat('r',(-0.06,0.24,0.0)
 cra=stance('aim',pz=-0.40,pp=12,s1p=8,s2p=6,s3p=-2,hp=2)
 hold('crouch_aim',3.0,breathe(cra,3.0,0.5),feetfn=lambda t:FE_CR,notes='Crouched aim (cover). Loop.')
 hold('crouch_shoot',0.3,recoil_keys(cra,1,0.3),loop=True,feetfn=lambda t:FE_CR,notes='Crouched bolt.')
-gait('crouch_walk',1.1,1.0,0.62,(0,-1),0.07,0.012,0.012,5,dict(pp=14,s1p=8,s2p=6,s3p=-2,hp=2,idxR=0.35),'aim',crouch=0.33,cape=6,notes='Crouched advance, rifle up. 1.1 m/s.')
+walkcycle('crouch_walk',1.1,1.0,(0,-1),'aim',dict(pp=14,s1p=8,s2p=6,s3p=-2,hp=2,idxR=0.35),s=0.64,lift=0.08,bob=0.010,crouch=0.30,lean=0,gun=0.45,cape=6,notes='Crouched advance, rifle up. 1.0 m/s.')
 # walking
-gait('walk',0.92,1.4,0.56,(0,-1),0.09,0.018,0.02,6,{},'patrol',notes='Patrol walk, low ready. 1.5 m/s.')
-gait('aim_walk_fwd',0.94,1.3,0.57,(0,-1),0.07,0.012,0.012,4,{},'aim',cape=3,notes='Combat walk forward while aiming. 1.4 m/s.')
-gait('aim_walk_bwd',0.94,1.1,0.58,(0,1),0.07,0.012,0.012,4,{},'aim',notes='Backpedal while aiming. 1.2 m/s.')
-gait('aim_strafe_l',0.9,1.2,0.60,(1,0),0.07,0.012,0.0,0,{},'aim',width=0.03,notes='Strafe left while aiming. 1.3 m/s.')
-gait('aim_strafe_r',0.9,1.2,0.60,(-1,0),0.07,0.012,0.0,0,{},'aim',width=0.03,notes='Strafe right while aiming. 1.3 m/s.')
+walkcycle('walk',0.96,1.4,(0,-1),'patrol',s=0.58,lift=0.11,bob=0.018,cycles=2,lean=3,scan=7,gun=1.0,notes='Patrol walk, low ready, heel-toe, scanning. 1.4 m/s.')
+walkcycle('aim_walk_fwd',0.96,1.3,(0,-1),'aim',s=0.62,lift=0.09,bob=0.012,lean=2,gun=0.45,cape=3,notes='Tactical walk forward while aiming (soft knees, stable rifle). 1.3 m/s.')
+walkcycle('aim_walk_bwd',1.0,1.1,(0,1),'aim',s=0.62,lift=0.08,bob=0.011,roll='bwd',lean=2,gun=0.45,notes='Backpedal while aiming (toe-first contact). 1.1 m/s.')
+walkcycle('aim_strafe_l',0.86,1.2,(1,0),'aim',s=0.55,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.03,notes='Strafe left while aiming. 1.2 m/s.')
+walkcycle('aim_strafe_r',0.86,1.2,(-1,0),'aim',s=0.55,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.03,notes='Strafe right while aiming. 1.2 m/s.')
 gait('run',0.66,4.2,0.30,(0,-1),0.16,0.035,0.015,8,dict(curlR=0.9),'port',lean=12,pz=-0.035,flight=True,cape=9,notes='Combat jog, rifle at port. 4.2 m/s.')
 gait('sprint',0.58,6.2,0.26,(0,-1),0.22,0.045,0.012,10,{},'sprint',lean=20,pz=-0.05,flight=True,cape=12,notes='Sprint, rifle across chest. 6.2 m/s.')
 # melee: rifle-butt strike

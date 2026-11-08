@@ -16,36 +16,36 @@
   "worst_extra_cm": 8.0
  },
  "aim_strafe_l": {
-  "stretched_edges": 3,
-  "worst_extra_cm": 5.6
+  "stretched_edges": 8,
+  "worst_extra_cm": 6.7
  },
  "aim_strafe_r": {
-  "stretched_edges": 3,
-  "worst_extra_cm": 5.6
+  "stretched_edges": 8,
+  "worst_extra_cm": 6.7
  },
  "aim_up": {
   "stretched_edges": 36,
   "worst_extra_cm": 15.7
  },
  "aim_walk_bwd": {
-  "stretched_edges": 3,
-  "worst_extra_cm": 5.7
+  "stretched_edges": 8,
+  "worst_extra_cm": 7.0
  },
  "aim_walk_fwd": {
-  "stretched_edges": 9,
-  "worst_extra_cm": 6.8
+  "stretched_edges": 23,
+  "worst_extra_cm": 9.6
  },
  "crouch_aim": {
   "stretched_edges": 11,
-  "worst_extra_cm": 6.3
+  "worst_extra_cm": 6.1
  },
  "crouch_shoot": {
-  "stretched_edges": 12,
+  "stretched_edges": 11,
   "worst_extra_cm": 5.7
  },
  "crouch_walk": {
-  "stretched_edges": 25,
-  "worst_extra_cm": 11.3
+  "stretched_edges": 33,
+  "worst_extra_cm": 12.8
  },
  "die": {
   "stretched_edges": 94,
@@ -108,7 +108,7 @@
   "worst_extra_cm": 22.5
  },
  "walk": {
-  "stretched_edges": 0,
-  "worst_extra_cm": 2.7
+  "stretched_edges": 3,
+  "worst_extra_cm": 5.0
  }
 }
