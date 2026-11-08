@@ -226,6 +226,56 @@
    ],
    "curves": 659
   },
+  "A_Trooper_cover_high_idle.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     85
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_cover_lean_fire_l.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     58
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_cover_lean_fire_r.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     58
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_cover_low_fire.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     61
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_cover_low_idle.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     79
+    ]
+   ],
+   "curves": 659
+  },
   "A_Trooper_crate_pickup.fbx": {
    "actions": 1,
    "frames": [
@@ -366,6 +416,26 @@
    ],
    "curves": 659
   },
+  "A_Trooper_dive_left.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     37
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_dive_right.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     37
+    ]
+   ],
+   "curves": 659
+  },
   "A_Trooper_drag_rescuer.fbx": {
    "actions": 1,
    "frames": [
@@ -382,6 +452,46 @@
     [
      1,
      37
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_flinch_duck.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     39
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_getup_back.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_getup_front.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_go_prone.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     49
     ]
    ],
    "curves": 659
@@ -422,6 +532,26 @@
     [
      1,
      22
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_hit_left.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     21
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_hit_right.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     21
     ]
    ],
    "curves": 659
@@ -486,6 +616,16 @@
    ],
    "curves": 659
   },
+  "A_Trooper_medic_treat.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     85
+    ]
+   ],
+   "curves": 659
+  },
   "A_Trooper_melee.fbx": {
    "actions": 1,
    "frames": [
@@ -512,6 +652,36 @@
     [
      1,
      181
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_prone_aim.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     91
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_prone_crawl.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     43
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_prone_shoot.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     10
     ]
    ],
    "curves": 659
@@ -552,6 +722,16 @@
     [
      1,
      22
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_run_stop.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     25
     ]
    ],
    "curves": 659
@@ -716,6 +896,36 @@
    ],
    "curves": 659
   },
+  "A_Trooper_turn_l90.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     25
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_turn_r90.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     25
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_vault.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     40
+    ]
+   ],
+   "curves": 659
+  },
   "A_Trooper_walk.fbx": {
    "actions": 1,
    "frames": [
@@ -775,6 +985,11 @@
   "climb_ladder",
   "command_advance",
   "command_point",
+  "cover_high_idle",
+  "cover_lean_fire_l",
+  "cover_lean_fire_r",
+  "cover_low_fire",
+  "cover_low_idle",
   "crate_pickup",
   "crate_putdown",
   "crouch_aim",
@@ -789,25 +1004,38 @@
   "die_headshot",
   "die_headshot_back",
   "die_run",
+  "dive_left",
+  "dive_right",
   "drag_rescuer",
   "drag_wounded",
+  "flinch_duck",
+  "getup_back",
+  "getup_front",
+  "go_prone",
   "grenade_throw",
   "hit_back",
   "hit_foot",
   "hit_front",
+  "hit_left",
+  "hit_right",
   "idle",
   "inspect_freight",
   "jump",
   "kneel_aim",
   "kneel_shoot",
   "mantle",
+  "medic_treat",
   "melee",
   "mortar_load",
   "patrol_look",
+  "prone_aim",
+  "prone_crawl",
+  "prone_shoot",
   "radio_call",
   "reload",
   "roll_to_kneel",
   "run",
+  "run_stop",
   "saber_death_arm",
   "saber_death_diagonal",
   "saber_death_half",
@@ -824,6 +1052,9 @@
   "stack_up",
   "stairs_up_aim",
   "suppress",
+  "turn_l90",
+  "turn_r90",
+  "vault",
   "walk",
   "walk_limp",
   "wounded_crawl",

@@ -10,26 +10,26 @@
    56
   ],
   "final_pelvis_cm": 20.9,
-  "final_chest_cm": 20.8,
-  "settled_speed": 0.017
+  "final_chest_cm": 20.9,
+  "settled_speed": 0.029
  },
  "die_back": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 147,
+  "intersecting_tris_over_idle": 52,
   "worst_pair": [
    [
-    "torso",
-    "farm_l"
+    "farm_l",
+    "farm_r"
    ],
-   32
+   0
   ],
-  "final_pelvis_cm": 15.2,
-  "final_chest_cm": 22.3,
-  "settled_speed": 0.012
+  "final_pelvis_cm": 15.1,
+  "final_chest_cm": 23.5,
+  "settled_speed": 0.019
  },
  "die_headshot": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 303,
+  "intersecting_tris_over_idle": 300,
   "worst_pair": [
    [
     "farm_r",
@@ -37,27 +37,27 @@
    ],
    28
   ],
-  "final_pelvis_cm": 26.6,
-  "final_chest_cm": 21.7,
-  "settled_speed": 0.02
+  "final_pelvis_cm": 26.9,
+  "final_chest_cm": 22.2,
+  "settled_speed": 0.057
  },
  "die_headshot_back": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 380,
+  "intersecting_tris_over_idle": 254,
   "worst_pair": [
    [
     "torso",
     "farm_r"
    ],
-   42
+   32
   ],
-  "final_pelvis_cm": 20.0,
-  "final_chest_cm": 17.2,
-  "settled_speed": 0.019
+  "final_pelvis_cm": 17.9,
+  "final_chest_cm": 16.8,
+  "settled_speed": 0.016
  },
  "die_run": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 119,
+  "intersecting_tris_over_idle": 203,
   "worst_pair": [
    [
     "torso",
@@ -65,8 +65,8 @@
    ],
    20
   ],
-  "final_pelvis_cm": 29.4,
-  "final_chest_cm": 24.4,
+  "final_pelvis_cm": 38.3,
+  "final_chest_cm": 28.1,
   "settled_speed": 0.028
  },
  "saber_death_arm": {
@@ -79,23 +79,23 @@
    ],
    0
   ],
-  "final_pelvis_cm": 15.6,
-  "final_chest_cm": 16.8,
-  "settled_speed": 0.049
+  "final_pelvis_cm": 15.9,
+  "final_chest_cm": 16.7,
+  "settled_speed": 0.007
  },
  "saber_death_leg": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 94,
+  "intersecting_tris_over_idle": 346,
   "worst_pair": [
    [
     "torso",
     "farm_r"
    ],
-   36
+   70
   ],
-  "final_pelvis_cm": 32.5,
-  "final_chest_cm": 34.0,
-  "settled_speed": 0.005
+  "final_pelvis_cm": 32.7,
+  "final_chest_cm": 33.2,
+  "settled_speed": 0.004
  },
  "saber_death_head": {
   "lowest_vertex_cm": 0.1,
@@ -107,9 +107,9 @@
    ],
    0
   ],
-  "final_pelvis_cm": 25.6,
-  "final_chest_cm": 18.9,
-  "settled_speed": 0.005
+  "final_pelvis_cm": 24.5,
+  "final_chest_cm": 18.8,
+  "settled_speed": 0.011
  },
  "saber_death_half": {
   "lowest_vertex_cm": 0.0,
@@ -121,49 +121,49 @@
    ],
    0
   ],
-  "final_pelvis_cm": 19.0,
+  "final_pelvis_cm": 19.1,
   "final_chest_cm": 17.0,
-  "settled_speed": 0.032
+  "settled_speed": 0.02
  },
  "saber_death_diagonal": {
   "lowest_vertex_cm": 0.1,
   "intersecting_tris_over_idle": 0,
   "worst_pair": null,
-  "final_pelvis_cm": 28.9,
-  "final_chest_cm": 12.6,
-  "settled_speed": 0.042
+  "final_pelvis_cm": 32.8,
+  "final_chest_cm": 12.9,
+  "settled_speed": 0.028
  },
  "death_explosion": {
   "lowest_vertex_cm": 0.2,
   "intersecting_tris_over_idle": 0,
   "worst_pair": null,
-  "final_pelvis_cm": 23.6,
-  "final_chest_cm": 29.3,
-  "settled_speed": 0.006
+  "final_pelvis_cm": 19.7,
+  "final_chest_cm": 27.2,
+  "settled_speed": 0.01
  },
  "death_explosion_arm": {
-  "lowest_vertex_cm": 0.0,
-  "intersecting_tris_over_idle": 0,
-  "worst_pair": null,
-  "final_pelvis_cm": 21.6,
-  "final_chest_cm": 19.6,
-  "settled_speed": 0.005
- },
- "death_explosion_leg": {
   "lowest_vertex_cm": 0.1,
   "intersecting_tris_over_idle": 0,
   "worst_pair": null,
-  "final_pelvis_cm": 25.7,
-  "final_chest_cm": 27.7,
-  "settled_speed": 0.03
+  "final_pelvis_cm": 21.7,
+  "final_chest_cm": 19.2,
+  "settled_speed": 0.005
+ },
+ "death_explosion_leg": {
+  "lowest_vertex_cm": 0.2,
+  "intersecting_tris_over_idle": 0,
+  "worst_pair": null,
+  "final_pelvis_cm": 22.6,
+  "final_chest_cm": 28.7,
+  "settled_speed": 0.006
  },
  "death_explosion_armleg": {
   "lowest_vertex_cm": -0.5,
   "intersecting_tris_over_idle": 0,
   "worst_pair": null,
-  "final_pelvis_cm": 17.7,
-  "final_chest_cm": 20.0,
-  "settled_speed": 0.02
+  "final_pelvis_cm": 20.1,
+  "final_chest_cm": 24.2,
+  "settled_speed": 0.018
  },
  "aim": {
   "lowest_vertex_cm": 0.1,
@@ -173,7 +173,7 @@
     "farm_l",
     "farm_r"
    ],
-   52
+   50
   ],
   "final_pelvis_cm": 98.2,
   "final_chest_cm": 139.0,
@@ -181,7 +181,7 @@
  },
  "aim_down": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 161,
+  "intersecting_tris_over_idle": 159,
   "worst_pair": [
    [
     "torso",
@@ -265,7 +265,7 @@
  },
  "aim_walk_bwd": {
   "lowest_vertex_cm": 0.0,
-  "intersecting_tris_over_idle": 53,
+  "intersecting_tris_over_idle": 51,
   "worst_pair": [
    [
     "farm_l",
@@ -279,7 +279,7 @@
  },
  "aim_walk_fwd": {
   "lowest_vertex_cm": 0.0,
-  "intersecting_tris_over_idle": 55,
+  "intersecting_tris_over_idle": 56,
   "worst_pair": [
    [
     "farm_l",
@@ -338,7 +338,7 @@
    0
   ],
   "final_pelvis_cm": 101.4,
-  "final_chest_cm": 142.2,
+  "final_chest_cm": 142.1,
   "settled_speed": null
  },
  "checkpoint_halt": {
@@ -352,7 +352,7 @@
    12
   ],
   "final_pelvis_cm": 101.4,
-  "final_chest_cm": 142.2,
+  "final_chest_cm": 142.1,
   "settled_speed": null
  },
  "climb_ladder": {
@@ -374,12 +374,12 @@
    0
   ],
   "final_pelvis_cm": 101.4,
-  "final_chest_cm": 142.2,
+  "final_chest_cm": 142.1,
   "settled_speed": null
  },
  "command_point": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 268,
+  "intersecting_tris_over_idle": 271,
   "worst_pair": [
    [
     "torso",
@@ -388,12 +388,82 @@
    46
   ],
   "final_pelvis_cm": 101.4,
-  "final_chest_cm": 142.2,
+  "final_chest_cm": 142.1,
+  "settled_speed": null
+ },
+ "cover_high_idle": {
+  "lowest_vertex_cm": 0.5,
+  "intersecting_tris_over_idle": 270,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_l"
+   ],
+   16
+  ],
+  "final_pelvis_cm": 101.8,
+  "final_chest_cm": 142.6,
+  "settled_speed": null
+ },
+ "cover_lean_fire_l": {
+  "lowest_vertex_cm": 0.1,
+  "intersecting_tris_over_idle": 254,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_l"
+   ],
+   0
+  ],
+  "final_pelvis_cm": 101.8,
+  "final_chest_cm": 142.6,
+  "settled_speed": null
+ },
+ "cover_lean_fire_r": {
+  "lowest_vertex_cm": 0.0,
+  "intersecting_tris_over_idle": 254,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_l"
+   ],
+   0
+  ],
+  "final_pelvis_cm": 101.8,
+  "final_chest_cm": 142.6,
+  "settled_speed": null
+ },
+ "cover_low_fire": {
+  "lowest_vertex_cm": 0.1,
+  "intersecting_tris_over_idle": 428,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_r"
+   ],
+   52
+  ],
+  "final_pelvis_cm": 56.0,
+  "final_chest_cm": 92.5,
+  "settled_speed": null
+ },
+ "cover_low_idle": {
+  "lowest_vertex_cm": 0.1,
+  "intersecting_tris_over_idle": 423,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_r"
+   ],
+   20
+  ],
+  "final_pelvis_cm": 56.0,
+  "final_chest_cm": 92.5,
   "settled_speed": null
  },
  "crate_pickup": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 590,
+  "intersecting_tris_over_idle": 591,
   "worst_pair": [
    [
     "farm_l",
@@ -407,7 +477,7 @@
  },
  "crate_putdown": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 574,
+  "intersecting_tris_over_idle": 577,
   "worst_pair": [
    [
     "farm_l",
@@ -427,7 +497,7 @@
     "farm_l",
     "farm_r"
    ],
-   52
+   50
   ],
   "final_pelvis_cm": 61.2,
   "final_chest_cm": 99.9,
@@ -435,13 +505,13 @@
  },
  "crouch_shoot": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 53,
+  "intersecting_tris_over_idle": 52,
   "worst_pair": [
    [
     "farm_l",
     "farm_r"
    ],
-   8
+   0
   ],
   "final_pelvis_cm": 61.2,
   "final_chest_cm": 99.9,
@@ -461,9 +531,37 @@
   "final_chest_cm": 105.3,
   "settled_speed": null
  },
+ "dive_left": {
+  "lowest_vertex_cm": -0.6,
+  "intersecting_tris_over_idle": 52,
+  "worst_pair": [
+   [
+    "farm_l",
+    "farm_r"
+   ],
+   0
+  ],
+  "final_pelvis_cm": 36.6,
+  "final_chest_cm": 40.2,
+  "settled_speed": null
+ },
+ "dive_right": {
+  "lowest_vertex_cm": -1.3,
+  "intersecting_tris_over_idle": 52,
+  "worst_pair": [
+   [
+    "farm_l",
+    "farm_r"
+   ],
+   0
+  ],
+  "final_pelvis_cm": 36.6,
+  "final_chest_cm": 40.2,
+  "settled_speed": null
+ },
  "drag_rescuer": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 305,
+  "intersecting_tris_over_idle": 304,
   "worst_pair": [
    [
     "farm_r",
@@ -483,6 +581,62 @@
   "final_chest_cm": 62.2,
   "settled_speed": null
  },
+ "flinch_duck": {
+  "lowest_vertex_cm": 0.0,
+  "intersecting_tris_over_idle": 545,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_r"
+   ],
+   4
+  ],
+  "final_pelvis_cm": 101.4,
+  "final_chest_cm": 142.1,
+  "settled_speed": null
+ },
+ "getup_back": {
+  "lowest_vertex_cm": -0.5,
+  "intersecting_tris_over_idle": 370,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_r"
+   ],
+   14
+  ],
+  "final_pelvis_cm": 101.4,
+  "final_chest_cm": 142.1,
+  "settled_speed": null
+ },
+ "getup_front": {
+  "lowest_vertex_cm": 0.0,
+  "intersecting_tris_over_idle": 387,
+  "worst_pair": [
+   [
+    "farm_l",
+    "thigh_l"
+   ],
+   48
+  ],
+  "final_pelvis_cm": 101.4,
+  "final_chest_cm": 142.1,
+  "settled_speed": null
+ },
+ "go_prone": {
+  "lowest_vertex_cm": -0.0,
+  "intersecting_tris_over_idle": 52,
+  "worst_pair": [
+   [
+    "farm_l",
+    "farm_r"
+   ],
+   0
+  ],
+  "final_pelvis_cm": 39.2,
+  "final_chest_cm": 57.9,
+  "settled_speed": null
+ },
  "grenade_throw": {
   "lowest_vertex_cm": 0.1,
   "intersecting_tris_over_idle": 278,
@@ -494,7 +648,7 @@
    12
   ],
   "final_pelvis_cm": 101.4,
-  "final_chest_cm": 142.2,
+  "final_chest_cm": 142.1,
   "settled_speed": null
  },
  "hit_back": {
@@ -537,6 +691,34 @@
   ],
   "final_pelvis_cm": 98.2,
   "final_chest_cm": 139.0,
+  "settled_speed": null
+ },
+ "hit_left": {
+  "lowest_vertex_cm": 0.0,
+  "intersecting_tris_over_idle": 130,
+  "worst_pair": [
+   [
+    "farm_l",
+    "farm_r"
+   ],
+   2
+  ],
+  "final_pelvis_cm": 99.4,
+  "final_chest_cm": 140.2,
+  "settled_speed": null
+ },
+ "hit_right": {
+  "lowest_vertex_cm": 0.1,
+  "intersecting_tris_over_idle": 52,
+  "worst_pair": [
+   [
+    "farm_l",
+    "farm_r"
+   ],
+   0
+  ],
+  "final_pelvis_cm": 99.4,
+  "final_chest_cm": 140.2,
   "settled_speed": null
  },
  "idle": {
@@ -583,7 +765,7 @@
     "farm_l",
     "farm_r"
    ],
-   50
+   48
   ],
   "final_pelvis_cm": 60.1,
   "final_chest_cm": 100.3,
@@ -615,6 +797,20 @@
   ],
   "final_pelvis_cm": 210.2,
   "final_chest_cm": 250.9,
+  "settled_speed": null
+ },
+ "medic_treat": {
+  "lowest_vertex_cm": 0.1,
+  "intersecting_tris_over_idle": 339,
+  "worst_pair": [
+   [
+    "farm_l",
+    "thigh_l"
+   ],
+   26
+  ],
+  "final_pelvis_cm": 60.1,
+  "final_chest_cm": 91.7,
   "settled_speed": null
  },
  "melee": {
@@ -659,6 +855,48 @@
   "final_chest_cm": 140.9,
   "settled_speed": null
  },
+ "prone_aim": {
+  "lowest_vertex_cm": 0.4,
+  "intersecting_tris_over_idle": 52,
+  "worst_pair": [
+   [
+    "farm_l",
+    "farm_r"
+   ],
+   0
+  ],
+  "final_pelvis_cm": 39.2,
+  "final_chest_cm": 57.9,
+  "settled_speed": null
+ },
+ "prone_crawl": {
+  "lowest_vertex_cm": 0.3,
+  "intersecting_tris_over_idle": 52,
+  "worst_pair": [
+   [
+    "farm_l",
+    "farm_r"
+   ],
+   0
+  ],
+  "final_pelvis_cm": 46.3,
+  "final_chest_cm": 63.1,
+  "settled_speed": null
+ },
+ "prone_shoot": {
+  "lowest_vertex_cm": 0.4,
+  "intersecting_tris_over_idle": 50,
+  "worst_pair": [
+   [
+    "farm_l",
+    "farm_r"
+   ],
+   8
+  ],
+  "final_pelvis_cm": 39.2,
+  "final_chest_cm": 57.9,
+  "settled_speed": null
+ },
  "radio_call": {
   "lowest_vertex_cm": 0.1,
   "intersecting_tris_over_idle": 166,
@@ -670,7 +908,7 @@
    0
   ],
   "final_pelvis_cm": 101.4,
-  "final_chest_cm": 142.2,
+  "final_chest_cm": 142.1,
   "settled_speed": null
  },
  "reload": {
@@ -689,7 +927,7 @@
  },
  "roll_to_kneel": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 493,
+  "intersecting_tris_over_idle": 491,
   "worst_pair": [
    [
     "torso",
@@ -713,6 +951,20 @@
   ],
   "final_pelvis_cm": 97.2,
   "final_chest_cm": 137.9,
+  "settled_speed": null
+ },
+ "run_stop": {
+  "lowest_vertex_cm": 0.1,
+  "intersecting_tris_over_idle": 36,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_r"
+   ],
+   0
+  ],
+  "final_pelvis_cm": 101.4,
+  "final_chest_cm": 142.1,
   "settled_speed": null
  },
  "saber_hit_1": {
@@ -745,13 +997,13 @@
  },
  "shoot": {
   "lowest_vertex_cm": 0.1,
-  "intersecting_tris_over_idle": 53,
+  "intersecting_tris_over_idle": 52,
   "worst_pair": [
    [
     "farm_l",
     "farm_r"
    ],
-   8
+   0
   ],
   "final_pelvis_cm": 98.2,
   "final_chest_cm": 139.0,
@@ -857,9 +1109,51 @@
   "final_chest_cm": 140.2,
   "settled_speed": null
  },
+ "turn_l90": {
+  "lowest_vertex_cm": 0.1,
+  "intersecting_tris_over_idle": 19,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_l"
+   ],
+   12
+  ],
+  "final_pelvis_cm": 101.4,
+  "final_chest_cm": 142.1,
+  "settled_speed": null
+ },
+ "turn_r90": {
+  "lowest_vertex_cm": 0.1,
+  "intersecting_tris_over_idle": 17,
+  "worst_pair": [
+   [
+    "torso",
+    "farm_r"
+   ],
+   4
+  ],
+  "final_pelvis_cm": 101.4,
+  "final_chest_cm": 142.1,
+  "settled_speed": null
+ },
+ "vault": {
+  "lowest_vertex_cm": 0.1,
+  "intersecting_tris_over_idle": 847,
+  "worst_pair": [
+   [
+    "farm_l",
+    "thigh_l"
+   ],
+   10
+  ],
+  "final_pelvis_cm": 101.9,
+  "final_chest_cm": 142.6,
+  "settled_speed": null
+ },
  "walk": {
   "lowest_vertex_cm": 0.0,
-  "intersecting_tris_over_idle": 214,
+  "intersecting_tris_over_idle": 210,
   "worst_pair": [
    [
     "torso",
@@ -873,7 +1167,7 @@
  },
  "walk_limp": {
   "lowest_vertex_cm": 0.0,
-  "intersecting_tris_over_idle": 210,
+  "intersecting_tris_over_idle": 208,
   "worst_pair": [
    [
     "torso",

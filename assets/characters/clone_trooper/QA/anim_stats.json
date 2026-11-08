@@ -698,5 +698,215 @@
   "max_foot_gap_cm": 0.37,
   "planted_foot_slip_cm_s": 0,
   "notes": "Officer / sergeant: arm up, then chops forward: \"advance\"."
+ },
+ "getup_back": {
+  "frames": 72,
+  "seconds": 2.4,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 0.37,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Get up from lying on his back (after being patched up): sits up, rolls onto a knee, pushes up, ready."
+ },
+ "getup_front": {
+  "frames": 72,
+  "seconds": 2.4,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 0.37,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Get up from face down or prone: pushes up, knees under, one knee, stands at the ready. Also prone-to-stand."
+ },
+ "medic_treat": {
+  "frames": 84,
+  "seconds": 2.8,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 9.34,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Medic kneeling over a wounded trooper, working on his chest (blaster slung). Loop."
+ },
+ "cover_low_idle": {
+  "frames": 78,
+  "seconds": 2.6,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Behind low cover (about 1 m): crouched, blaster up at the chest, head down, glancing. Loop."
+ },
+ "cover_low_fire": {
+  "frames": 60,
+  "seconds": 2.0,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Low cover: pops up over the wall, fires 3 bolts (0.5, 0.75, 1.0 s), drops back down."
+ },
+ "cover_high_idle": {
+  "frames": 84,
+  "seconds": 2.8,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.66,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Behind tall cover, wall edge on his right: standing close, blaster at port, watching the edge. Loop."
+ },
+ "cover_lean_fire_r": {
+  "frames": 57,
+  "seconds": 1.9,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 1.34,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Tall cover: steps and leans out to the right, fires 3 bolts, back behind the wall."
+ },
+ "cover_lean_fire_l": {
+  "frames": 57,
+  "seconds": 1.9,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 0.76,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Tall cover: steps and leans out to the left, fires 3 bolts, back behind the wall."
+ },
+ "go_prone": {
+  "frames": 48,
+  "seconds": 1.6,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.11,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Drops from standing to prone: kneels, falls forward onto the elbows, rifle aimed."
+ },
+ "prone_aim": {
+  "frames": 90,
+  "seconds": 3.0,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Prone, up on the elbows, aiming. Loop."
+ },
+ "prone_shoot": {
+  "frames": 9,
+  "seconds": 0.3,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Prone bolt with recoil. Loop for sustained fire."
+ },
+ "prone_crawl": {
+  "frames": 42,
+  "seconds": 1.4,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 3.29,
+  "max_foot_gap_cm": 0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Prone crawl on elbows and knees, rifle cradled forward. 0.4 m/s. Loop."
+ },
+ "turn_l90": {
+  "frames": 24,
+  "seconds": 0.8,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 1.22,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Turn in place 90 deg left, stepping (root rotation; the feet do not skate)."
+ },
+ "turn_r90": {
+  "frames": 24,
+  "seconds": 0.8,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 1.69,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Turn in place 90 deg right, stepping (root rotation; the feet do not skate)."
+ },
+ "run_stop": {
+  "frames": 24,
+  "seconds": 0.8,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 0.46,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Stops from a run: leans back, two braking steps, settles at the ready (root motion ~1.2 m)."
+ },
+ "dive_left": {
+  "frames": 36,
+  "seconds": 1.2,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 2.74,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Dives to the left away from a grenade or fire, lands on his side with the rifle up (root motion ~2.5 m)."
+ },
+ "dive_right": {
+  "frames": 36,
+  "seconds": 1.2,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 2.74,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Dives to the right away from a grenade or fire, lands on his side with the rifle up (root motion ~2.5 m)."
+ },
+ "vault": {
+  "frames": 39,
+  "seconds": 1.3,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 1.58,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Vaults a 1 m wall: left hand on top, legs swing over, lands and moves on. Blaster kept in the right hand (root motion 1.6 m)."
+ },
+ "hit_left": {
+  "frames": 20,
+  "seconds": 0.667,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.92,
+  "max_foot_gap_cm": 2.92,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Blaster hit from the left: twists away and side-steps, recovers."
+ },
+ "hit_right": {
+  "frames": 20,
+  "seconds": 0.667,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 1.31,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Blaster hit from the right: twists away and side-steps, recovers."
+ },
+ "flinch_duck": {
+  "frames": 38,
+  "seconds": 1.267,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.51,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Explosion nearby: ducks low, left arm over the helmet, back up."
  }
 }

@@ -32,11 +32,11 @@ for act in bpy.data.actions:
                 P['pelvis'].keyframe_insert('location', frame=f, group='pelvis'); P['pelvis'].keyframe_insert('rotation_quaternion', frame=f, group='pelvis')
                 continue
             if low >= -0.002: break
-            dz = 0.002 - low; worst = max(worst, dz)
+            dz = 0.012 - low; worst = max(worst, dz)   # aim 1.2 cm up: the in-order FBX bake evaluates IK about 1 cm differently
             i = int(np.argmin(zt)); side = next((s for s in 'lr' if FOOT[s][i]), None) if zt.min() <= zg.min() else None
             if side:
                 # lift that foot target only (and only as far as that foot needs)
-                need = 0.002 - zt[FOOT[side]].min()
+                need = 0.012 - zt[FOOT[side]].min()
                 P[f'ctrl_foot_{side}'].matrix = M.Translation((0, 0, need)) @ P[f'ctrl_foot_{side}'].matrix
                 b = f'ctrl_foot_{side}'
             else:
