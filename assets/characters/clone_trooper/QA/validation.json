@@ -1,5 +1,5 @@
 {
- "fbx_bones": 74,
+ "fbx_bones": 62,
  "fbx_bone_names_sample": [
   "root",
   "pelvis",
@@ -16,8 +16,8 @@
  ],
  "fbx_meshes": {
   "SK_Trooper": {
-   "tris": 83861,
-   "groups": 62,
+   "tris": 84902,
+   "groups": 52,
    "mats": [
     "MI_Trooper"
    ]
@@ -64,7 +64,7 @@
      91
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_aim_down.fbx": {
    "actions": 1,
@@ -74,7 +74,7 @@
      2
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_aim_left.fbx": {
    "actions": 1,
@@ -84,7 +84,7 @@
      2
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_aim_right.fbx": {
    "actions": 1,
@@ -94,7 +94,7 @@
      2
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_aim_strafe_l.fbx": {
    "actions": 1,
@@ -104,7 +104,7 @@
      27
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_aim_strafe_r.fbx": {
    "actions": 1,
@@ -114,7 +114,7 @@
      27
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_aim_up.fbx": {
    "actions": 1,
@@ -124,7 +124,7 @@
      2
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_aim_walk_bwd.fbx": {
    "actions": 1,
@@ -134,7 +134,7 @@
      31
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_aim_walk_fwd.fbx": {
    "actions": 1,
@@ -144,7 +144,7 @@
      30
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_crouch_aim.fbx": {
    "actions": 1,
@@ -154,7 +154,7 @@
      91
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_crouch_shoot.fbx": {
    "actions": 1,
@@ -164,7 +164,7 @@
      10
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_crouch_walk.fbx": {
    "actions": 1,
@@ -174,7 +174,7 @@
      34
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_die.fbx": {
    "actions": 1,
@@ -184,7 +184,7 @@
      58
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_die_back.fbx": {
    "actions": 1,
@@ -194,7 +194,7 @@
      49
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_die_headshot.fbx": {
    "actions": 1,
@@ -204,7 +204,7 @@
      40
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_die_run.fbx": {
    "actions": 1,
@@ -214,7 +214,7 @@
      43
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_hit_back.fbx": {
    "actions": 1,
@@ -224,7 +224,7 @@
      22
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_hit_front.fbx": {
    "actions": 1,
@@ -234,7 +234,7 @@
      22
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_idle.fbx": {
    "actions": 1,
@@ -244,7 +244,7 @@
      121
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_jump.fbx": {
    "actions": 1,
@@ -254,7 +254,7 @@
      28
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_melee.fbx": {
    "actions": 1,
@@ -264,7 +264,7 @@
      28
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_patrol_look.fbx": {
    "actions": 1,
@@ -274,7 +274,7 @@
      181
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_reload.fbx": {
    "actions": 1,
@@ -284,7 +284,7 @@
      67
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_run.fbx": {
    "actions": 1,
@@ -294,7 +294,7 @@
      22
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_shoot.fbx": {
    "actions": 1,
@@ -304,7 +304,7 @@
      10
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_shoot_burst.fbx": {
    "actions": 1,
@@ -314,7 +314,7 @@
      19
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_shoot_hip.fbx": {
    "actions": 1,
@@ -324,7 +324,7 @@
      10
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_signal_halt.fbx": {
    "actions": 1,
@@ -334,7 +334,7 @@
      49
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_signal_moveup.fbx": {
    "actions": 1,
@@ -344,7 +344,7 @@
      46
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_sprint.fbx": {
    "actions": 1,
@@ -354,7 +354,7 @@
      20
     ]
    ],
-   "curves": 749
+   "curves": 629
   },
   "A_Trooper_walk.fbx": {
    "actions": 1,
@@ -364,7 +364,7 @@
      59
     ]
    ],
-   "curves": 749
+   "curves": 629
   }
  },
  "glb_actions": [

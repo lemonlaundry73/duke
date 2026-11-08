@@ -7,12 +7,17 @@
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"; REPO="$(cd "$HERE/../.." && pwd)"
 W="${1:?work dir}"; O="${2:?out dir}"; PY="${BLENDER_PY:-python3.11}"
-SRC="$REPO/assets/characters/clone_trooper/Source"
+SRC="${SRC:-$REPO/assets/characters/clone_trooper/Source}"
 mkdir -p "$W" "$O"
 # glTF from Tripo/gltfpack is meshopt-compressed and quantized; Blender needs it plain
 npx --yes @gltf-transform/cli@4.1.1 dequantize "$SRC/trooper_armor_source.glb" "$W/trooper_dq.glb"
 npx --yes @gltf-transform/cli@4.1.1 dequantize "$SRC/blaster_source.glb" "$W/blaster_dq.glb"
-"$PY" -I "$HERE/inspect.py" "$W"            # import both -> raw.blend
+if [ -f "$SRC/character.json" ]; then cp "$SRC/character.json" "$W/"; fi
+if grep -q '"joints": *"source"' "$W/character.json" 2>/dev/null; then
+  "$PY" -I "$HERE/strip_rig.py" "$W"        # pre-rigged source: keep its mesh + joint positions, drop its skin
+else
+  "$PY" -I "$HERE/inspect.py" "$W"          # import both -> raw.blend
+fi
 "$PY" -I "$HERE/prep.py" "$W"               # 1.83 m, feet at origin, 85k-tri trooper -> prep.blend
 "$PY" -I "$HERE/stage1.py" "$W"             # face -Y, cape mask, joint landmarks -> s1.blend
 "$PY" -I "$HERE/stage2.py" "$W"             # skeleton, weights, bridge cuts, blaster -> s2.blend

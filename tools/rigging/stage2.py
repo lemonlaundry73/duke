@@ -4,9 +4,13 @@ from mathutils import Vector as V, Matrix as M
 w=sys.argv[-1]
 bpy.ops.wm.open_mainfile(filepath=f'{w}/s1.blend')
 t=bpy.data.objects['trooper']; g=bpy.data.objects['blaster']
-SH=V((0.03,0.04,0))
-t.data.transform(M.Translation(SH)); t.data.update()
+import os
+CFG=json.load(open(f'{w}/character.json')) if os.path.exists(f'{w}/character.json') else {}
 cape=np.load(f'{w}/cape.npy'); LM=json.load(open(f'{w}/landmarks.json'))
+TJ=LM.get('joints')
+if TJ: pv=TJ['Pelvis'][0]; SH=V((-pv[0],-pv[1]+0.01,0))   # centre the pelvis over the root
+else: SH=V((0.03,0.04,0))
+t.data.transform(M.Translation(SH)); t.data.update()
 n=len(t.data.vertices); co=np.empty(n*3,np.float32); t.data.vertices.foreach_get('co',co); co=co.reshape(n,3).astype(np.float64)
 sh=np.array(SH)
 def P(a): return np.array(a)+sh
@@ -39,6 +43,24 @@ for s,sg in (('l',1),('r',-1)):
     hip=np.array([sg*0.095,0.0,0.90])
     J[f'thigh_{s}']=(tuple(hip),tuple(knee)); J[f'calf_{s}']=(tuple(knee),tuple(ank))
     J[f'foot_{s}']=(tuple(ank),(fx,-0.10,0.035)); J[f'ball_{s}']=((fx,-0.10,0.035),(fx,fb[0][1]+0.01,0.03))
+if TJ:
+    jt=lambda n,i=0: tuple(np.array(TJ[n][i])+np.array(SH))
+    hd=lambda n: jt(n,0)
+    zt=float(co[:,2].max())
+    J['pelvis']=(hd('Pelvis'),hd('Waist')); J['spine_01']=(hd('Waist'),hd('Spine01')); J['spine_02']=(hd('Spine01'),hd('Spine02'))
+    J['spine_03']=(hd('Spine02'),hd('NeckTwist01')); J['neck_01']=(hd('NeckTwist01'),hd('Head'))
+    J['head']=(hd('Head'),(hd('Head')[0],hd('Head')[1],zt))
+    for s_,T in (('l','L'),('r','R')):
+        J[f'clavicle_{s_}']=(hd(f'{T}_Clavicle'),hd(f'{T}_Upperarm')); J[f'upperarm_{s_}']=(hd(f'{T}_Upperarm'),hd(f'{T}_Forearm'))
+        J[f'lowerarm_{s_}']=(hd(f'{T}_Forearm'),hd(f'{T}_Hand')); J[f'hand_{s_}']=(hd(f'{T}_Hand'),hd(f'{T}_Mid1'))
+        for ours,theirs in (('thumb','Thumb'),('index','Index'),('middle','Mid'),('ring','Ring'),('pinky','Pinky')):
+            p1,p2,p3=np.array(hd(f'{T}_{theirs}1')),np.array(hd(f'{T}_{theirs}2')),np.array(hd(f'{T}_{theirs}3'))
+            tip=p3+(p3-p2)*0.9
+            J[f'{ours}_01_{s_}']=(tuple(p1),tuple(p2)); J[f'{ours}_02_{s_}']=(tuple(p2),tuple(p3)); J[f'{ours}_03_{s_}']=(tuple(p3),tuple(tip))
+        J[f'thigh_{s_}']=(hd(f'{T}_Thigh'),hd(f'{T}_Calf')); J[f'calf_{s_}']=(hd(f'{T}_Calf'),hd(f'{T}_Foot'))
+        b0=np.array(hd(f'{T}_ToeBase')); fwd=b0-np.array(hd(f'{T}_Foot')); fwd[2]=0; fwd/=np.linalg.norm(fwd)
+        J[f'foot_{s_}']=(hd(f'{T}_Foot'),tuple(b0)); J[f'ball_{s_}']=(tuple(b0),tuple(b0+fwd*0.09))
+    print('skeleton from source joints; shoulder L',np.round(J['upperarm_l'][0],3),'wrist L',np.round(J['hand_l'][0],3))
 # cape chains from cape vertices
 cc=co[cape]
 for nm,(xl,xh) in (('c',(-0.12,0.12)),('l',(0.14,0.45)),('r',(-0.45,-0.14))):
@@ -123,7 +145,9 @@ farBody=~(near(('upperarm','lowerarm','hand','thigh','calf','foot','ball'),1.6))
 brown=np.load(f'{w}/brown.npy')>0.5
 tightArm=near(('upperarm','lowerarm'),0.95)|near(('hand','thumb','index','middle','ring','pinky'),1.0)
 cape=(cape|farBody|(brown&(z<1.42)&~tightArm&~torsoCore))&~(nearArm&~brown)&~tightArm&~nearLeg&~torsoCore
+if CFG.get('cape',True) is False: cape[:]=False
 print('cape frac refined',cape.mean())
+ARMX=min(0.205,abs(J['upperarm_l'][0][0])-0.03)
 armchain=lambda k: k.split('_')[0] in('upperarm','lowerarm','hand','thumb','index','middle','ring','pinky')
 legchain=lambda k: k.split('_')[0] in('thigh','calf','foot','ball')
 iscape=lambda k: k.startswith('cape')
@@ -131,7 +155,7 @@ big=1e9
 for i,k in enumerate(names):
     if iscape(k): D[~cape,i]=big
     if armchain(k):
-        D[np.abs(x)<0.205,i]=big; D[cape,i]=big
+        D[np.abs(x)<ARMX,i]=big; D[cape,i]=big
         sgn=1 if k.endswith('_l') else -1; D[sgn*x<0,i]=big
     if legchain(k):
         sgn=1 if k.endswith('_l') else -1; D[sgn*x<-0.03,i]=big; D[z>1.02,i]=big; D[cape,i]=big

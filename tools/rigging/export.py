@@ -6,15 +6,33 @@ bpy.ops.wm.open_mainfile(filepath=f'{w}/anim.blend')
 sc=bpy.context.scene; ao=bpy.data.objects['Armature']; t=bpy.data.objects['SK_Trooper']; g=bpy.data.objects['SK_Trooper_Blaster']
 for m,nm in ((t,'MI_Trooper'),(g,'MI_Blaster')):
     for s in m.material_slots: s.material.name=nm
-for img in bpy.data.images:
-    if img.name.startswith(('Color_','ORM_','NormalGL_')):
-        kind=img.name.split('_')[0]; owner='Trooper' if '28493' in img.name else 'Blaster'
-        img.name=f'T_{owner}_{ {"Color":"BaseColor","ORM":"ORM","NormalGL":"Normal_OpenGL"}[kind]}'
+def mat_images(o):
+    out=[]
+    for sl in o.material_slots:
+        if sl.material and sl.material.use_nodes:
+            for nd in sl.material.node_tree.nodes:
+                if nd.type=='TEX_IMAGE' and nd.image: out.append(nd.image)
+    return out
+def kind_of(img):
+    n=img.name.lower()
+    if 'normal' in n: return 'Normal_OpenGL'
+    if 'orm' in n or 'metal' in n or 'rough' in n: return 'ORM'
+    return 'BaseColor'
+for o,owner in ((t,'Trooper'),(g,'Blaster')):
+    for img in mat_images(o): img.name=f'T_{owner}_{kind_of(img)}'
 os.makedirs(out+'/Unreal/Textures',exist_ok=True); TEX={}
 for img in bpy.data.images:
     if img.name.startswith('T_') and img.packed_file:
         data=img.packed_file.data; ext='.png' if data[:4]==b'\x89PNG' else '.jpg'
         fp=f'{out}/Unreal/Textures/{img.name}{ext}'; open(fp,'wb').write(data); TEX[img.name]=os.path.basename(fp)
+# a source without an ORM map gets a flat one from its own roughness/metallic factors (R=AO 1, G=roughness, B=metallic)
+for owner,o in (('Trooper',t),('Blaster',g)):
+    if f'T_{owner}_ORM' not in TEX:
+        bsdf=next(n for n in o.material_slots[0].material.node_tree.nodes if n.type=='BSDF_PRINCIPLED')
+        r=bsdf.inputs['Roughness'].default_value; m=bsdf.inputs['Metallic'].default_value
+        im=bpy.data.images.new(f'T_{owner}_ORM',64,64,alpha=False); im.pixels=[1.0,r,m,1.0]*(64*64)
+        im.filepath_raw=f'{out}/Unreal/Textures/T_{owner}_ORM.png'; im.file_format='PNG'; im.save(); TEX[im.name]=f'T_{owner}_ORM.png'
+        print('generated flat ORM for',owner,'roughness',round(r,2),'metallic',round(m,2))
 json.dump(TEX,open(f'{out}/Unreal/Textures/textures.json','w'),indent=1); print('textures',TEX)
 def sel(objs):
     for o in sc.objects: o.select_set(False)

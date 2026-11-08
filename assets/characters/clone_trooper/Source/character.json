@@ -1,0 +1,6 @@
+{
+ "name": "Clone Trooper (Phase II armor)",
+ "cape": false,
+ "joints": "source",
+ "note": "Pre-rigged Tripo source: the Duke skeleton is placed on its joints; its own skin is discarded."
+}
