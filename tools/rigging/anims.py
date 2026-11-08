@@ -204,10 +204,13 @@ def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.01
             else: pitch=6*math.sin(math.pi*w); ball=-max(0.0,pitch)*0.4*(1-ss(w/0.5))
             sg=1 if side=='l' else -1; toe=sg*(6 if roll!='side' else 3)
             pa,pb={'fwd':('ball','heel'),'bwd':('heel','ball')}.get(roll,('ankle','ankle'))
-            return foot_mat_blend(side,(dx*off+sg*width,dy*off,lz),pitch,toe,pa,pb,ss(w),froll),ball
+            pass_y=(-0.09*math.sin(math.pi*w) if roll=='side' else 0.0)   # strafing: swing foot passes in front of the planted one
+            spread=(sg*L*0.25 if roll=='side' else 0.0)                      # step-together strafe: the feet never cross
+            return foot_mat_blend(side,(dx*off+sg*width+spread,dy*off+pass_y,lz),pitch,toe,pa,pb,ss(w),froll),ball
         sg=1 if side=='l' else -1
         toe=sg*(6 if roll!='side' else 3)
-        return foot_mat(side,(dx*off+sg*width,dy*off,lz),pitch=pitch,yaw=toe,pivot=piv,roll=froll if roll=='fwd' else 0.0),ball
+        spread=(sg*L*0.25 if roll=='side' else 0.0)
+        return foot_mat(side,(dx*off+sg*width+spread,dy*off,lz),pitch=pitch,yaw=toe,pivot=piv,roll=froll if roll=='fwd' else 0.0),ball
     def frame(f,drop):
         g=f/N*cycles; p=g%1.0; feet={}; balls={}
         for side,ph in (('l',0.0),('r',0.5)):
@@ -461,6 +464,9 @@ def fk_clip(name,dur,tl,release,gun_vel,gun_spin,t_contact,notes,loop=False,gun_
             hm=d.get('hand'+sd.upper())
             if hm is not None:
                 bpy.context.view_layer.update(); P[f'ctrl_hand_{sd}'].matrix=hm
+            ep=d.get('elbow'+sd.upper())          # elbow pole position (armature space) for poses like clutching a wound
+            if ep is not None:
+                bpy.context.view_layer.update(); m=P[f'ctrl_elbow_{sd}'].matrix.copy(); m.translation=ep; P[f'ctrl_elbow_{sd}'].matrix=m
         bpy.context.view_layer.update()
         if gun_mode=='back':
             P['weapon_r'].matrix=back_gun_matrix(); key(f); continue
@@ -627,8 +633,8 @@ walkcycle('crouch_walk',1.1,1.0,(0,-1),'aim',dict(pp=14,s1p=8,s2p=6,s3p=-2,hp=2,
 walkcycle('walk',1.04,1.3,(0,-1),'patrol',s=0.60,lift=0.10,bob=0.014,cycles=2,lean=2.5,scan=8,gun=0.8,notes='Patrol walk: relaxed low ready, full heel-to-toe roll with toe bend and ankle push-off, slow scan. 1.3 m/s.')
 walkcycle('aim_walk_fwd',0.96,1.3,(0,-1),'aim',s=0.62,lift=0.09,bob=0.012,lean=2,gun=0.45,cape=3,notes='Tactical walk forward while aiming (soft knees, stable rifle). 1.3 m/s.')
 walkcycle('aim_walk_bwd',1.0,1.1,(0,1),'aim',s=0.62,lift=0.08,bob=0.011,roll='bwd',lean=2,gun=0.45,notes='Backpedal while aiming (toe-first contact). 1.1 m/s.')
-walkcycle('aim_strafe_l',0.86,1.2,(1,0),'aim',s=0.55,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.03,notes='Strafe left while aiming. 1.2 m/s.')
-walkcycle('aim_strafe_r',0.86,1.2,(-1,0),'aim',s=0.55,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.03,notes='Strafe right while aiming. 1.2 m/s.')
+walkcycle('aim_strafe_l',0.86,1.2,(1,0),'aim',s=0.45,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.09,notes='Strafe left while aiming. 1.2 m/s.')
+walkcycle('aim_strafe_r',0.86,1.2,(-1,0),'aim',s=0.45,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.09,notes='Strafe right while aiming. 1.2 m/s.')
 runcycle('run',0.70,4.2,0.30,'port',dict(curlR=0.9),bias=0.12,heel=0.30,bob=0.035,lean=10,strike='mid',yawamp=8,listamp=4,gun=1.0,cape=9,notes='Combat jog, rifle at port: midfoot landing, heel recovery, flight phase. 4.2 m/s.')
 runcycle('sprint',0.62,6.2,0.24,'sprint',{},bias=0.06,heel=0.44,bob=0.04,lean=18,strike='fore',yawamp=10,listamp=5,gun=1.2,cape=12,notes='Sprint, rifle across chest: forefoot landing, high heel recovery and knee drive. 6.2 m/s.')
 # melee: rifle-butt strike
@@ -671,8 +677,8 @@ def roll_to_kneel():
     keys=[(0.00,dict(K0,pz=-0.08,s1p=8,s2p=6,hp=-4),'s'),
           (0.22,dict(K0,pz=-0.28,pp=24,s1p=12,s2p=14,hp=8),'s'),
           (0.38,dict(K0,pz=-0.42,pp=95,s2p=18,s3p=10,hp=30,np_=10,legs=0.3,tlp=-60,trp=-40,clp=80,crp=60),'s'),
-          (0.56,dict(K0,pz=-0.55,pp=185,s2p=24,s3p=14,hp=38,np_=14,legs=0,tlp=-115,trp=-110,clp=135,crp=130),'s'),
-          (0.76,dict(K0,pz=-0.55,pp=280,s2p=22,s3p=12,hp=30,np_=12,legs=0,tlp=-120,trp=-118,clp=140,crp=138),'s'),
+          (0.56,dict(K0,pz=-0.55,pp=185,s2p=24,s3p=14,hp=38,np_=14,legs=0,tlp=-95,trp=-90,clp=135,crp=130),'s'),
+          (0.76,dict(K0,pz=-0.55,pp=280,s2p=22,s3p=12,hp=30,np_=12,legs=0,tlp=-98,trp=-95,clp=140,crp=138),'s'),
           (0.96,dict(K0,pz=-0.52,pp=345,s2p=12,s3p=6,hp=14,legs=0,tlp=-100,trp=-60,clp=130,crp=100),'s'),
           (1.18,dict(KNEEL,pp=368,gpos=GUN['port']['gpos'],gyaw=GUN['port']['gyaw'],gpitch=GUN['port']['gpitch'],groll=GUN['port']['groll'],legs=1),'s'),
           (1.38,dict(KNEEL,pp=368),'s'),(2.6,dict(KNEEL,pp=368),'s')]
@@ -713,7 +719,7 @@ def climb_ladder():
         for sd,ph in (('r',0.0),('l',0.5)):
             z,sw=limb_z((p+ph)%1.0,1.80,v*T*0.5)
             sg=1 if sd=='l' else -1
-            hands['hand'+sd.upper()]=hand_grip_matrix(sd,(sg*0.17,ladder_y+0.05+0.06*sw,z),extra_pitch=-15)
+            hands['hand'+sd.upper()]=hand_grip_matrix(sd,(sg*0.21,ladder_y+0.05+0.06*sw,z),extra_pitch=-15)
         feet={}
         for sd,ph in (('l',0.0),('r',0.5)):
             z,sw=limb_z((p+ph)%1.0,0.46,v*T*0.5)
@@ -727,15 +733,15 @@ def mantle():
     st=stance('ready'); K0=dict(st,**LIMBS0,armL=1,armR=1,legs=1); H=1.10; edge=-0.50
     keys=[(0.00,dict(K0,rootz=0,rooty=0),'s'),
           (0.22,dict(K0,rootz=0,rooty=-0.05,pz=-0.14,pp=10,s2p=8),'s'),
-          (0.40,dict(K0,rootz=0.40,rooty=-0.15,pz=-0.10,pp=18,s2p=14,hp=-8),'o'),
-          (0.66,dict(K0,rootz=0.80,rooty=-0.35,pz=-0.22,pp=30,s2p=20,s3p=8,hp=-4),'s'),
-          (0.95,dict(K0,rootz=H,rooty=-0.58,pz=-0.38,pp=26,s2p=16,s3p=6),'s'),
+          (0.40,dict(K0,rootz=0.40,rooty=-0.15,pz=-0.10,pp=18,s2p=14,hp=-8,gdz=0.20,gdp=45,gdx=-0.06),'o'),
+          (0.66,dict(K0,rootz=0.80,rooty=-0.35,pz=-0.22,pp=30,s2p=20,s3p=8,hp=-4,gdz=0.24,gdp=50,gdx=-0.08),'s'),
+          (0.95,dict(K0,rootz=H,rooty=-0.58,pz=-0.38,pp=26,s2p=16,s3p=6,gdz=0.22,gdp=45,gdx=-0.08),'s'),
           (1.30,dict(K0,rootz=H,rooty=-0.74,pz=-0.06,pp=6,s2p=4),'s'),
           (1.70,dict(K0,rootz=H,rooty=-0.82),'s')]
     def tl(t):
         x=segs(t,keys); rz,ry=x['rootz'],x['rooty']
         # left hand: reach and plant on the ledge, push, then back to the blaster
-        ledge=hand_grip_matrix('l',(0.16,edge-0.04,H+0.03),fingers_up=False,extra_pitch=-80)
+        ledge=hand_grip_matrix('l',(0.32,edge-0.04,H+0.03),fingers_up=False,extra_pitch=-80)
         on=ss((t-0.12)/0.14)*(1-ss((t-1.0)/0.25))
         if on>0.001:
             bpy.context.view_layer.update()
@@ -779,8 +785,10 @@ def saber_hits():
         k=ss((t-0.06)/0.12)*(1-ss((t-0.6)/0.25))
         if k>0.001:
             bpy.context.view_layer.update(); ongun=P['ctrl_hand_l'].matrix.copy()
-            tgt=P['spine_03'].matrix@REST['spine_03'].inverted()@lh_mat((-0.05,-0.20,1.30),pitch=-70,yaw=60)
-            x['handL']=M.Translation(ongun.translation.lerp(tgt.translation,k))@ongun.to_quaternion().slerp(tgt.to_quaternion(),k).to_matrix().to_4x4()
+            tgt=P['spine_03'].matrix@REST['spine_03'].inverted()@lh_mat((0.03,-0.31,1.34),pitch=-70,yaw=50)
+            fwdv=(P['spine_03'].matrix.to_3x3()@V((0,0,1))).normalized()        # out in front of the chest (spine_03 local +Z = forward)
+            bulge=fwdv*0.14*math.sin(math.pi*k)
+            x['handL']=M.Translation(ongun.translation.lerp(tgt.translation,k)+bulge)@ongun.to_quaternion().slerp(tgt.to_quaternion(),k).to_matrix().to_4x4()
         st=ss((t-0.08)/0.25)
         feet={'l':foot_mat('l',(0.02,-0.12+0.10*st,0.05*math.sin(math.pi*min(1,max(0,(t-0.08)/0.25)))),yaw=8),'r':AIMFEET['r']}
         return x,feet,dict(armL=1,armR=1,legs=1),fk_of(x)
@@ -801,8 +809,10 @@ def saber_endings():
         k=ss((t-0.12)/0.15)*(1-ss((t-1.3)/0.2))
         if k>0.001:
             bpy.context.view_layer.update(); ongun=P['ctrl_hand_l'].matrix.copy()
-            tgt=P['spine_03'].matrix@REST['spine_03'].inverted()@lh_mat((-0.17,-0.04,1.38),pitch=-40,yaw=80)
+            ch=P['spine_03'].matrix@REST['spine_03'].inverted()
+            tgt=ch@lh_mat((-0.15,-0.21,1.37),pitch=-40,yaw=80)               # on the front of the chest plate, by the stump
             x['handL']=M.Translation(ongun.translation.lerp(tgt.translation,k))@ongun.to_quaternion().slerp(tgt.to_quaternion(),k).to_matrix().to_4x4()
+            x['elbowL']=(ch@V((0.42,-0.55,1.20)))                            # elbow out in front, so the forearm lies across the chest, not through it
         st=ss((t-0.1)/0.25); st2=ss((t-0.35)/0.25)
         feet={'l':foot_mat('l',(0.02,-0.12+0.14*st2,0.05*math.sin(math.pi*min(1,max(0,(t-0.35)/0.25)))),yaw=8),
               'r':foot_mat('r',(-0.04,0.12+0.16*st,0.06*math.sin(math.pi*min(1,max(0,(t-0.1)/0.25)))),yaw=-25)}
