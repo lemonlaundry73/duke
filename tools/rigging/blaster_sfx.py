@@ -55,10 +55,54 @@ def write(path, x):
     w = wave.open(path, 'wb'); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
     w.writeframes((np.clip(x, -1, 1) * 32767).astype('<i2').tobytes()); w.close()
 
+def explosion(path, seed):
+    n = int(SR * 2.2); t = np.arange(n) / SR; rng = np.random.default_rng(seed)
+    noise = rng.standard_normal(n)
+    # low-passed noise body (cumulative smoothing) for the boom, brighter crack on top
+    boom = np.convolve(noise, np.ones(220) / 220, 'same') * 9.0 * np.exp(-t / 0.55)
+    crack = noise * np.exp(-t / 0.035) * 0.9
+    thump = np.sin(2 * np.pi * (38 + 70 * np.exp(-t / 0.06)) * t) * np.exp(-t / 0.35) * 1.2
+    debris = np.zeros(n)
+    for _ in range(40):   # falling debris ticks
+        k = int(SR * rng.uniform(0.25, 1.9)); L = int(SR * 0.012)
+        if k + L < n: debris[k:k + L] += rng.standard_normal(L) * np.exp(-np.arange(L) / (SR * 0.003)) * rng.uniform(0.05, 0.25)
+    x = np.tanh(1.6 * (boom + crack + thump + debris)); x *= envelope(n, 0.0005, 0.4); x /= np.abs(x).max() * 1.05
+    write(path, x)
+
+def saber_hum(path):
+    """Loopable hum: low motor fundamental with harmonics and a slight electrical buzz (no recordings)."""
+    dur = 2.0; n = int(SR * dur); t = np.arange(n) / SR
+    f0 = 90.0   # integer cycles in 2 s -> seamless loop
+    x = (np.sin(2*np.pi*f0*t) + 0.5*np.sin(2*np.pi*2*f0*t+0.3) + 0.25*np.sin(2*np.pi*3*f0*t+1.1) + 0.12*np.sin(2*np.pi*4*f0*t))
+    buzz = np.sign(np.sin(2*np.pi*f0*t)) * 0.08 * (1 + 0.3*np.sin(2*np.pi*3*t))
+    x = (x + buzz) * (1 + 0.06*np.sin(2*np.pi*1.5*t)); x /= np.abs(x).max() * 1.6
+    write(path, x)
+
+def saber_swing(path, seed):
+    n = int(SR * 0.55); t = np.arange(n) / SR; u = t / t[-1]
+    amp = np.sin(np.pi * u) ** 1.5
+    f = 90 * (1 + 0.55 * np.sin(np.pi * u))          # doppler-like rise and fall
+    ph = 2 * np.pi * np.cumsum(f) / SR
+    x = (np.sin(ph) + 0.6*np.sin(2*ph+0.4) + 0.3*np.sin(3*ph)) * amp
+    rng = np.random.default_rng(seed); x += rng.standard_normal(n) * 0.05 * amp
+    x /= np.abs(x).max() * 1.1; write(path, x)
+
+def saber_hit(path, seed):
+    n = int(SR * 0.45); t = np.arange(n) / SR; rng = np.random.default_rng(seed)
+    crackle = rng.standard_normal(n) * (rng.random(n) < 0.08) * np.exp(-t / 0.15) * 1.5
+    sizzle = np.convolve(rng.standard_normal(n), np.ones(4) / 4, 'same') * np.exp(-t / 0.12)
+    tone = np.sin(2 * np.pi * (180 + 600 * np.exp(-t / 0.03)) * t) * np.exp(-t / 0.08) * 0.8
+    x = np.tanh(2.0 * (crackle + sizzle + tone)); x *= envelope(n, 0.0005, 0.1); x /= np.abs(x).max() * 1.05
+    write(path, x)
+
 if __name__ == '__main__':
     o = sys.argv[1]
     blaster(f'{o}/S_Blaster_Fire_01.wav', D=2.4, seed=1)
     blaster(f'{o}/S_Blaster_Fire_02.wav', D=2.15, seed=2, body_hz=(2500, 300), bright=1.1)
     blaster(f'{o}/S_Blaster_Fire_03.wav', D=2.7, seed=3, body_hz=(2000, 230), bright=0.92)
     impact(f'{o}/S_Blaster_Impact.wav', 4)
+    explosion(f'{o}/S_Explosion.wav', 5)
+    saber_hum(f'{o}/S_Saber_Hum.wav')
+    saber_swing(f'{o}/S_Saber_Swing.wav', 6)
+    saber_hit(f'{o}/S_Saber_Hit.wav', 7)
     print('ok')

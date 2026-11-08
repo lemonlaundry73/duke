@@ -12,7 +12,7 @@ mkdir -p "$W" "$O"
 # glTF from Tripo/gltfpack is meshopt-compressed and quantized; Blender needs it plain
 npx --yes @gltf-transform/cli@4.1.1 dequantize "$SRC/trooper_armor_source.glb" "$W/trooper_dq.glb"
 npx --yes @gltf-transform/cli@4.1.1 dequantize "$SRC/blaster_source.glb" "$W/blaster_dq.glb"
-if [ -f "$SRC/character.json" ]; then cp "$SRC/character.json" "$W/"; fi
+for cfg in character.json blaster.json; do if [ -f "$SRC/$cfg" ]; then cp "$SRC/$cfg" "$W/"; fi; done
 if grep -q '"joints": *"source"' "$W/character.json" 2>/dev/null; then
   "$PY" -I "$HERE/strip_rig.py" "$W"        # pre-rigged source: keep its mesh + joint positions, drop its skin
 else
@@ -22,8 +22,11 @@ fi
 "$PY" -I "$HERE/stage1.py" "$W"             # face -Y, cape mask, joint landmarks -> s1.blend
 "$PY" -I "$HERE/stage2.py" "$W"             # skeleton, weights, bridge cuts, blaster -> s2.blend
 "$PY" -I "$HERE/anims.py" "$HERE" "$W"      # control rig + clips + QA -> anim.blend, anim_stats.json
+"$PY" -I "$HERE/cuts.py" "$W"            # lightsaber/explosion dismemberment variants -> cut_variants.json
 "$PY" -I "$HERE/stretch.py" "$W/anim.blend" # mesh stretch per clip -> stretch.json
 "$PY" -I "$HERE/export.py" "$W" "$O"        # Unreal/ (FBX + textures), Web/trooper.glb
 mkdir -p "$O/Audio"; "$PY" -I "$HERE/blaster_sfx.py" "$O/Audio"
+# web preview: meshopt-compressed copy (three.js MeshoptDecoder); the plain GLB stays for tools that cannot decode it
+npx --yes @gltf-transform/cli@4.1.1 meshopt "$O/Web/trooper.glb" "$O/Web/trooper_web.glb"
 "$PY" -I "$HERE/validate.py" "$O"           # re-import everything -> validation.json
 echo "done: $O"

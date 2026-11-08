@@ -135,6 +135,24 @@ def instance(parent, name, tex, prefix):
     EAL.save_loaded_asset(mi)
     return mi
 
+def cap_materials():
+    """Cut caps: cauterized (glowing molten rim) for the lightsaber, charred with faint embers for explosions."""
+    out = {}
+    for key, base, glow, k in (('saber', (0.06, 0.025, 0.015), (1.0, 0.28, 0.05), 6.0), ('blast', (0.04, 0.03, 0.025), (0.9, 0.2, 0.05), 1.0)):
+        m = fresh(FX, 'M_CutCap_' + key.capitalize(), unreal.Material, unreal.MaterialFactoryNew())
+        b = MEL.create_material_expression(m, unreal.MaterialExpressionConstant3Vector, -500, 0); b.set_editor_property('constant', unreal.LinearColor(*base, 1))
+        g = MEL.create_material_expression(m, unreal.MaterialExpressionVectorParameter, -500, 200)
+        g.set_editor_property('parameter_name', 'Glow'); g.set_editor_property('default_value', unreal.LinearColor(*glow, 1))
+        i = MEL.create_material_expression(m, unreal.MaterialExpressionScalarParameter, -500, 350)
+        i.set_editor_property('parameter_name', 'Intensity'); i.set_editor_property('default_value', k)
+        mul = MEL.create_material_expression(m, unreal.MaterialExpressionMultiply, -250, 250)
+        MEL.connect_material_expressions(g, '', mul, 'A'); MEL.connect_material_expressions(i, '', mul, 'B')
+        MEL.connect_material_property(b, '', unreal.MaterialProperty.MP_BASE_COLOR)
+        MEL.connect_material_property(mul, '', unreal.MaterialProperty.MP_EMISSIVE_COLOR)
+        m.set_editor_property('used_with_skeletal_mesh', True)
+        MEL.recompile_material(m); EAL.save_loaded_asset(m); out[key] = m
+    return out
+
 def bolt_materials():
     """Emissive red bolt core (unlit) and a soft additive glow shell; colour is a parameter."""
     core = fresh(FX, 'M_BlasterBolt', unreal.Material, unreal.MaterialFactoryNew())
@@ -207,10 +225,28 @@ def main():
         name = os.path.splitext(f)[0]
         seq = first(run_import(os.path.join(anim_dir, f), ROOT + '/Anims', fbx_ui('anim', skeleton), name=name), unreal.AnimSequence)
         if not seq: err('animation failed: ' + f); continue
-        seq.set_editor_property('enable_root_motion', False)
+        # roll and mantle carry root motion (the root is locked in the pose; DukeTrooper moves the capsule along the same curve)
+        seq.set_editor_property('enable_root_motion', name in ('A_Trooper_roll_to_kneel', 'A_Trooper_mantle'))
         EAL.save_loaded_asset(seq); n += 1
     log('%d animations imported' % n)
 
+    # dismemberment variants (lightsaber endings, explosion limb loss): same skeleton, swapped in at the cut
+    cut_dir = os.path.join(SRC, 'Unreal', 'Cuts')
+    if os.path.isdir(cut_dir):
+        caps = cap_materials()
+        for f in sorted(os.listdir(cut_dir)):
+            if not f.endswith('.fbx'): continue
+            name = os.path.splitext(f)[0]
+            ui = fbx_ui('skeletal'); ui.set_editor_property('skeleton', skeleton); ui.set_editor_property('create_physics_asset', False)
+            cm = first(run_import(os.path.join(cut_dir, f), ROOT + '/Cuts', ui, name=name), unreal.SkeletalMesh)
+            if not cm: err('cut variant failed: ' + f); continue
+            ms = cm.get_editor_property('materials')
+            for i, sm in enumerate(ms):
+                slot = str(sm.get_editor_property('material_slot_name'))
+                mat = caps['saber'] if 'CutCap_Saber' in slot else caps['blast'] if 'CutCap_Blast' in slot else (mi_blaster if 'Blaster' in slot else mi_trooper)
+                sm.set_editor_property('material_interface', mat); ms[i] = sm
+            cm.set_editor_property('materials', ms); EAL.save_loaded_asset(cm)
+        log('cut variants imported')
     run_import(os.path.join(SRC, 'Unreal', 'SM_Blaster.fbx'), ROOT, fbx_ui('static'), name='SM_Blaster')
     bl = EAL.load_asset(ROOT + '/SM_Blaster')
     if bl:

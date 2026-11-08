@@ -99,13 +99,14 @@ hr=eb['hand_r']; wr=V(J['hand_r'][0]); kr=V(J['hand_r'][1])
 fdir=(kr-wr).normalized()           # finger direction
 B=fdir.copy()                        # barrel ~ along forearm/fingers in rest
 Uup=V((0,-1,0)); Uup=(Uup-Uup.dot(B)*B).normalized()   # scope side toward the thumb/front
-rake=math.radians(16)
+BL=json.load(open(f'{w}/blaster.json')) if os.path.exists(f'{w}/blaster.json') else {}
+rake=math.radians(BL.get('grip_rake_deg',16))
 # grip axis G = -U cos r - B sin r must run along the palm width; rotate about lateral axis to achieve rake
 lat=B.cross(Uup).normalized()
 R=M.Rotation(-rake,3,lat)
 B=(R@B).normalized(); Uup=(R@Uup).normalized()
-GS=0.62  # blaster scale -> ~0.60 m carbine (fits the trooper's reach)
-grip_src=V((0,-0.238,-0.11))*GS; fore_src=V((0,0.11,-0.095))*GS; muzzle_src=V((0,0.49,0.067))*GS; hold_src=V((0,-0.02,-0.04))*GS
+GS=BL.get('scale',0.62)  # blaster scale (0.62 -> ~0.60 m carbine, fits the trooper's reach)
+grip_src=V(BL.get('grip',(0,-0.238,-0.11)))*GS; fore_src=V(BL.get('fore',(0,0.11,-0.095)))*GS; muzzle_src=V(BL.get('muzzle',(0,0.49,0.067)))*GS; hold_src=V(BL.get('hold',(0,-0.02,-0.04)))*GS
 palm=(wr+kr)/2+V((0.022,0,0))      # inside of right palm (palm faces +X / the body)
 Rg=M((lat,B,Uup)).transposed()     # columns: X=lat, Y=barrel, Z=up
 gun_world=M.Translation(palm)@Rg.to_4x4()@M.Translation(-grip_src)

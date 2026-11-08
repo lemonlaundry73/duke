@@ -1,5 +1,5 @@
 {
- "fbx_bones": 62,
+ "fbx_bones": 64,
  "fbx_bone_names_sample": [
   "root",
   "pelvis",
@@ -23,7 +23,7 @@
    ]
   },
   "SK_Trooper_Blaster": {
-   "tris": 19996,
+   "tris": 19987,
    "groups": 1,
    "mats": [
     "MI_Blaster"
@@ -33,21 +33,21 @@
  "fbx_height_m": 1.83,
  "fbx_images": [
   [
+   "T_Blaster_BaseColor",
+   [
+    4096,
+    4096
+   ]
+  ],
+  [
    "T_Trooper_BaseColor",
    [
-    0,
-    0
+    4096,
+    4096
    ]
   ],
   [
-   "T_Trooper_BaseColor.001",
-   [
-    0,
-    0
-   ]
-  ],
-  [
-   "T_Trooper_BaseColor.002",
+   "T_Trooper_Normal_OpenGL",
    [
     0,
     0
@@ -64,7 +64,7 @@
      91
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_aim_down.fbx": {
    "actions": 1,
@@ -74,7 +74,7 @@
      2
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_aim_left.fbx": {
    "actions": 1,
@@ -84,7 +84,7 @@
      2
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_aim_right.fbx": {
    "actions": 1,
@@ -94,7 +94,7 @@
      2
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_aim_strafe_l.fbx": {
    "actions": 1,
@@ -104,7 +104,7 @@
      27
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_aim_strafe_r.fbx": {
    "actions": 1,
@@ -114,7 +114,7 @@
      27
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_aim_up.fbx": {
    "actions": 1,
@@ -124,7 +124,7 @@
      2
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_aim_walk_bwd.fbx": {
    "actions": 1,
@@ -134,7 +134,7 @@
      31
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_aim_walk_fwd.fbx": {
    "actions": 1,
@@ -144,7 +144,17 @@
      30
     ]
    ],
-   "curves": 629
+   "curves": 649
+  },
+  "A_Trooper_climb_ladder.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     37
+    ]
+   ],
+   "curves": 649
   },
   "A_Trooper_crouch_aim.fbx": {
    "actions": 1,
@@ -154,7 +164,7 @@
      91
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_crouch_shoot.fbx": {
    "actions": 1,
@@ -164,7 +174,7 @@
      10
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_crouch_walk.fbx": {
    "actions": 1,
@@ -174,7 +184,47 @@
      34
     ]
    ],
-   "curves": 629
+   "curves": 649
+  },
+  "A_Trooper_death_explosion.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_death_explosion_arm.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_death_explosion_armleg.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     79
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_death_explosion_leg.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     79
+    ]
+   ],
+   "curves": 649
   },
   "A_Trooper_die.fbx": {
    "actions": 1,
@@ -184,7 +234,7 @@
      58
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_die_back.fbx": {
    "actions": 1,
@@ -194,7 +244,7 @@
      49
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_die_headshot.fbx": {
    "actions": 1,
@@ -204,7 +254,7 @@
      40
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_die_run.fbx": {
    "actions": 1,
@@ -214,7 +264,7 @@
      43
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_hit_back.fbx": {
    "actions": 1,
@@ -224,7 +274,7 @@
      22
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_hit_front.fbx": {
    "actions": 1,
@@ -234,7 +284,7 @@
      22
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_idle.fbx": {
    "actions": 1,
@@ -244,7 +294,7 @@
      121
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_jump.fbx": {
    "actions": 1,
@@ -254,7 +304,37 @@
      28
     ]
    ],
-   "curves": 629
+   "curves": 649
+  },
+  "A_Trooper_kneel_aim.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     91
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_kneel_shoot.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     10
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_mantle.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     52
+    ]
+   ],
+   "curves": 649
   },
   "A_Trooper_melee.fbx": {
    "actions": 1,
@@ -264,7 +344,7 @@
      28
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_patrol_look.fbx": {
    "actions": 1,
@@ -274,7 +354,7 @@
      181
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_reload.fbx": {
    "actions": 1,
@@ -284,7 +364,17 @@
      67
     ]
    ],
-   "curves": 629
+   "curves": 649
+  },
+  "A_Trooper_roll_to_kneel.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     79
+    ]
+   ],
+   "curves": 649
   },
   "A_Trooper_run.fbx": {
    "actions": 1,
@@ -294,7 +384,77 @@
      22
     ]
    ],
-   "curves": 629
+   "curves": 649
+  },
+  "A_Trooper_saber_death_arm.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     79
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_saber_death_diagonal.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_saber_death_half.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_saber_death_head.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_saber_death_leg.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     67
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_saber_hit_1.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     25
+    ]
+   ],
+   "curves": 649
+  },
+  "A_Trooper_saber_hit_2.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     29
+    ]
+   ],
+   "curves": 649
   },
   "A_Trooper_shoot.fbx": {
    "actions": 1,
@@ -304,7 +464,7 @@
      10
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_shoot_burst.fbx": {
    "actions": 1,
@@ -314,7 +474,7 @@
      19
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_shoot_hip.fbx": {
    "actions": 1,
@@ -324,7 +484,7 @@
      10
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_signal_halt.fbx": {
    "actions": 1,
@@ -334,7 +494,7 @@
      49
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_signal_moveup.fbx": {
    "actions": 1,
@@ -344,7 +504,7 @@
      46
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_sprint.fbx": {
    "actions": 1,
@@ -354,17 +514,17 @@
      20
     ]
    ],
-   "curves": 629
+   "curves": 649
   },
   "A_Trooper_walk.fbx": {
    "actions": 1,
    "frames": [
     [
      1,
-     59
+     63
     ]
    ],
-   "curves": 629
+   "curves": 649
   }
  },
  "glb_actions": [
@@ -377,9 +537,14 @@
   "aim_up",
   "aim_walk_bwd",
   "aim_walk_fwd",
+  "climb_ladder",
   "crouch_aim",
   "crouch_shoot",
   "crouch_walk",
+  "death_explosion",
+  "death_explosion_arm",
+  "death_explosion_armleg",
+  "death_explosion_leg",
   "die",
   "die_back",
   "die_headshot",
@@ -388,10 +553,21 @@
   "hit_front",
   "idle",
   "jump",
+  "kneel_aim",
+  "kneel_shoot",
+  "mantle",
   "melee",
   "patrol_look",
   "reload",
+  "roll_to_kneel",
   "run",
+  "saber_death_arm",
+  "saber_death_diagonal",
+  "saber_death_half",
+  "saber_death_head",
+  "saber_death_leg",
+  "saber_hit_1",
+  "saber_hit_2",
   "shoot",
   "shoot_burst",
   "shoot_hip",
@@ -415,6 +591,74 @@
   ],
   [
    "SK_Trooper_Blaster",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_death_explosion_arm",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_death_explosion_arm_Piece_a",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_death_explosion_armleg",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_death_explosion_armleg_Piece_a",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_death_explosion_armleg_Piece_b",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_death_explosion_leg",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_death_explosion_leg_Piece_a",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_arm",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_arm_Piece_a",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_diagonal",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_diagonal_Piece_a",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_half",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_half_Piece_a",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_head",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_head_Piece_a",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_leg",
+   "MESH"
+  ],
+  [
+   "SK_Trooper_Cut_saber_death_leg_Piece_a",
    "MESH"
   ]
  ]

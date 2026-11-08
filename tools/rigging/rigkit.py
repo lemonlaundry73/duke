@@ -22,8 +22,12 @@ def build_controls(ao,w):
         cb(f'ctrl_elbow_{s}',V((sg*0.55,0.45,1.0)),V((sg*0.55,0.45,1.08)),V((0,-1,0)),'spine_03')
         f=eb[f'foot_{s}']; cb(f'ctrl_foot_{s}',f.head.copy(),f.tail.copy(),f.z_axis.copy(),'root')
         cb(f'ctrl_knee_{s}',V((sg*0.14,-0.7,0.52)),V((sg*0.14,-0.7,0.6)),V((0,-1,0)),f'ctrl_foot_{s}')
+    # free bones for severed pieces (lightsaber / explosion dismemberment): rest = identity, children of root
+    for cn in ('cut_a','cut_b'):
+        if cn not in eb:
+            b=eb.new(cn); b.head=V((0,0,0)); b.tail=V((0,0.1,0)); b.roll=0.0; b.parent=eb['root']
     for b in eb: 
-        if b.name.startswith(('weapon_r','muzzle','ik_')): b.use_deform=True   # exported as bones/sockets for Unreal
+        if b.name.startswith(('weapon_r','muzzle','ik_','cut_')): b.use_deform=True   # exported as bones/sockets for Unreal
     bpy.ops.object.mode_set(mode='POSE')
     pbs=ao.pose.bones
     for pb in pbs: pb.rotation_mode='QUATERNION'

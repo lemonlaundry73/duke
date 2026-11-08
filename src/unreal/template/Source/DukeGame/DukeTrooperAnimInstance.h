@@ -21,7 +21,11 @@ struct FDukeTrooperAnimState
 	bool bCrouched = false;
 	bool bFalling = false;
 	bool bDead = false;
-	FName DeathClip = NAME_None;                 // die, die_back, die_headshot, die_run
+	FName DeathClip = NAME_None;                 // die, die_back, die_headshot, die_run, saber_death_*, death_explosion*
+	float DeathTime = 0.f;                        // seconds since death (game thread; survives a mesh swap at the cut)
+	bool bKneeling = false;                       // one knee down, aiming (after a combat roll)
+	bool bClimbing = false;                       // on a ladder
+	float ClimbSpeed = 0.f;                       // cm/s up the ladder
 	FName IdleVariant = NAME_None;                // e.g. patrol_look
 	FName Action = NAME_None;                     // shoot, shoot_burst, reload, hit_front, ...
 	int32 ActionSerial = 0;                       // bump to restart the same action
@@ -63,6 +67,7 @@ private:
 	int32 ActionSerial = -1;
 	float ActionTime = 0.f, ActionWeight = 0.f;
 	float DeadTime = 0.f;
+	float ClimbPhase = 0.f;
 
 	const UAnimSequence* Clip(FName N) const;
 	void BuildBase(TArray<FDukeClipRef>& Out, FName& OutKey);

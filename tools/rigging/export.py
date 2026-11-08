@@ -21,8 +21,15 @@ def kind_of(img):
 for o,owner in ((t,'Trooper'),(g,'Blaster')):
     for img in mat_images(o): img.name=f'T_{owner}_{kind_of(img)}'
 os.makedirs(out+'/Unreal/Textures',exist_ok=True); TEX={}
+# texture policy: cap at 4K (hero weapon/character); larger sources are downscaled once here
+for img in list(bpy.data.images):
+    if img.name.startswith('T_') and img.size[0]>4096:
+        old=img.size[:]; isn='Normal' in img.name
+        img.scale(4096,4096); fp=f"{out}/Unreal/Textures/{img.name}{'.png' if isn else '.jpg'}"
+        img.filepath_raw=fp; img.file_format='PNG' if isn else 'JPEG'; img.save(); img.pack(); TEX[img.name]=os.path.basename(fp)
+        print('downscaled',img.name,old,'-> 4096')
 for img in bpy.data.images:
-    if img.name.startswith('T_') and img.packed_file:
+    if img.name.startswith('T_') and img.packed_file and img.name not in TEX:
         data=img.packed_file.data; ext='.png' if data[:4]==b'\x89PNG' else '.jpg'
         fp=f'{out}/Unreal/Textures/{img.name}{ext}'; open(fp,'wb').write(data); TEX[img.name]=os.path.basename(fp)
 # a source without an ORM map gets a flat one from its own roughness/metallic factors (R=AO 1, G=roughness, B=metallic)
@@ -70,13 +77,40 @@ bpy.ops.export_scene.fbx(filepath=f'{out}/Unreal/SM_Blaster.fbx',object_types={'
     use_selection=True,apply_scale_options='FBX_SCALE_ALL',axis_forward='-Z',axis_up='Y')
 bb=[v.co for v in gs.data.vertices]; print('SM_Blaster extents',[ (round(min(c[i] for c in bb),3),round(max(c[i] for c in bb),3)) for i in range(3)])
 bpy.data.objects.remove(gs)
+# ---- dismemberment variants: one skeletal mesh per ending (same skeleton), swapped in at the cut ----
+CV=json.load(open(f'{w}/cut_variants.json')) if os.path.exists(f'{w}/cut_variants.json') else []
+if CV:
+    os.makedirs(out+'/Unreal/Cuts',exist_ok=True)
+    for c in cons: c.mute=True
+    ao.animation_data.action=None
+    for pb in ao.pose.bones: pb.location=(0,0,0); pb.rotation_quaternion=(1,0,0,0)
+    sc.frame_set(0)
+    for c in CV:
+        objs=[bpy.data.objects[c['remainder']]]+[bpy.data.objects[n] for n in c['pieces']]
+        for o in objs: o.hide_viewport=False; o.hide_set(False)
+        sel([ao]+objs+[g])
+        bpy.ops.export_scene.fbx(filepath=f"{out}/Unreal/Cuts/SK_Trooper_Cut_{c['clip']}.fbx",object_types={'ARMATURE','MESH'},mesh_smooth_type='FACE',
+            use_tspace=True,path_mode='STRIP',embed_textures=False,bake_anim=False,**common)
+    for c in cons: c.mute=False
+    json.dump(CV,open(f'{out}/Unreal/Cuts/cut_variants.json','w'),indent=1)
+    print('cut variants exported',len(CV))
 # ---- web GLB: 2K textures, all clips ----
 for img in bpy.data.images:
     if img.name.startswith('T_') and img.size[0]>2048:
         img.scale(2048 if 'BaseColor' in img.name or ('Normal' in img.name and 'Trooper' in img.name) else 1024, 2048 if 'BaseColor' in img.name or ('Normal' in img.name and 'Trooper' in img.name) else 1024)
 # NLA-free: export each action as a glTF animation
 for act in bpy.data.actions: act.use_fake_user=True
-sel([ao,t,g])
+web=[ao,t,g]
+# variants for the web preview are decimated copies (the Unreal FBXs above stay full resolution)
+for c in CV:
+    for n in [c['remainder']]+c['pieces']:
+        o=bpy.data.objects[n]; o.hide_viewport=False; o.hide_set(False)
+        dm=o.modifiers.new('webdec','DECIMATE'); dm.ratio=0.3 if n==c['remainder'] else 0.5
+        bpy.context.view_layer.objects.active=o
+        while o.modifiers[0].name!='webdec': bpy.ops.object.modifier_move_up(modifier='webdec')
+        bpy.ops.object.modifier_apply(modifier='webdec')
+        web.append(o)
+sel(web)
 bpy.ops.export_scene.gltf(filepath=f'{out}/Web/trooper.glb',export_format='GLB',use_selection=True,export_def_bones=True,export_animations=True,
     export_animation_mode='ACTIONS',export_force_sampling=True,export_frame_step=1,export_image_format='JPEG',export_jpeg_quality=82,export_apply=False,
     export_skins=True,export_yup=True,export_optimize_animation_size=True)

@@ -2,6 +2,7 @@
 #include "DukeTrooper.h"
 #include "DukeTrooperAnimInstance.h"
 #include "DukeBlasterBolt.h"
+#include "DukeDamageTypes.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/PointLightComponent.h"
@@ -24,8 +25,19 @@ const TArray<FName>& ADukeTrooper::ClipNames()
 		TEXT("aim_walk_fwd"), TEXT("aim_walk_bwd"), TEXT("aim_strafe_l"), TEXT("aim_strafe_r"),
 		TEXT("shoot"), TEXT("shoot_burst"), TEXT("shoot_hip"), TEXT("reload"),
 		TEXT("crouch_aim"), TEXT("crouch_shoot"), TEXT("crouch_walk"),
-		TEXT("hit_front"), TEXT("hit_back"), TEXT("die"), TEXT("die_back"), TEXT("die_headshot"), TEXT("die_run"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup") };
+		TEXT("hit_front"), TEXT("hit_back"), TEXT("die"), TEXT("die_back"), TEXT("die_headshot"), TEXT("die_run"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup"),
+		TEXT("roll_to_kneel"), TEXT("kneel_aim"), TEXT("kneel_shoot"), TEXT("climb_ladder"), TEXT("mantle"),
+		TEXT("saber_hit_1"), TEXT("saber_hit_2"), TEXT("saber_death_arm"), TEXT("saber_death_leg"), TEXT("saber_death_head"), TEXT("saber_death_half"), TEXT("saber_death_diagonal"),
+		TEXT("death_explosion"), TEXT("death_explosion_arm"), TEXT("death_explosion_leg"), TEXT("death_explosion_armleg") };
 	return Names;
+}
+
+static float CutTime(FName Clip)
+{
+	const FString C = Clip.ToString();
+	if (C.StartsWith(TEXT("saber_death_"))) return 2.f / 30.f;
+	if (C == TEXT("death_explosion_arm") || C == TEXT("death_explosion_leg") || C == TEXT("death_explosion_armleg")) return 1.f / 30.f;
+	return -1.f;   // no dismemberment
 }
 
 ADukeTrooper::ADukeTrooper()
@@ -73,9 +85,24 @@ void ADukeTrooper::LoadAssets()
 			if (UAnimSequence* Seq = LoadObject<UAnimSequence>(nullptr, *Path)) A->Clips.Add(N, Seq);
 			else UE_LOG(LogTemp, Warning, TEXT("DukeTrooper: missing clip %s"), *Path);
 		}
+	for (const FName& N : ClipNames())
+		if (CutTime(N) > 0.f)
+			if (USkeletalMesh* CM = LoadObject<USkeletalMesh>(nullptr, *FString::Printf(TEXT("%s/Cuts/SK_Trooper_Cut_%s.SK_Trooper_Cut_%s"), AssetRoot, *N.ToString(), *N.ToString())))
+				CutMeshes.Add(N, CM);
 	for (int32 i = 1; i <= 3; ++i)
 		if (USoundBase* S = LoadObject<USoundBase>(nullptr, *FString::Printf(TEXT("/Game/DukeForge/Audio/S_Blaster_Fire_0%d.S_Blaster_Fire_0%d"), i, i)))
 			FireSounds.Add(S);
+}
+
+void ADukeTrooper::RefreshAnimClips()
+{
+	if (UDukeTrooperAnimInstance* A = Anim())
+		if (A->Clips.Num() == 0)
+			for (const FName& N : ClipNames())
+			{
+				const FString Path = FString::Printf(TEXT("%s/Anims/A_Trooper_%s.A_Trooper_%s"), AssetRoot, *N.ToString(), *N.ToString());
+				if (UAnimSequence* Seq = LoadObject<UAnimSequence>(nullptr, *Path)) A->Clips.Add(N, Seq);
+			}
 }
 
 UDukeTrooperAnimInstance* ADukeTrooper::Anim() const
@@ -120,8 +147,27 @@ void ADukeTrooper::Tick(float Dt)
 		else if (State == EDukeTrooperState::Alert) { if (Now > ActionLock) { State = EDukeTrooperState::Combat; StateSince = Now; } }
 		else if (State == EDukeTrooperState::Combat) TickCombat(Dt, Now);
 	}
+	TickMoves(Dt, Now);
+	if (State == EDukeTrooperState::Dead && !bCutApplied)
+	{
+		const float CT = CutTime(DeathClipName);
+		if (CT > 0.f && Now - DeathAt >= CT)
+			if (TObjectPtr<USkeletalMesh>* CM = CutMeshes.Find(DeathClipName))
+			{
+				// same skeleton: the death clip continues on the pre-cut mesh (remaining body + severed pieces)
+				GetMesh()->SetSkeletalMesh(*CM, false);
+				RefreshAnimClips();
+				A = Anim();
+				bCutApplied = true;
+			}
+	}
 	if (A)
 	{
+		A->State.DeathClip = DeathClipName;
+		A->State.DeathTime = State == EDukeTrooperState::Dead ? Now - DeathAt : 0.f;
+		A->State.bKneeling = State == EDukeTrooperState::Combat && Now < KneelUntil && RollStart < 0.f;
+		A->State.bClimbing = bClimbing;
+		A->State.ClimbSpeed = bClimbing ? 50.f : 0.f;
 		const FVector V = GetActorTransform().InverseTransformVectorNoScale(GetVelocity());
 		A->State.LocalVelocity = FVector(V.X, V.Y, 0.f);
 		A->State.bAiming = State == EDukeTrooperState::Combat;
@@ -194,7 +240,7 @@ void ADukeTrooper::TickCombat(float Dt, float Now)
 	// movement: hold the preferred range, strafe between bursts (aim-walk clips are direction-blended)
 	UCharacterMovementComponent* Move = GetCharacterMovement();
 	Move->MaxWalkSpeed = CombatMoveSpeed;
-	const bool bCrouched = Now < CrouchUntil;
+	const bool bCrouched = Now < CrouchUntil || Now < KneelUntil || RollStart >= 0.f;
 	if (!bCrouched && Now > ReloadUntil)
 	{
 		if (Now > MoveUntil)
@@ -224,7 +270,11 @@ void ADukeTrooper::TickCombat(float Dt, float Now)
 		FireBolt(Now);
 		--Ammo;
 		if (--BurstLeft > 0) NextShot = Now + ShotInterval;
-		else { BurstLeft = BurstSize; NextShot = Now + FMath::FRandRange(BurstPause.X, BurstPause.Y); }
+		else
+		{
+			BurstLeft = BurstSize; NextShot = Now + FMath::FRandRange(BurstPause.X, BurstPause.Y);
+			if (Now > KneelUntil && RollStart < 0.f && FMath::FRand() < RollChance) StartRoll(Now);
+		}
 	}
 }
 
@@ -248,8 +298,18 @@ float ADukeTrooper::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 	const float Dmg = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	if (State == EDukeTrooperState::Dead || Dmg <= 0.f) return Dmg;
 	const float Now = GetWorld()->GetTimeSeconds();
-	Health -= Dmg;
 	AActor* From = EventInstigator && EventInstigator->GetPawn() ? EventInstigator->GetPawn() : DamageCauser;
+	const UClass* DT = DamageEvent.DamageTypeClass ? DamageEvent.DamageTypeClass.Get() : nullptr;
+	if (DT && DT->IsChildOf(UDukeSaberDamageType::StaticClass()))
+	{
+		// lightsaber: two burns, the third blade contact dismembers
+		if (++SaberHits >= 3) { Die(PickSaberEnding(DamageEvent)); return Dmg; }
+		if (UDukeTrooperAnimInstance* A = Anim()) { A->PlayAction(SaberHits == 1 ? TEXT("saber_hit_1") : TEXT("saber_hit_2")); ActionLock = Now + 0.7f; }
+		if (State != EDukeTrooperState::Combat && From) EnterCombat(From, Now, false);
+		return Dmg;
+	}
+	Health -= Dmg;
+	if (DT && DT->IsChildOf(UDukeExplosionDamageType::StaticClass()) && Health <= 0.f) { Die(PickExplosionEnding(DamageEvent, From)); return Dmg; }
 	if (Health <= 0.f) { Die(PickDeath(DamageEvent, From, Dmg)); return Dmg; }
 	if (UDukeTrooperAnimInstance* A = Anim())
 	{
@@ -285,9 +345,100 @@ FName ADukeTrooper::PickDeath(const FDamageEvent& DamageEvent, AActor* From, flo
 void ADukeTrooper::Die(FName DeathClip)
 {
 	if (UDukeTrooperAnimInstance* A = Anim()) A->State.DeathClip = DeathClip;
+	DeathClipName = DeathClip; DeathAt = GetWorld()->GetTimeSeconds(); bCutApplied = false;
+	bClimbing = false; RollStart = -1.f; MantleStart = -1.f;
 	State = EDukeTrooperState::Dead;
 	GetCharacterMovement()->DisableMovement();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MuzzleFlash->SetIntensity(0.f);
 	SetLifeSpan(30.f);
+}
+
+// ---------------- lightsaber and explosion endings ----------------
+FName ADukeTrooper::PickSaberEnding(const FDamageEvent& DamageEvent) const
+{
+	FVector HitAt = FVector::ZeroVector;
+	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID)) HitAt = static_cast<const FPointDamageEvent&>(DamageEvent).HitInfo.ImpactPoint;
+	if (HitAt.IsNearlyZero())
+	{
+		static const FName Any[5] = { TEXT("saber_death_arm"), TEXT("saber_death_leg"), TEXT("saber_death_head"), TEXT("saber_death_half"), TEXT("saber_death_diagonal") };
+		return Any[FMath::RandRange(0, 4)];
+	}
+	// height above the feet and side of the body decide where the blade landed
+	const FVector L = GetActorTransform().InverseTransformPosition(HitAt);
+	const float Z = L.Z + GetCapsuleComponent()->GetScaledCapsuleHalfHeight();   // cm above the feet
+	if (Z > 150.f) return TEXT("saber_death_head");
+	if (Z < 85.f) return TEXT("saber_death_leg");
+	if (L.Y > 18.f && Z > 115.f) return TEXT("saber_death_arm");             // right side, upper arm height
+	return FMath::RandBool() ? FName(TEXT("saber_death_half")) : FName(TEXT("saber_death_diagonal"));
+}
+
+FName ADukeTrooper::PickExplosionEnding(const FDamageEvent& DamageEvent, AActor* From) const
+{
+	FVector Origin = From ? From->GetActorLocation() : GetActorLocation() + GetActorForwardVector() * 100.f;
+	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) Origin = static_cast<const FRadialDamageEvent&>(DamageEvent).Origin;
+	const FVector L = GetActorTransform().InverseTransformPosition(Origin);
+	if (L.Size2D() < 80.f) return TEXT("death_explosion_leg");                 // right underneath: launched, loses a leg
+	if (L.X < -40.f) return TEXT("death_explosion_armleg");                   // behind: cartwheels forward
+	if (L.Y < -60.f && FMath::FRand() < 0.7f) return TEXT("death_explosion_arm");   // his left: thrown right, loses the left arm
+	return FMath::FRand() < 0.25f ? FName(TEXT("death_explosion_arm")) : FName(TEXT("death_explosion"));
+}
+
+// ---------------- roll, kneel, mantle, ladder ----------------
+// travel curves match the authored root motion of roll_to_kneel (2.3 m) and mantle (0.82 m forward, 1.1 m up)
+static float RollTravel(float T)
+{
+	const float V0 = 320.f, T1 = 0.35f, T2 = 1.15f;
+	if (T < T1) return V0 * T;
+	if (T < T2) { const float U = (T - T1) / (T2 - T1); return V0 * T1 + V0 * (T2 - T1) * (U - U * U * 0.5f); }
+	return V0 * T1 + V0 * (T2 - T1) * 0.5f;
+}
+
+void ADukeTrooper::StartRoll(float Now)
+{
+	if (UDukeTrooperAnimInstance* A = Anim()) A->PlayAction(TEXT("roll_to_kneel"));
+	RollStart = Now; RollFrom = GetActorLocation(); RollDir = GetActorForwardVector();
+	KneelUntil = Now + 1.2f + KneelSeconds;
+	NextShot = Now + 1.5f;
+}
+
+void ADukeTrooper::Mantle(float LedgeHeight)
+{
+	if (IsDead()) return;
+	if (UDukeTrooperAnimInstance* A = Anim()) A->PlayAction(TEXT("mantle"));
+	MantleStart = GetWorld()->GetTimeSeconds(); MantleFrom = GetActorLocation(); MantleHeight = LedgeHeight;
+	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+}
+
+void ADukeTrooper::StartLadderClimb(float Height)
+{
+	if (IsDead()) return;
+	bClimbing = true; ClimbTop = GetActorLocation().Z + Height;
+	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+	GetCharacterMovement()->StopMovementImmediately();
+}
+
+void ADukeTrooper::TickMoves(float Dt, float Now)
+{
+	if (RollStart >= 0.f)
+	{
+		const float T = Now - RollStart;
+		const FVector Want = RollFrom + RollDir * RollTravel(FMath::Min(T, 1.2f));
+		SetActorLocation(FVector(Want.X, Want.Y, GetActorLocation().Z), true);
+		if (T > 1.2f) RollStart = -1.f;
+	}
+	if (MantleStart >= 0.f)
+	{
+		const float T = Now - MantleStart;
+		auto Ease = [](float X) { X = FMath::Clamp(X, 0.f, 1.f); return X * X * (3.f - 2.f * X); };
+		const float Up = Ease((T - 0.22f) / 0.73f) * (MantleHeight + 5.f);
+		const float Fwd = Ease((T - 0.2f) / 1.4f) * 82.f;
+		SetActorLocation(MantleFrom + GetActorForwardVector() * Fwd + FVector(0, 0, Up), false);
+		if (T > 1.7f) { MantleStart = -1.f; GetCharacterMovement()->SetMovementMode(MOVE_Walking); }
+	}
+	if (bClimbing)
+	{
+		AddActorWorldOffset(FVector(0, 0, 50.f * Dt), true);
+		if (GetActorLocation().Z >= ClimbTop) { bClimbing = false; Mantle(40.f); }
+	}
 }

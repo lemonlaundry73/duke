@@ -10,7 +10,7 @@
 static float ClipSpeed(FName N)
 {
 	static const TMap<FName, float> Speeds = {
-		{ TEXT("walk"), 140.f }, { TEXT("run"), 420.f }, { TEXT("sprint"), 620.f },
+		{ TEXT("walk"), 130.f }, { TEXT("run"), 420.f }, { TEXT("sprint"), 620.f },
 		{ TEXT("aim_walk_fwd"), 130.f }, { TEXT("aim_walk_bwd"), 110.f }, { TEXT("aim_strafe_l"), 120.f }, { TEXT("aim_strafe_r"), 120.f },
 		{ TEXT("crouch_walk"), 100.f } };
 	const float* V = Speeds.Find(N);
@@ -23,7 +23,8 @@ static void CopyPose(FPoseContext& Out, FPoseContext& Src)
 }
 static bool IsFullBodyAction(FName N)
 {
-	return N == TEXT("hit_front") || N == TEXT("hit_back") || N == TEXT("melee") || N == TEXT("jump");
+	return N == TEXT("hit_front") || N == TEXT("hit_back") || N == TEXT("melee") || N == TEXT("jump") ||
+		N == TEXT("roll_to_kneel") || N == TEXT("mantle") || N == TEXT("saber_hit_1") || N == TEXT("saber_hit_2");
 }
 
 float UDukeTrooperAnimInstance::ClipLength(FName Name) const
@@ -63,7 +64,20 @@ void FDukeTrooperAnimProxy::BuildBase(TArray<FDukeClipRef>& Out, FName& OutKey)
 	{
 		const FName Death = (S.DeathClip != NAME_None && Clip(S.DeathClip)) ? S.DeathClip : FName(TEXT("die"));
 		OutKey = Death;
-		Add(Death, 1.f, DeadTime, false);
+		Add(Death, 1.f, S.DeathTime, false);
+		return;
+	}
+	if (S.bClimbing)
+	{
+		OutKey = TEXT("climb_ladder");
+		const UAnimSequence* Q = Clip(TEXT("climb_ladder"));
+		Add(TEXT("climb_ladder"), 1.f, Q ? ClimbPhase * Q->GetPlayLength() : 0.f);
+		return;
+	}
+	if (S.bKneeling)
+	{
+		OutKey = TEXT("kneel_aim");
+		Add(TEXT("kneel_aim"), 1.f, IdleTime);
 		return;
 	}
 	if (S.bFalling)
@@ -118,6 +132,8 @@ void FDukeTrooperAnimProxy::Update(float DeltaSeconds)
 	Dt = DeltaSeconds;
 	IdleTime += Dt; StateTime += Dt;
 	if (S.bDead) DeadTime += Dt; else DeadTime = 0.f;
+	if (const UAnimSequence* C = Clip(TEXT("climb_ladder")))   // authored at 50 cm/s
+		ClimbPhase = FMath::Fmod(ClimbPhase + Dt * (S.ClimbSpeed / 50.f) / FMath::Max(C->GetPlayLength(), 0.01f) + 1.f, 1.f);
 
 	// advance the shared gait phase by the dominant locomotion clip's authored speed, so feet stay planted
 	const float Speed = S.LocalVelocity.Size2D();
@@ -243,6 +259,7 @@ bool FDukeTrooperAnimProxy::Evaluate(FPoseContext& Output)
 	{
 		FName Name = ActionName;
 		if (S.bCrouched && (Name == TEXT("shoot") || Name == TEXT("shoot_burst")) && Clip(TEXT("crouch_shoot"))) Name = TEXT("crouch_shoot");
+		if (S.bKneeling && (Name == TEXT("shoot") || Name == TEXT("shoot_burst")) && Clip(TEXT("kneel_shoot"))) Name = TEXT("kneel_shoot");
 		if (const UAnimSequence* Q = Clip(Name))
 		{
 			FPoseContext P(Output);
