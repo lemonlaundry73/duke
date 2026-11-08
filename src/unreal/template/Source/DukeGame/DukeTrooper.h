@@ -68,6 +68,7 @@ public:
 	void EndDrag();                             // at cover: lets go
 	void Revive();                              // medic patched him up
 	void PlayGesture(FName Clip);               // one-shot upper-body/full-body action (signals, radio, commands)
+	void StartVault();                          // over a ~1 m wall ahead (root motion 1.6 m)
 	static constexpr float DragForward = DUKE_DRAG_FORWARD_CM;   // wounded root ahead of the rescuer, measured by tools/rigging/drag_pair.py
 	static constexpr float DragLeft = DUKE_DRAG_LEFT_CM;
 
@@ -111,6 +112,11 @@ private:
 	int32 SaberHits = 0;
 	bool bLimping = false;   // shot in the foot
 	bool bWounded = false, bBeingDragged = false; float WoundedAt = 0.f;
+	float BusyUntil = 0.f;                      // full-body action playing (get-up, dive, vault, turn): no other moves
+	bool bProne = false, bTreating = false; FName CoverKind = NAME_None; float CoverFireUntil = 0.f, NextCoverFire = 0.f;
+	float TurnFrom = 0.f, TurnTo = 0.f, TurnStart = -1.f, LastSpeed = 0.f, VaultStart = -1.f; FVector VaultFrom = FVector::ZeroVector;
+	void FaceTarget(const FVector& P, float Dt, float Now);   // turn in place with stepping feet when the angle is large
+	FName CoverHeightAt(const FVector& Spot, const FVector& Threat) const;
 	TWeakObjectPtr<ADukeTrooper> DragPartner;
 	void TickOrder(float Dt, float Now);
 	void BecomeWounded(float Now);

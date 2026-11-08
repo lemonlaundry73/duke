@@ -31,7 +31,10 @@ const TArray<FName>& ADukeTrooper::ClipNames()
 		TEXT("hit_front"), TEXT("hit_back"), TEXT("die"), TEXT("die_back"), TEXT("die_headshot"), TEXT("die_headshot_back"), TEXT("die_run"), TEXT("hit_foot"), TEXT("walk_limp"),
 		TEXT("wounded_down"), TEXT("wounded_crawl"), TEXT("drag_rescuer"), TEXT("drag_wounded"), TEXT("stack_up"), TEXT("breach_clear"), TEXT("stairs_up_aim"),
 		TEXT("carry_crate"), TEXT("crate_pickup"), TEXT("crate_putdown"), TEXT("radio_call"), TEXT("mortar_load"), TEXT("grenade_throw"), TEXT("suppress"),
-		TEXT("checkpoint_halt"), TEXT("check_credentials"), TEXT("inspect_freight"), TEXT("attention"), TEXT("command_point"), TEXT("command_advance"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup"),
+		TEXT("checkpoint_halt"), TEXT("check_credentials"), TEXT("inspect_freight"), TEXT("attention"), TEXT("command_point"), TEXT("command_advance"),
+		TEXT("getup_back"), TEXT("getup_front"), TEXT("medic_treat"), TEXT("cover_low_idle"), TEXT("cover_low_fire"), TEXT("cover_high_idle"),
+		TEXT("cover_lean_fire_r"), TEXT("cover_lean_fire_l"), TEXT("go_prone"), TEXT("prone_aim"), TEXT("prone_shoot"), TEXT("prone_crawl"),
+		TEXT("turn_l90"), TEXT("turn_r90"), TEXT("run_stop"), TEXT("dive_left"), TEXT("dive_right"), TEXT("vault"), TEXT("hit_left"), TEXT("hit_right"), TEXT("flinch_duck"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup"),
 		TEXT("roll_to_kneel"), TEXT("kneel_aim"), TEXT("kneel_shoot"), TEXT("climb_ladder"), TEXT("mantle"),
 		TEXT("saber_hit_1"), TEXT("saber_hit_2"), TEXT("saber_death_arm"), TEXT("saber_death_leg"), TEXT("saber_death_head"), TEXT("saber_death_half"), TEXT("saber_death_diagonal"),
 		TEXT("death_explosion"), TEXT("death_explosion_arm"), TEXT("death_explosion_leg"), TEXT("death_explosion_armleg") };
@@ -200,6 +203,8 @@ void ADukeTrooper::Tick(float Dt)
 		A->State.bWounded = bWounded && !bBeingDragged;
 		A->State.bDragged = bBeingDragged;
 		A->State.bDragging = DragPartner.IsValid() && !bWounded;
+		A->State.bProne = bProne && !bWounded;
+		if (bTreating && !bWounded) A->State.DutyClip = TEXT("medic_treat");
 		const bool bDutyOrder = Order.Type == EDukeOrder::Duty || Order.Type == EDukeOrder::Attention || Order.Type == EDukeOrder::Stack;
 		A->State.DutyClip = (bDutyOrder && !bWounded && !DragPartner.IsValid()) ? Order.Clip : NAME_None;
 		// props: a supply crate while hauling, a datapad while checking papers (Unreal cube scaled; swap in real meshes on a Blueprint)
@@ -208,6 +213,7 @@ void ADukeTrooper::Tick(float Dt)
 		PropMesh->SetVisibility(bCrate || bPad);
 		PropMesh->SetRelativeScale3D(bCrate ? FVector(0.40f, 0.40f, 0.34f) : FVector(0.12f, 0.02f, 0.18f));
 		if (Order.Type == EDukeOrder::Cover || Order.Type == EDukeOrder::Suppress || Order.Type == EDukeOrder::Breach) A->State.bAiming = true;
+		if (Order.Type == EDukeOrder::Cover && CoverKind != NAME_None && !bWounded && Now >= CoverFireUntil) A->State.DutyClip = CoverKind;   // cover_low_idle / cover_high_idle
 		A->State.ClimbSpeed = bClimbing ? 50.f : 0.f;
 		const FVector V = GetActorTransform().InverseTransformVectorNoScale(GetVelocity());
 		A->State.LocalVelocity = FVector(V.X, V.Y, 0.f);
@@ -370,8 +376,16 @@ float ADukeTrooper::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 	if (!bWounded && Squad.IsValid() && Health < MaxHealth * 0.35f && FMath::FRand() < WoundChance) { BecomeWounded(Now); if (From) Squad->ReportThreat(this, From); return Dmg; }
 	if (UDukeTrooperAnimInstance* A = Anim())
 	{
-		const bool bFront = !From || FVector::DotProduct(GetActorForwardVector(), From->GetActorLocation() - GetActorLocation()) > 0.f;
-		A->PlayAction(bFront ? TEXT("hit_front") : TEXT("hit_back"));
+		// directional reaction: front / back / left / right of the shooter; a nearby blast makes him duck instead
+		FName R = TEXT("hit_front");
+		if (DT && DT->IsChildOf(UDukeExplosionDamageType::StaticClass())) R = TEXT("flinch_duck");
+		else if (From)
+		{
+			const FVector To = (From->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+			const float F = FVector::DotProduct(GetActorForwardVector(), To), Rt = FVector::DotProduct(GetActorRightVector(), To);
+			R = FMath::Abs(Rt) > FMath::Abs(F) ? (Rt > 0.f ? FName(TEXT("hit_right")) : FName(TEXT("hit_left"))) : (F > 0.f ? FName(TEXT("hit_front")) : FName(TEXT("hit_back")));
+		}
+		A->PlayAction(R);
 		ActionLock = Now + 0.35f;
 	}
 	if (State != EDukeTrooperState::Combat && From) EnterCombat(From, Now, false);
@@ -568,6 +582,7 @@ void ADukeTrooper::Revive()
 	if (!bWounded || IsDead()) return;
 	bWounded = false; Health = MaxHealth * 0.5f;
 	GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
+	PlayGesture(TEXT("getup_back")); BusyUntil = GetWorld()->GetTimeSeconds() + 2.4f;   // gets up before doing anything else
 }
 
 void ADukeTrooper::BeginDrag(ADukeTrooper* W)
@@ -598,6 +613,34 @@ void ADukeTrooper::TickOrder(float Dt, float Now)
 	AActor* Tgt = Order.Target.Get();
 	if (bBeingDragged) return;                                   // carried by the rescuer
 	if (bWounded) { MoveToward(Order.Location, 30.f); return; }  // crawls toward cover
+	const float Speed2D = GetVelocity().Size2D();
+	if (LastSpeed > 300.f && Speed2D < 60.f && Now > BusyUntil) { PlayGesture(TEXT("run_stop")); }   // brakes out of a run
+	LastSpeed = Speed2D;
+	if (TurnStart >= 0.f)
+	{
+		const float K = FMath::Clamp((Now - TurnStart) / 0.8f, 0.f, 1.f);
+		SetActorRotation(FRotator(0.f, TurnFrom + FMath::FindDeltaAngleDegrees(TurnFrom, TurnTo) * (K * K * (3.f - 2.f * K)), 0.f));
+		if (K >= 1.f) TurnStart = -1.f;
+	}
+	if (VaultStart >= 0.f)
+	{
+		const float K = FMath::Clamp((Now - VaultStart) / 1.3f, 0.f, 1.f);
+		SetActorLocation(VaultFrom + GetActorForwardVector() * 160.f * (K * K * (3.f - 2.f * K)) + FVector(0, 0, 55.f * FMath::Sin(PI * FMath::Min(1.f, K / 0.75f))), false);
+		if (K >= 1.f) { VaultStart = -1.f; GetCharacterMovement()->SetMovementMode(MOVE_Walking); }
+		return;
+	}
+	if (Now < BusyUntil) return;
+	bTreating = false;
+	if (Order.Type != EDukeOrder::Suppress && bProne) { bProne = false; PlayGesture(TEXT("getup_front")); BusyUntil = Now + 2.4f; return; }
+	// a ~1 m wall in the way while moving: vault it
+	if (Speed2D > 120.f)
+	{
+		FCollisionQueryParams VQ(SCENE_QUERY_STAT(DukeVault), false, this); FHitResult HLow, HHigh;
+		const FVector P0 = GetActorLocation() - FVector(0, 0, GetCapsuleComponent()->GetScaledCapsuleHalfHeight() - 50.f);
+		const FVector Fw = GetActorForwardVector() * 90.f;
+		if (GetWorld()->LineTraceSingleByChannel(HLow, P0, P0 + Fw, ECC_Visibility, VQ) && !GetWorld()->LineTraceSingleByChannel(HHigh, P0 + FVector(0, 0, 80.f), P0 + FVector(0, 0, 80.f) + Fw * 1.6f, ECC_Visibility, VQ))
+		{ StartVault(); return; }
+	}
 	const float Dist = FVector::Dist2D(GetActorLocation(), Order.Location);
 	auto Face = [&](const FVector& P) { SetActorRotation(FMath::RInterpTo(GetActorRotation(), ((P - GetActorLocation()) * FVector(1, 1, 0)).Rotation(), Dt, 7.f)); };
 	auto ShootIfSeen = [&](bool bBlind)
@@ -612,10 +655,25 @@ void ADukeTrooper::TickOrder(float Dt, float Now)
 		MoveToward(Order.Location, Dist > 800.f ? 420.f : PatrolSpeed);   // jog when far, walk otherwise
 		break;
 	case EDukeOrder::Cover:
-		if (Dist > 60.f) { MoveToward(Order.Location, Dist > 500.f ? 420.f : CombatMoveSpeed, false); if (Tgt && Dist < 500.f) Face(Tgt->GetActorLocation()); }
-		else { CrouchUntil = Now + 0.5f; if (Tgt) Face(Tgt->GetActorLocation()); ShootIfSeen(false); }
+		if (Dist > 60.f) { CoverKind = NAME_None; MoveToward(Order.Location, Dist > 500.f ? 420.f : CombatMoveSpeed, false); if (Tgt && Dist < 500.f) Face(Tgt->GetActorLocation()); }
+		else
+		{
+			if (Tgt) FaceTarget(Tgt->GetActorLocation(), Dt, Now);
+			if (CoverKind == NAME_None && Tgt) CoverKind = CoverHeightAt(GetActorLocation(), Tgt->GetActorLocation());
+			if (CoverKind == NAME_None) { CrouchUntil = Now + 0.5f; ShootIfSeen(false); break; }       // no real cover here: crouch and fight
+			// pop up (low wall) or lean out (tall wall) to fire, then back into cover
+			if (Now > NextCoverFire && Tgt)
+			{
+				const bool bLow = CoverKind == TEXT("cover_low_idle");
+				PlayGesture(bLow ? TEXT("cover_low_fire") : TEXT("cover_lean_fire_r"));
+				CoverFireUntil = Now + (bLow ? 2.0f : 1.9f); NextCoverFire = CoverFireUntil + FMath::FRandRange(1.0f, 2.5f);
+				BurstLeft = 3; NextShot = Now + (bLow ? 0.5f : 0.45f);
+			}
+			if (Now < CoverFireUntil && Now >= NextShot && BurstLeft > 0 && Tgt) { Target = Tgt; FireBolt(Now); --Ammo; --BurstLeft; NextShot = Now + 0.25f; }
+		}
 		break;
 	case EDukeOrder::Suppress:
+		if (Duty == EDukeDuty::Heavy && Dist <= 60.f && !bProne) { bProne = true; PlayGesture(TEXT("go_prone")); BusyUntil = Now + 1.6f; break; }   // the heavy goes prone to suppress
 		if (Dist > 60.f) MoveToward(Order.Location, CombatMoveSpeed);
 		if (Tgt) { Face(Tgt->GetActorLocation()); ShootIfSeen(true); }  // keeps their heads down even without a clear shot
 		break;
@@ -637,7 +695,7 @@ void ADukeTrooper::TickOrder(float Dt, float Now)
 			const bool bAtCover = FVector::Dist2D(W->GetActorLocation(), Order.Location) < 150.f;
 			if (ToW > 110.f) MoveToward(W->GetActorLocation() + (GetActorLocation() - W->GetActorLocation()).GetSafeNormal2D() * 100.f, 420.f);
 			else if (!bAtCover) BeginDrag(W);
-			else if (Duty == EDukeDuty::Medic) { CrouchUntil = Now + 0.5f; if (Now - W->WoundedAt > 6.f) W->Revive(); }   // treats him there
+			else if (Duty == EDukeDuty::Medic) { bTreating = true; FaceTarget(W->GetActorLocation(), Dt, Now); if (Now - W->WoundedAt > 6.f) W->Revive(); }   // kneels and treats him there
 			else CrouchUntil = Now + 0.5f;                                                                                  // guards him
 		}
 		break;
@@ -652,4 +710,42 @@ void ADukeTrooper::TickOrder(float Dt, float Now)
 		break;
 	default: break;
 	}
+}
+
+// ---------------- turning, cover height, vault ----------------
+void ADukeTrooper::FaceTarget(const FVector& P, float Dt, float Now)
+{
+	const float Want = ((P - GetActorLocation()) * FVector(1, 1, 0)).Rotation().Yaw;
+	const float Delta = FMath::FindDeltaAngleDegrees(GetActorRotation().Yaw, Want);
+	if (TurnStart >= 0.f) return;
+	if (FMath::Abs(Delta) > 70.f && GetVelocity().Size2D() < 20.f && Now >= BusyUntil)
+	{
+		// stepping turn: 90 deg with the feet moving, instead of spinning on the spot
+		PlayGesture(Delta > 0.f ? TEXT("turn_r90") : TEXT("turn_l90"));   // Unreal yaw + = right turn
+		TurnFrom = GetActorRotation().Yaw; TurnTo = TurnFrom + FMath::Sign(Delta) * 90.f; TurnStart = Now;
+		return;
+	}
+	SetActorRotation(FMath::RInterpTo(GetActorRotation(), FRotator(0.f, Want, 0.f), Dt, 7.f));
+}
+
+// Low cover blocks a crouching trooper (60 cm) but not a standing one (150 cm); tall cover blocks both.
+FName ADukeTrooper::CoverHeightAt(const FVector& Spot, const FVector& Threat) const
+{
+	FCollisionQueryParams Q(SCENE_QUERY_STAT(DukeCoverHeight), false, this);
+	const float FeetZ = Spot.Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+	auto Blocked = [&](float H)
+	{
+		FHitResult Hit; const FVector A(Spot.X, Spot.Y, FeetZ + H);
+		const FVector Dir = ((Threat - Spot) * FVector(1, 1, 0)).GetSafeNormal();
+		return GetWorld()->LineTraceSingleByChannel(Hit, A, A + Dir * 150.f, ECC_Visibility, Q);
+	};
+	if (!Blocked(60.f)) return NAME_None;
+	return Blocked(150.f) ? FName(TEXT("cover_high_idle")) : FName(TEXT("cover_low_idle"));
+}
+
+void ADukeTrooper::StartVault()
+{
+	PlayGesture(TEXT("vault")); VaultStart = GetWorld()->GetTimeSeconds(); VaultFrom = GetActorLocation();
+	BusyUntil = VaultStart + 1.3f;
+	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
 }

@@ -10,7 +10,7 @@
 static float ClipSpeed(FName N)
 {
 	static const TMap<FName, float> Speeds = {
-		{ TEXT("walk"), 130.f }, { TEXT("walk_limp"), 90.f }, { TEXT("drag_rescuer"), 90.f }, { TEXT("carry_crate"), 100.f }, { TEXT("wounded_crawl"), 30.f }, { TEXT("run"), 420.f }, { TEXT("sprint"), 620.f },
+		{ TEXT("walk"), 130.f }, { TEXT("walk_limp"), 90.f }, { TEXT("drag_rescuer"), 90.f }, { TEXT("carry_crate"), 100.f }, { TEXT("wounded_crawl"), 30.f }, { TEXT("prone_crawl"), 40.f }, { TEXT("run"), 420.f }, { TEXT("sprint"), 620.f },
 		{ TEXT("aim_walk_fwd"), 130.f }, { TEXT("aim_walk_bwd"), 110.f }, { TEXT("aim_strafe_l"), 120.f }, { TEXT("aim_strafe_r"), 120.f },
 		{ TEXT("crouch_walk"), 100.f } };
 	const float* V = Speeds.Find(N);
@@ -24,7 +24,10 @@ static void CopyPose(FPoseContext& Out, FPoseContext& Src)
 static bool IsFullBodyAction(FName N)
 {
 	return N == TEXT("hit_front") || N == TEXT("hit_back") || N == TEXT("melee") || N == TEXT("jump") ||
-		N == TEXT("roll_to_kneel") || N == TEXT("mantle") || N == TEXT("saber_hit_1") || N == TEXT("saber_hit_2");
+		N == TEXT("roll_to_kneel") || N == TEXT("mantle") || N == TEXT("saber_hit_1") || N == TEXT("saber_hit_2") ||
+		N == TEXT("getup_back") || N == TEXT("getup_front") || N == TEXT("go_prone") || N == TEXT("dive_left") || N == TEXT("dive_right") ||
+		N == TEXT("vault") || N == TEXT("turn_l90") || N == TEXT("turn_r90") || N == TEXT("run_stop") || N == TEXT("flinch_duck") ||
+		N == TEXT("hit_left") || N == TEXT("hit_right") || N == TEXT("cover_low_fire") || N == TEXT("cover_lean_fire_r") || N == TEXT("cover_lean_fire_l");
 }
 
 float UDukeTrooperAnimInstance::ClipLength(FName Name) const
@@ -72,6 +75,12 @@ void FDukeTrooperAnimProxy::BuildBase(TArray<FDukeClipRef>& Out, FName& OutKey)
 	{
 		if (Speed > 10.f) { OutKey = TEXT("wounded_crawl"); Add(TEXT("wounded_crawl"), 1.f, Cyc(TEXT("wounded_crawl"))); }
 		else { OutKey = TEXT("wounded_down"); Add(TEXT("wounded_down"), 1.f, IdleTime); }
+		return;
+	}
+	if (S.bProne)
+	{
+		if (Speed > 10.f) { OutKey = TEXT("prone_crawl"); Add(TEXT("prone_crawl"), 1.f, Cyc(TEXT("prone_crawl"))); }
+		else { OutKey = TEXT("prone_aim"); Add(TEXT("prone_aim"), 1.f, IdleTime); }
 		return;
 	}
 	if (S.bDragging) { OutKey = TEXT("drag_rescuer"); Add(TEXT("drag_rescuer"), 1.f, Cyc(TEXT("drag_rescuer"))); return; }
@@ -166,6 +175,7 @@ void FDukeTrooperAnimProxy::Update(float DeltaSeconds)
 	else if (S.bLimping) Gait = TEXT("walk_limp");
 	if (S.bDragging || S.bDragged) Gait = TEXT("drag_rescuer");      // the pair shares one clock, so hands and collar stay together
 	else if (S.bWounded) Gait = TEXT("wounded_crawl");
+	else if (S.bProne) Gait = TEXT("prone_crawl");
 	else if (S.DutyClip == TEXT("carry_crate")) Gait = TEXT("carry_crate");
 	else if (Speed > 525.f) Gait = TEXT("sprint");
 	else if (Speed > 275.f) Gait = TEXT("run");
@@ -287,6 +297,7 @@ bool FDukeTrooperAnimProxy::Evaluate(FPoseContext& Output)
 		FName Name = ActionName;
 		if (S.bCrouched && (Name == TEXT("shoot") || Name == TEXT("shoot_burst")) && Clip(TEXT("crouch_shoot"))) Name = TEXT("crouch_shoot");
 		if (S.bKneeling && (Name == TEXT("shoot") || Name == TEXT("shoot_burst")) && Clip(TEXT("kneel_shoot"))) Name = TEXT("kneel_shoot");
+		if (S.bProne && (Name == TEXT("shoot") || Name == TEXT("shoot_burst")) && Clip(TEXT("prone_shoot"))) Name = TEXT("prone_shoot");
 		if (const UAnimSequence* Q = Clip(Name))
 		{
 			FPoseContext P(Output);

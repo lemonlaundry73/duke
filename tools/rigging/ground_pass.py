@@ -18,7 +18,7 @@ def lowest():
         z = (np.array(o.matrix_world) @ np.c_[c, np.ones(n)].T)[2]; o.evaluated_get(dg).to_mesh_clear(); res.append(z)
     return res
 REPORT = {}
-LYING = {'wounded_down', 'wounded_crawl', 'drag_wounded'}
+LYING = {'wounded_down', 'wounded_crawl', 'drag_wounded', 'prone_aim', 'prone_shoot', 'prone_crawl'}
 for act in bpy.data.actions:
     if act.name in RD: continue
     ao.animation_data.action = act; N = int(act.frame_range[1]); worst = 0.0
@@ -26,7 +26,7 @@ for act in bpy.data.actions:
         for it in range(8):
             sc.frame_set(f); bpy.context.view_layer.update()
             zt, zg = lowest(); low = min(zt.min(), zg.min())
-            if act.name in LYING and low > 0.004:
+            if (act.name in LYING or (act.name.startswith('getup') and f < 12)) and low > 0.004:
                 # lying clips rest ON the floor: settle the body down onto it
                 P['pelvis'].matrix = M.Translation((0, 0, 0.002 - low)) @ P['pelvis'].matrix; bpy.context.view_layer.update()
                 P['pelvis'].keyframe_insert('location', frame=f, group='pelvis'); P['pelvis'].keyframe_insert('rotation_quaternion', frame=f, group='pelvis')

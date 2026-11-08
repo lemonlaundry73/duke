@@ -59,6 +59,8 @@ def apply(d,feet=None,ball=None,frame=None):
     K.reset(ao)
     if 'rootx' in d or 'rooty' in d or 'rootz' in d:      # root motion (roll, mantle, blast throws)
         K.loc_world(P['root'],(d.get('rootx',0.0),d.get('rooty',0.0),d.get('rootz',0.0)))
+    if d.get('rootyaw'):                                   # root rotation (turn in place)
+        K.rot(P['root'],0,d['rootyaw'],0)
     K.loc_world(P['pelvis'],(d['px'],d['py'],d['pz'])); K.rot(P['pelvis'],d['pp'],d['pyw'],d['pr'])
     for i in (1,2,3): K.rot(P[f'spine_0{i}'],d[f's{i}p'],d[f's{i}y'],d[f's{i}r'])
     K.rot(P['neck_01'],d['np_'],d['ny'],d['nr']); K.rot(P['head'],d['hp'],d['hy'],d['hr'])
@@ -1166,6 +1168,182 @@ def rank_clips():
     fk_clip('command_advance',1.3,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Officer / sergeant: arm up, then chops forward: "advance".')
 
 wounded_clips(); drag_clips(); cqb_clips(); logistics_clips(); comms_artillery_clips(); checkpoint_clips(); rank_clips()
+# ================= combat completeness: get-ups, cover, prone, turns, stops, dives, vault, reactions =================
+def blend_feet(a,b,k):
+    out={}
+    for sd in 'lr':
+        A,B=a[sd],b[sd]; m=A.to_quaternion().slerp(B.to_quaternion(),k).to_matrix().to_4x4(); m.translation=A.translation.lerp(B.translation,k); out[sd]=m
+    return out
+def feet_at(t,keys):
+    """keys: [(t, feet_dict)] -> smoothly blended feet"""
+    if t<=keys[0][0]: return keys[0][1]
+    for (t0,a),(t1,b) in zip(keys,keys[1:]):
+        if t<=t1: return blend_feet(a,b,ss((t-t0)/(t1-t0)))
+    return keys[-1][1]
+AIMd=dict(stance('aim'),**LIMBS0); AIMd.update(armL=1,armR=1,legs=1)
+READYd=dict(stance('ready'),**LIMBS0); READYd.update(armL=1,armR=1,legs=1)
+KNEELd=dict(KNEEL)
+LYING_BACK=dict(LIE,armL=1,armR=1)
+PRONE=dict(stance('aim'),**LIMBS0); PRONE.update(armL=1,armR=1,legs=0,pp=86,pz=-0.80,s1p=-12,s2p=-16,s3p=-14,np_=-20,hp=-30,tlp=4,trp=4,tlr=-10,trr=10,clp=4,crp=4,pyw=0,s1y=0,s2y=0,s3y=0)
+
+def getup_clips():
+    # from lying on his back: sit up, roll onto the right knee, push up, stand at the ready
+    keys=[(0.0,dict(LYING_BACK,armL=0),'s'),
+          (0.45,dict(LYING_BACK,armL=0,pp=-45,pz=-0.64,s2p=22,s3p=12,hp=18,tlp=-70,trp=-60,clp=105,crp=95),'s'),
+          (0.95,dict(KNEELd,armL=0,pr=-12,pyw=18,s2p=18,hp=10,legs=1),'s'),
+          (1.35,dict(KNEELd,armL=0,legs=1),'s'),
+          (1.95,dict(READYd,pz=-0.12,s2p=10,legs=1),'s'),
+          (2.4,dict(READYd),'s')]
+    def tl(t):
+        x=segs(t,keys); x['legs']=ss((t-0.2)/0.25)     # feet plant in front of him as he sits up; IK carries them to the kneel
+        if t<1.6: x['handL_rel']=hmat('l',(0.30,0.10 if t<0.7 else -0.10,0.98),pitch=-60)      # pushing off the ground
+        else: x['armL']=ss((t-1.6)/0.4)                                                          # back on the blaster
+        SIT={'l':foot_mat('l',(0.06,-0.52,0),pitch=-18,yaw=10),'r':foot_mat('r',(-0.06,-0.46,0),pitch=-18,yaw=-10)}
+        return x,feet_at(t,[(0.2,SIT),(0.55,SIT),(0.95,kneel_feet()),(1.5,kneel_feet()),(2.1,FE_RDY)]),dict(armL=x['armL'] if t>=1.6 else 0,armR=1,legs=x['legs']),fk_of(x)
+    fk_clip('getup_back',2.4,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Get up from lying on his back (after being patched up): sits up, rolls onto a knee, pushes up, ready.')
+    # from face down / prone: push up, knees under, one knee, stand
+    PR=dict(PRONE,armL=0)
+    keys=[(0.0,PR,'s'),
+          (0.4,dict(PR,pp=62,pz=-0.62,s2p=-6,s3p=-6,hp=-20),'s'),
+          (0.9,dict(PR,pp=40,pz=-0.58,s2p=10,s3p=4,hp=-6,tlp=-100,trp=-100,clp=135,crp=135),'s'),
+          (1.35,dict(KNEELd,armL=0,legs=1),'s'),
+          (1.95,dict(READYd,pz=-0.12,s2p=10,legs=1),'s'),
+          (2.4,dict(READYd),'s')]
+    def tl(t):
+        x=segs(t,keys); x['legs']=ss((t-0.9)/0.45)
+        if t<1.4: x['handL_rel']=hmat('l',(0.22,-0.30,1.05),pitch=-100)
+        else: x['armL']=ss((t-1.4)/0.4)
+        return x,feet_at(t,[(0.9,kneel_feet()),(1.5,kneel_feet()),(2.1,FE_RDY)]),dict(armL=x['armL'] if t>=1.4 else 0,armR=1,legs=x['legs']),fk_of(x)
+    fk_clip('getup_front',2.4,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Get up from face down or prone: pushes up, knees under, one knee, stands at the ready. Also prone-to-stand.')
+    # medic treating a wounded man lying at his left front: kneels, both hands working on the chest
+    def tl(t):
+        x=dict(KNEELd,armL=0,armR=0,pp=24,s2p=22,s3p=10,hp=26,hy=8)
+        w=0.03*math.sin(2*math.pi*t/0.7)
+        x['handL']=hmat('l',(0.18,-0.46,0.42+w),pitch=-110,yaw=20); x['handR']=hmat('r',(0.00,-0.48,0.42-w),pitch=-110,yaw=-20)
+        return x,kneel_feet(),dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('medic_treat',2.8,tl,99,(0,0,0),(0,0,0),None,loop=True,gun_mode='back',notes='Medic kneeling over a wounded trooper, working on his chest (blaster slung). Loop.')
+
+def cover_clips():
+    LOW=dict(READYd,pz=-0.52,pp=16,s1p=8,s2p=10,s3p=6,hp=6,gpos=(-0.05,-0.20,1.18),gyaw=30,gpitch=55,groll=-25)   # crouched, rifle up at the chest
+    FEc={'l':foot_mat('l',(0.04,-0.16,0),yaw=10),'r':foot_mat('r',(-0.06,0.18,0),pitch=40,pivot='ball',yaw=-14)}
+    def tl(t):
+        x=dict(LOW); x['s2p']+=osc(t,2.6,1.5); x['hy']=osc(t,3.9,12); return x,FEc,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('cover_low_idle',2.6,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=1,notes='Behind low cover (about 1 m): crouched, blaster up at the chest, head down, glancing. Loop.')
+    UP=dict(AIMd,pz=-0.18,pp=6,s2p=4)
+    keys=[(0.0,LOW,'s'),(0.35,UP,'o'),(1.35,UP,'s'),(1.75,LOW,'s'),(2.0,LOW,'s')]
+    def tl(t):
+        x=segs(t,keys); x=shots(t,(0.5,0.75,1.0),x); x.update({k:x.get(k,0) for k in LIMBS0})
+        return x,FEc,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('cover_low_fire',2.0,tl,99,(0,0,0),(0,0,0),None,lhand_on=1,notes='Low cover: pops up over the wall, fires 3 bolts (0.5, 0.75, 1.0 s), drops back down.')
+    # tall cover: the wall edge is on his right; he stands close to it, then leans out to fire
+    HIGH=dict(READYd,s2p=2,hp=2,hy=-25,s3y=-8,gpos=(-0.04,-0.20,1.24),gyaw=35,gpitch=60,groll=-30)
+    FEh={'l':foot_mat('l',(0.04,-0.04,0),yaw=8),'r':foot_mat('r',(-0.04,0.06,0),yaw=-14)}
+    def tl(t):
+        x=dict(HIGH); x['s2p']+=osc(t,2.8,1.2); return x,FEh,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('cover_high_idle',2.8,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=1,notes='Behind tall cover, wall edge on his right: standing close, blaster at port, watching the edge. Loop.')
+    for side,sg in (('r',-1),('l',1)):
+        LEAN=dict(AIMd,s1r=-sg*6,s2r=-sg*12,s3r=-sg*10,pr=-sg*4,px=sg*0.10,hr=sg*6)
+        keys=[(0.0,HIGH,'s'),(0.3,LEAN,'o'),(1.3,LEAN,'s'),(1.65,HIGH,'s'),(1.9,HIGH,'s')]
+        def tl(t,keys=keys,sg=sg):
+            x=segs(t,keys); x=shots(t,(0.45,0.7,0.95),x); x.update({k:x.get(k,0) for k in LIMBS0})
+            k=ss(t/0.3)*(1-ss((t-1.3)/0.35))
+            feet={'l':foot_mat('l',(0.04+sg*0.18*k*(sg>0),-0.04,0),yaw=8),'r':foot_mat('r',(-0.04+sg*0.18*k*(sg<0),0.06,0),yaw=-14)}
+            return x,feet,dict(armL=1,armR=1,legs=1),fk_of(x)
+        fk_clip(f'cover_lean_fire_{side}',1.9,tl,99,(0,0,0),(0,0,0),None,lhand_on=1,
+                notes=f'Tall cover: steps and leans out to the {"right" if side=="r" else "left"}, fires 3 bolts, back behind the wall.')
+
+def prone_clips():
+    keys=[(0.0,AIMd,'s'),(0.35,dict(KNEELd),'s'),(0.75,dict(PRONE,pp=50,pz=-0.62,s2p=0,hp=-10,legs=0.4,tlp=-60,trp=-60,clp=90,crp=90),'s'),(1.25,PRONE,'o'),(1.6,PRONE,'s')]
+    def tl(t):
+        x=segs(t,keys); x['legs']=1-ss((t-0.4)/0.4)
+        return x,feet_at(t,[(0.0,AIMFEET),(0.35,kneel_feet())]),dict(armL=1,armR=1,legs=x['legs']),fk_of(x)
+    fk_clip('go_prone',1.6,tl,99,(0,0,0),(0,0,0),None,lhand_on=1,notes='Drops from standing to prone: kneels, falls forward onto the elbows, rifle aimed.')
+    def tl(t):
+        x=dict(PRONE); x['s2p']+=osc(t,3.0,1.0); return x,None,dict(armL=1,armR=1,legs=0),fk_of(x)
+    fk_clip('prone_aim',3.0,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=1,notes='Prone, up on the elbows, aiming. Loop.')
+    def tl(t):
+        x=shots(t,(0.0,),dict(PRONE)); return x,None,dict(armL=1,armR=1,legs=0),fk_of(x)
+    fk_clip('prone_shoot',0.3,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=1,notes='Prone bolt with recoil. Loop for sustained fire.')
+    def tl(t):
+        p=(t/1.4)%1.0; x=dict(PRONE)
+        x['tlp']=-35*max(0,math.sin(2*math.pi*p)); x['trp']=-35*max(0,math.sin(2*math.pi*(p+0.5)))
+        x['clp']=55*max(0,math.sin(2*math.pi*p)); x['crp']=55*max(0,math.sin(2*math.pi*(p+0.5)))
+        x['tlr']=-10-12*max(0,math.sin(2*math.pi*p)); x['trr']=10+12*max(0,math.sin(2*math.pi*(p+0.5)))
+        x['s1y']=6*math.sin(2*math.pi*p); x['s2y']=5*math.sin(2*math.pi*p); x['pr']=4*math.sin(2*math.pi*p)
+        x['gdy']=0.04*math.sin(2*math.pi*p); x['s2p']=PRONE['s2p']+6
+        return x,None,dict(armL=1,armR=1,legs=0),fk_of(x)
+    fk_clip('prone_crawl',1.4,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=1,notes='Prone crawl on elbows and knees, rifle cradled forward. 0.4 m/s. Loop.')
+
+def move_clips():
+    # turn in place: root rotates 90 deg, the feet step around (planted foot pivots, the other steps)
+    for name,sg in (('turn_l90',1),('turn_r90',-1)):
+        def tl(t,sg=sg):
+            k=ss(t/0.8); yaw=90*sg*k; x=dict(READYd,rootyaw=yaw)
+            x['s2y']=-sg*12*math.sin(math.pi*k); x['hy']=sg*14*math.sin(math.pi*min(1,k*1.4))   # head leads, chest follows
+            lead,trail=('l','r') if sg>0 else ('r','l')
+            ka=ss((t-0.05)/0.35); kb=ss((t-0.35)/0.4)
+            feet={}
+            for sd,kk in ((lead,ka),(trail,kb)):
+                ang=90*sg*kk-yaw                                     # world heading of this foot minus the root's
+                base=FE_RDY[sd]; m=M.Rotation(R(ang),4,'Z')@base; m.translation=M.Rotation(R(ang),3,'Z')@base.translation
+                m.translation.z+=0.07*math.sin(math.pi*kk); feet[sd]=m
+            return x,feet,dict(armL=1,armR=1,legs=1),fk_of(x)
+        fk_clip(name,0.8,tl,99,(0,0,0),(0,0,0),None,lhand_on=1,notes=f'Turn in place 90 deg {"left" if sg>0 else "right"}, stepping (root rotation; the feet do not skate).')
+    # stop from a run: lean back, two short braking steps, settle at the ready
+    RUNP=dict(stance('port'),**LIMBS0); RUNP.update(armL=1,armR=1,legs=1,s1p=6,s2p=5,hp=-6,pz=-0.08)
+    keys=[(0.0,RUNP,'s'),(0.25,dict(RUNP,pp=-8,s2p=-4,pz=-0.14),'o'),(0.5,dict(READYd,pz=-0.06),'s'),(0.8,READYd,'s')]
+    def tl(t):
+        x=segs(t,keys); x['rooty']=-(1.2*(1-math.exp(-t/0.18)))
+        f1=ss(t/0.2); f2=ss((t-0.2)/0.25)
+        feet={'l':foot_mat('l',(0,0.25*(1-f1)-0.25*f1*0+(-0.0),0.06*math.sin(math.pi*f1)),pitch=-10*(1-f1)),'r':foot_mat('r',(0,0.30*(1-f2),0.06*math.sin(math.pi*f2)))}
+        for sd in 'lr': feet[sd].translation.y+= 1.2*(1-math.exp(-t/0.18)) - 1.2*(1-math.exp(-min(t,0.45)/0.18))
+        return x,feet,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('run_stop',0.8,tl,99,(0,0,0),(0,0,0),None,lhand_on=1,notes='Stops from a run: leans back, two braking steps, settles at the ready (root motion ~1.2 m).')
+    # dive sideways to cover: push off, fly, land on the side and roll to prone-ish
+    for name,sg in (('dive_left',1),('dive_right',-1)):
+        def tl(t,sg=sg):
+            g=9.81; up=2.2; tl_=2*up/g; tf=min(t,tl_)
+            x=dict(AIMd); x['rootx']=sg*(2.6*tf+(0.4*(1-math.exp(-(t-tl_)/0.12)) if t>tl_ else 0)); x['rootz']=max(0.0,up*tf-0.5*g*tf*tf)
+            k=ss(t/0.15); fl=math.sin(math.pi*min(1,t/tl_)) if t<tl_ else 0; land=ss((t-tl_)/0.25)
+            x.update(pr=sg*75*min(1,t/tl_)+sg*10*land,pz=-0.25*k-0.5*land,legs=1-k,s2r=sg*10*fl,tlp=-40*fl,trp=-20*fl,clp=60*fl,crp=40*fl)
+            return x,AIMFEET,dict(armL=1,armR=1,legs=x['legs']),fk_of(x)
+        fk_clip(name,1.2,tl,99,(0,0,0),(0,0,0),None,lhand_on=1,notes=f'Dives to the {"left" if sg>0 else "right"} away from a grenade or fire, lands on his side with the rifle up (root motion ~2.5 m).')
+    # vault a 1 m wall: left hand on top, legs swing over, land and continue
+    H=1.0
+    keys=[(0.0,dict(READYd,rooty=0,rootz=0),'s'),(0.25,dict(READYd,rooty=-0.25,rootz=0,pz=-0.12,pp=10),'s'),
+          (0.5,dict(READYd,rooty=-0.6,rootz=0.55,pz=-0.30,pp=18,pr=-12,legs=0.0,tlp=-80,trp=-70,clp=90,crp=80,tlr=-20,trr=-20),'o'),
+          (0.75,dict(READYd,rooty=-1.0,rootz=0.40,pz=-0.30,pp=10,pr=-8,legs=0.0,tlp=-40,trp=-30,clp=50,crp=40),'i'),
+          (0.95,dict(READYd,rooty=-1.4,rootz=0.0,pz=-0.18,pp=8,legs=1),'s'),(1.3,dict(READYd,rooty=-1.6,rootz=0.0),'s')]
+    def tl(t):
+        x=segs(t,keys); ry,rz=x['rooty'],x['rootz']
+        on=ss((t-0.25)/0.12)*(1-ss((t-0.7)/0.12))
+        if on>0.01:
+            bpy.context.view_layer.update(); ongun=P['ctrl_hand_l'].matrix.copy()
+            top=hmat('l',(0.18,-0.75-ry,H+0.02-rz),pitch=-90)
+            x['handL']=M.Translation(ongun.translation.lerp(top.translation,on))@ongun.to_quaternion().slerp(top.to_quaternion(),on).to_matrix().to_4x4()
+        ik=1.0 if t<0.4 or t>0.9 else 0.0
+        return x,AIMFEET if t>0.9 else FE_RDY,dict(armL=1,armR=1,legs=ik if t<0.4 or t>0.95 else x['legs']),fk_of(x)
+    fk_clip('vault',1.3,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Vaults a 1 m wall: left hand on top, legs swing over, lands and moves on. Blaster kept in the right hand (root motion 1.6 m).')
+
+def reaction_clips():
+    for name,sg in (('hit_left',1),('hit_right',-1)):
+        keys=[(0.0,AIMd,'s'),(0.06,dict(AIMd,s2y=-sg*20,s3y=-sg*14,s2r=-sg*10,pyw=-sg*10,px=-sg*0.05,hr=-sg*12,gdyaw=-sg*14,gdz=0.03),'o'),(0.3,dict(AIMd,s2y=-sg*6,s2r=-sg*3,px=-sg*0.06),'s'),(0.65,AIMd,'s')]
+        def tl(t,keys=keys,sg=sg):
+            x=segs(t,keys); st=ss((t-0.05)/0.22); side='r' if sg>0 else 'l'
+            feet=dict(AIMFEET); feet[side]=foot_mat(side,((-0.04 if side=='r' else 0.02)-sg*0.12*st,(0.12 if side=='r' else -0.12),0.05*math.sin(math.pi*min(1,max(0,(t-0.05)/0.22)))),yaw=(-25 if side=='r' else 8))
+            return x,feet,dict(armL=1,armR=1,legs=1),fk_of(x)
+        fk_clip(name,0.65,tl,99,(0,0,0),(0,0,0),None,lhand_on=1,notes=f'Blaster hit from the {"left" if sg>0 else "right"}: twists away and side-steps, recovers.')
+    keys=[(0.0,READYd,'s'),(0.12,dict(READYd,pz=-0.42,pp=22,s2p=24,s3p=14,hp=30,armL=0),'o'),(0.85,dict(READYd,pz=-0.40,pp=20,s2p=22,s3p=12,hp=28,armL=0),'s'),(1.25,READYd,'s')]
+    def tl(t):
+        x=segs(t,keys); k=ss(t/0.12)*(1-ss((t-0.85)/0.3))
+        if k>0.01:
+            x['handL_rel']=hmat('l',(0.10,-0.06,1.66),pitch=-90,yaw=-30)                   # arm over the helmet
+        else: x['armL']=1
+        FE={'l':foot_mat('l',(0.05,-0.10*k,0),yaw=10),'r':foot_mat('r',(-0.06,0.14*k,0),pitch=30*k,pivot='ball',yaw=-14)}
+        return x,FE,dict(armL=x['armL'] if k<=0.01 else 0,armR=1,legs=1),fk_of(x)
+    fk_clip('flinch_duck',1.25,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Explosion nearby: ducks low, left arm over the helmet, back up.')
+
+getup_clips(); cover_clips(); prone_clips(); move_clips(); reaction_clips()
 json.dump(CUTS,open(f'{w}/cuts.json','w'),indent=1)
 bpy.context.scene.frame_set(0)
 for o in bpy.context.scene.objects: o.select_set(False)

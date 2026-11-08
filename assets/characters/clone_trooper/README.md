@@ -48,6 +48,11 @@ Extra bones:
 | Injured | `hit_foot` (shot in the foot: jerks it up, hops), `walk_limp` (0.9 m/s, weight off the right leg), `wounded_down`, `wounded_crawl` |
 | Squad tactics | `drag_rescuer` + `drag_wounded` (pair: dragging a wounded trooper to cover by the collar; offset in `Unreal/drag_pair.json`), `stack_up`, `breach_clear` (root motion), `stairs_up_aim`, `suppress`, `grenade_throw` |
 | Duties | `carry_crate`, `crate_pickup`, `crate_putdown` (logistics; crate on the `prop` bone), `radio_call`, `mortar_load` (artillery), `checkpoint_halt`, `check_credentials`, `inspect_freight` (roadblock), `attention` (port arms, for officers), `command_point`, `command_advance` (officer / sergeant) |
+| Getting up | `getup_back` (lying on his back: sits up with feet planted, one knee, rises), `getup_front` (face down / prone: pushes up, knees under, rises), `medic_treat` (kneels over a wounded man, working on his chest) |
+| Cover | `cover_low_idle`, `cover_low_fire` (behind a ~1 m wall: crouched, pops up for 3 bolts, back down), `cover_high_idle`, `cover_lean_fire_r`, `cover_lean_fire_l` (tall wall edge: leans out for 3 bolts) |
+| Prone | `go_prone`, `prone_aim`, `prone_shoot`, `prone_crawl` (getting up: `getup_front`) |
+| Combat movement | `turn_l90`, `turn_r90` (stepping turn in place, root rotation), `run_stop` (braking steps, root motion), `dive_left`, `dive_right` (root motion ~2.5 m), `vault` (1 m wall, root motion 1.6 m) |
+| Reactions | `hit_left`, `hit_right` (with `hit_front` / `hit_back`: hits from all four sides), `flinch_duck` (explosion nearby) |
 | Other | `reload` (power-cell swap, 2.2 s), `hit_front`, `hit_back`, `melee` (rifle-butt strike) |
 | Movement | `roll_to_kneel` (dive roll over the shoulder, up on one knee aiming down the sights, 3 bolts; root motion 2.3 m), `kneel_aim`, `kneel_shoot`, `climb_ladder` (hand over hand, blaster slung on the back, 0.5 m/s loop), `mantle` (1.1 m ledge, one-handed, blaster kept; root motion) |
 | Lightsaber | `saber_hit_1`, `saber_hit_2` (burns 1 and 2), then the 3rd contact: `saber_death_arm` (clutches the stump, staggers, knees, falls forward), `saber_death_leg` (topples sideways, rolls onto his back), `saber_death_head` (body stands a beat, knees buckle, falls forward; the head rolls), `saber_death_half` (the legs stand then topple; the upper body slides back off), `saber_death_diagonal` (the upper piece slides down the cut; hips and legs crumple) |
@@ -120,6 +125,11 @@ endings use their baked clips.
   the posts and troopers stand to attention as he passes.
 - `ADukeCheckpoint` + `ADukeTraveller`: travellers queue at the barrier; the gate guard halts them, checks papers, searches the
   freight, then waves them through, detains them, or the squad engages if a rebel draws a weapon.
+
+In combat (`DukeTrooper`): picks low or tall cover by tracing at 60 cm and 150 cm, then crouches and pops up or leans out to
+fire; the heavy goes prone to suppress; hit reactions follow the shooter's side; a nearby blast makes him duck; large turns
+while standing use the stepping turns; braking out of a run plays `run_stop`; a ~1 m wall in his path is vaulted; a revived
+trooper gets up (`getup_back`) before doing anything else; a treating medic plays `medic_treat`.
 
 ## Unreal status
 

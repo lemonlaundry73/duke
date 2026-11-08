@@ -28,6 +28,7 @@ struct FDukeTrooperAnimState
 	bool bWounded = false;                        // down on the ground (wounded_down / wounded_crawl)
 	bool bDragged = false;                        // being dragged to safety (drag_wounded)
 	bool bDragging = false;                       // dragging a wounded comrade (drag_rescuer)
+	bool bProne = false;                          // prone (prone_aim / prone_crawl / prone_shoot)
 	FName DutyClip = NAME_None;                   // looping duty: radio_call, checkpoint_halt, attention, stack_up, carry_crate, mortar_load ...                       // one knee down, aiming (after a combat roll)
 	bool bClimbing = false;                       // on a ladder
 	float ClimbSpeed = 0.f;                       // cm/s up the ladder
