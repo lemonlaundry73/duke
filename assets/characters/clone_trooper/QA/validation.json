@@ -181,7 +181,37 @@
    "frames": [
     [
      1,
-     61
+     58
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_die_back.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     49
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_die_headshot.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     40
+    ]
+   ],
+   "curves": 749
+  },
+  "A_Trooper_die_run.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     43
     ]
    ],
    "curves": 749
@@ -261,7 +291,7 @@
    "frames": [
     [
      1,
-     21
+     22
     ]
    ],
    "curves": 749
@@ -321,7 +351,7 @@
    "frames": [
     [
      1,
-     18
+     20
     ]
    ],
    "curves": 749
@@ -351,6 +381,9 @@
   "crouch_shoot",
   "crouch_walk",
   "die",
+  "die_back",
+  "die_headshot",
+  "die_run",
   "hit_back",
   "hit_front",
   "idle",

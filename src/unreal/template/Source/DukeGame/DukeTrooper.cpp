@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
 #include "AIController.h"
+#include "Engine/DamageEvents.h"
 
 const TCHAR* ADukeTrooper::AssetRoot = TEXT("/Game/DukeForge/Characters/CloneTrooper");
 
@@ -23,7 +24,7 @@ const TArray<FName>& ADukeTrooper::ClipNames()
 		TEXT("aim_walk_fwd"), TEXT("aim_walk_bwd"), TEXT("aim_strafe_l"), TEXT("aim_strafe_r"),
 		TEXT("shoot"), TEXT("shoot_burst"), TEXT("shoot_hip"), TEXT("reload"),
 		TEXT("crouch_aim"), TEXT("crouch_shoot"), TEXT("crouch_walk"),
-		TEXT("hit_front"), TEXT("hit_back"), TEXT("die"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup") };
+		TEXT("hit_front"), TEXT("hit_back"), TEXT("die"), TEXT("die_back"), TEXT("die_headshot"), TEXT("die_run"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup") };
 	return Names;
 }
 
@@ -248,8 +249,8 @@ float ADukeTrooper::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 	if (State == EDukeTrooperState::Dead || Dmg <= 0.f) return Dmg;
 	const float Now = GetWorld()->GetTimeSeconds();
 	Health -= Dmg;
-	if (Health <= 0.f) { Die(); return Dmg; }
 	AActor* From = EventInstigator && EventInstigator->GetPawn() ? EventInstigator->GetPawn() : DamageCauser;
+	if (Health <= 0.f) { Die(PickDeath(DamageEvent, From, Dmg)); return Dmg; }
 	if (UDukeTrooperAnimInstance* A = Anim())
 	{
 		const bool bFront = !From || FVector::DotProduct(GetActorForwardVector(), From->GetActorLocation() - GetActorLocation()) > 0.f;
@@ -262,8 +263,28 @@ float ADukeTrooper::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 	return Dmg;
 }
 
-void ADukeTrooper::Die()
+// Choose the death that fits the shot: momentum (running), headshot, blown back, or the default chest-hit crumple.
+FName ADukeTrooper::PickDeath(const FDamageEvent& DamageEvent, AActor* From, float Damage) const
 {
+	if (GetVelocity().Size2D() > 300.f) return TEXT("die_run");
+	FVector HitAt = FVector::ZeroVector;
+	FName Bone = NAME_None;
+	if (DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		const FPointDamageEvent& PE = static_cast<const FPointDamageEvent&>(DamageEvent);
+		HitAt = PE.HitInfo.ImpactPoint; Bone = PE.HitInfo.BoneName;
+	}
+	const bool bHead = Bone == TEXT("head") || Bone == TEXT("neck_01") ||
+		(!HitAt.IsNearlyZero() && HitAt.Z > GetActorLocation().Z + GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.62f);
+	if (bHead) return TEXT("die_headshot");
+	const bool bFromBehind = From && FVector::DotProduct(GetActorForwardVector(), (From->GetActorLocation() - GetActorLocation()).GetSafeNormal2D()) < -0.2f;
+	if (bFromBehind || Damage >= MaxHealth * 0.5f || FMath::FRand() < 0.3f) return TEXT("die_back");
+	return TEXT("die");
+}
+
+void ADukeTrooper::Die(FName DeathClip)
+{
+	if (UDukeTrooperAnimInstance* A = Anim()) A->State.DeathClip = DeathClip;
 	State = EDukeTrooperState::Dead;
 	GetCharacterMovement()->DisableMovement();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

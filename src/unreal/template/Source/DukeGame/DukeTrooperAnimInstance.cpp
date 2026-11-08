@@ -61,8 +61,9 @@ void FDukeTrooperAnimProxy::BuildBase(TArray<FDukeClipRef>& Out, FName& OutKey)
 
 	if (S.bDead)
 	{
-		OutKey = TEXT("die");
-		Add(TEXT("die"), 1.f, DeadTime, false);
+		const FName Death = (S.DeathClip != NAME_None && Clip(S.DeathClip)) ? S.DeathClip : FName(TEXT("die"));
+		OutKey = Death;
+		Add(Death, 1.f, DeadTime, false);
 		return;
 	}
 	if (S.bFalling)

@@ -29,11 +29,11 @@
  },
  "aim_walk_bwd": {
   "stretched_edges": 8,
-  "worst_extra_cm": 7.0
+  "worst_extra_cm": 6.8
  },
  "aim_walk_fwd": {
   "stretched_edges": 23,
-  "worst_extra_cm": 9.6
+  "worst_extra_cm": 9.5
  },
  "crouch_aim": {
   "stretched_edges": 11,
@@ -48,8 +48,20 @@
   "worst_extra_cm": 12.8
  },
  "die": {
-  "stretched_edges": 94,
-  "worst_extra_cm": 17.8
+  "stretched_edges": 74,
+  "worst_extra_cm": 22.8
+ },
+ "die_back": {
+  "stretched_edges": 106,
+  "worst_extra_cm": 23.5
+ },
+ "die_headshot": {
+  "stretched_edges": 146,
+  "worst_extra_cm": 21.9
+ },
+ "die_run": {
+  "stretched_edges": 92,
+  "worst_extra_cm": 16.5
  },
  "hit_back": {
   "stretched_edges": 34,
@@ -80,8 +92,8 @@
   "worst_extra_cm": 5.6
  },
  "run": {
-  "stretched_edges": 55,
-  "worst_extra_cm": 15.0
+  "stretched_edges": 74,
+  "worst_extra_cm": 16.1
  },
  "shoot": {
   "stretched_edges": 4,
@@ -104,11 +116,11 @@
   "worst_extra_cm": 4.3
  },
  "sprint": {
-  "stretched_edges": 84,
+  "stretched_edges": 100,
   "worst_extra_cm": 22.5
  },
  "walk": {
   "stretched_edges": 3,
-  "worst_extra_cm": 5.0
+  "worst_extra_cm": 4.8
  }
 }

@@ -50,6 +50,10 @@ def foot_mat(s,off=(0,0,0),pitch=0,yaw=0,pivot='ankle'):
     ank=V(ANK0[s])
     m=M.Translation(ank)@M.Rotation(R(yaw),4,'Z')@M.Translation(-ank)@M.Translation(piv)@M.Rotation(R(pitch),4,'X')@M.Translation(-piv)@base
     m.translation+=V(off); return m
+def foot_mat_blend(s,off,pitch,yaw,pivA,pivB,k):
+    # same foot rotation, pivot moving smoothly from pivA to pivB (keeps the ankle path continuous)
+    mA=foot_mat(s,off,pitch,yaw,pivA); mB=foot_mat(s,off,pitch,yaw,pivB)
+    m=mA.copy(); m.translation=mA.translation.lerp(mB.translation,k); return m
 def apply(d,feet=None,ball=None,frame=None):
     K.reset(ao)
     K.loc_world(P['pelvis'],(d['px'],d['py'],d['pz'])); K.rot(P['pelvis'],d['pp'],d['pyw'],d['pr'])
@@ -64,7 +68,7 @@ def apply(d,feet=None,ball=None,frame=None):
     for i in (1,2,3,4):
         for c,sg in (('c',0),('l',1),('r',-1)):
             k=f'cape_0{i}_{c}'
-            if k in P: K.rot(P[k],d['capeP']*(0.6+0.25*i),0,d['capeS']*sg*0.5)
+            if k in P: K.rot(P[k],d['capeP']*(0.6+0.25*i),0,d['capeS']*sg*0.5+d.get('capeR',0)*(0.5+0.2*i))
     # left hand: on the gun (lhand=1) or free at lpos (armature space matrix)
     c=[c for c in P['lowerarm_l'].constraints if c.type=='IK'][0]
     if d.get('lpos') is not None:
@@ -82,8 +86,11 @@ def finish(name,nframes,loop=True,speed=0.0,notes=''):
     for f in range(0,nframes+1):
         bpy.context.scene.frame_set(f)
         a,b=K.hand_error(ao) if True else (0,0)
-        hl=(P['hand_l'].head-P['ctrl_hand_l'].head).length if act.get('lhand_on',1) else 0
-        hgap=max(hgap,(P['hand_r'].head-P['ctrl_hand_r'].head).length,hl); fgap=max(fgap,b)
+        locked=lambda bn: all(c.influence>0.999 for c in P[bn].constraints)
+        hl=(P['hand_l'].head-P['ctrl_hand_l'].head).length if (act.get('lhand_on',1) and locked('lowerarm_l')) else 0
+        hr=(P['hand_r'].head-P['ctrl_hand_r'].head).length if locked('lowerarm_r') else 0
+        fg=max(((P[f'foot_{sd}'].head-P[f'ctrl_foot_{sd}'].head).length if locked(f'calf_{sd}') else 0) for sd in 'lr')
+        hgap=max(hgap,hr,hl); fgap=max(fgap,fg)
         # foot slip: world speed of a planted foot (z of sole near ground) given the character moves at `speed` along its travel dir
         cur={s:P[f'foot_{s}'].head.copy() for s in 'lr'}
         if prev is not None and speed>0:
@@ -180,7 +187,10 @@ def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.01
             if roll=='fwd': pitch=28*(1-ss(w/0.45))-16*ss((w-0.6)/0.4)
             elif roll=='bwd': pitch=-14*(1-ss(w/0.45))+12*ss((w-0.6)/0.4)
             else: pitch=6*math.sin(math.pi*w)
-            piv='ankle'; ball=-max(0.0,pitch)*0.4
+            ball=-max(0.0,pitch)*0.4*(1-ss(w/0.5))
+            sg=1 if side=='l' else -1; toe=sg*(6 if roll!='side' else 3)
+            pa,pb={'fwd':('ball','heel'),'bwd':('heel','ball')}.get(roll,('ankle','ankle'))
+            return foot_mat_blend(side,(dx*off+sg*width,dy*off,lz),pitch,toe,pa,pb,ss(w)),ball
         sg=1 if side=='l' else -1
         toe=sg*(6 if roll!='side' else 3)
         return foot_mat(side,(dx*off+sg*width,dy*off,lz),pitch=pitch,yaw=toe,pivot=piv),ball
@@ -224,6 +234,75 @@ def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.01
     for f in range(N+1):
         frame(f,drop); key(f)
     print(name,'soft-knee pelvis drop cm',round(drop*100,1))
+    finish(name,N,True,v,notes)
+# ---------------- human run (reference-based) ----------------
+def runcycle(name,T,v,s,stanceName,stanceKw=None,bias=0.1,heel=0.30,bob=0.035,lean=8.0,strike='mid',yawamp=8.0,listamp=4.0,gun=1.0,cape=8.0,notes=''):
+    """Running from gait reference: flight phase; pelvis lowest at mid-stance (compression), highest mid-flight;
+    landing under the body (midfoot for a jog, forefoot for a sprint); heel recovery (heel kicks up behind),
+    knee drive, then the foot paws back before contact. Chest counter-rotates; head, rifle and cape trail."""
+    new(name,direction=(0,-1))
+    N=round(T*FPS); L=v*T*s
+    d0=stance(stanceName,**(stanceKw or {}))
+    LEG={sd:(P[f'thigh_{sd}'].bone.length+P[f'calf_{sd}'].bone.length) for sd in 'lr'}
+    C=lambda ph: math.cos(2*math.pi*ph); Sn=lambda ph: math.sin(2*math.pi*ph)
+    fwdbias=-bias*L       # contact a little ahead of the hip, toe-off further behind
+    def foot(side,q):
+        sg=1 if side=='l' else -1
+        if q<s:
+            u=q/s; off=L*(0.5-u)+fwdbias+L*0.5*0.0; lz=0.0; ball=0.0
+            if strike=='fore':
+                if u<0.25: e=ss(u/0.25); pitch=14*(1-e); piv='ball'; ball=-pitch*0.8
+                else: pitch=0.0; piv='ankle'
+            else:
+                pitch=0.0; piv='ankle'
+            if u>0.45: k=(u-0.45)/0.55; pitch=40*k**1.5; piv='ball'; ball=-pitch*0.9
+        else:
+            w=(q-s)/(1-s)
+            # first the foot keeps travelling back and up (heel recovery), then the knee drives it forward,
+            # it reaches slightly past the landing point and paws back into contact
+            back=0.10*L*math.sin(math.pi*min(1.0,w/0.35))
+            prog=ss(max(0.0,(w-0.12)/0.78))*1.04-0.04*ss((w-0.9)/0.1)
+            off=-L/2+fwdbias-back+L*prog
+            lz=heel*(math.sin(math.pi*w**0.75))**1.1+0.012*math.sin(math.pi*w)
+            land=14 if strike=='fore' else 0
+            pitch=40*(1-ss(w/0.35))+30*math.sin(math.pi*min(1.0,w/0.6))*(1-ss(w/0.6))+land*ss((w-0.6)/0.4)
+            ball=-max(0.0,pitch)*0.3*(1-ss(w/0.5))
+            return foot_mat_blend(side,(0.0,-off,lz),pitch,sg*5,'ball','ball' if strike=='fore' else 'ankle',ss(w)),ball
+        return foot_mat(side,(0.0,-off,lz),pitch=pitch,yaw=sg*5,pivot=piv),ball
+    def frame(f,drop):
+        p=f/N; feet={}; balls={}
+        for side,ph in (('l',0.0),('r',0.5)):
+            feet[side],balls[side]=foot(side,(p+ph)%1.0)
+        d=dict(d0)
+        d['pz']=d0['pz']-bob*math.cos(4*math.pi*(p-s/2))-drop        # lowest at mid-stance, highest in flight
+        d['py']=d0['py']-0.012*Sn(2*(p-s/2))                           # brake at contact, drive at toe-off
+        d['px']=d0['px']+0.016*Sn(p-s/2)
+        d['pr']=d0['pr']-listamp*Sn(p-s/2)
+        d['pyw']=d0['pyw']-yawamp*C(p)
+        d['pp']=d0['pp']+lean*0.3+1.5*C(2*(p-s/2))
+        y1=yawamp*0.45*C(p-0.03); y2=yawamp*0.55*C(p-0.06); y3=yawamp*0.35*C(p-0.09)
+        r1=listamp*0.5*Sn(p-s/2-0.06); r2=listamp*0.25*Sn(p-s/2-0.1)
+        d['s1y']=d0['s1y']+y1; d['s2y']=d0['s2y']+y2; d['s3y']=d0['s3y']+y3
+        d['s1r']=d0['s1r']+r1; d['s2r']=d0['s2r']+r2
+        d['s1p']=d0['s1p']+lean*0.35; d['s2p']=d0['s2p']+lean*0.3+1.5*C(2*(p-s/2-0.08)); d['s3p']=d0['s3p']+lean*0.2
+        yawsum=d['pyw']-d0['pyw']+y1+y2+y3; rollsum=d['pr']-d0['pr']+r1+r2
+        d['ny']=d0['ny']-0.5*yawsum; d['hy']=d0['hy']-0.45*yawsum; d['nr']=d0['nr']-0.4*rollsum; d['hr']=d0['hr']-0.45*rollsum
+        d['hp']=d0['hp']-lean*0.6-2.0*C(2*(p-s/2-0.12))
+        d['gdz']=gun*0.020*C(2*(p-s/2-0.1)); d['gdx']=gun*0.018*Sn(p-0.14); d['gdy']=gun*0.010*C(2*(p-0.16))
+        d['gdyaw']=gun*4.0*Sn(p-0.12); d['gdr']=gun*3.0*Sn(p-0.16); d['gdp']=gun*3.0*C(2*(p-s/2-0.14))
+        d['capeP']=cape+6*C(2*(p-0.3)); d['capeS']=7*Sn(p-0.3)
+        apply(d,feet,balls); return feet
+    need=[]
+    for f in range(N):
+        feet=frame(f,0.0); bpy.context.view_layer.update(); dr=0
+        for sd in 'lr':
+            hip=P[f'thigh_{sd}'].head; A=feet[sd].translation; hz=(V((A.x-hip.x,A.y-hip.y,0))).length
+            maxv=math.sqrt(max(0.0,(0.985*LEG[sd])**2-hz*hz)); dr=max(dr,(hip.z-A.z)-maxv)
+        need.append(max(0.0,dr))
+    drop=max(need)+0.004
+    for f in range(N+1):
+        frame(f,drop); key(f)
+    print(name,'run pelvis drop cm',round(drop*100,1),'worst frame',need.index(max(need)),'of',N,[round(x*100) for x in need])
     finish(name,N,True,v,notes)
 # ---------------- clips ----------------
 def hold(name,secs,keys,loop=True,feetfn=None,notes='',lhand_on=1):
@@ -308,26 +387,194 @@ reload_clip()
 hold('hit_front',0.7,[(0,aim),(0.08,dict(aim,pp=-6,py=0.03,s2p=-10,s3p=-12,np_=-8,hp=-10,gdz=0.06,gdp=18,gdy=0.05,s3y=6,curlL=0.6)),(0.3,dict(aim,pp=-2,s2p=-3,s3p=-4,hp=-3,gdp=6)),(0.7,aim)],loop=False,feetfn=lambda t:FE_AIM,notes='Blaster hit from the front.')
 hold('hit_back',0.7,[(0,aim),(0.08,dict(aim,pp=8,py=-0.03,s2p=12,s3p=12,hp=10,gdz=-0.05,gdp=-12)),(0.3,dict(aim,s2p=4,s3p=4,gdp=-4)),(0.7,aim)],loop=False,feetfn=lambda t:FE_AIM,notes='Hit from behind.')
 # death: shot, knees buckle, falls on his back; left hand lets go
-def death():
-    new('die',lhand_on=0); N=round(2.0*FPS)
+# ---------------- deaths (Call of Duty style): limp limbs, dropped blaster, gravity, grounded landing ----------------
+GROUND_PTS=[('head','mid',0.13),('spine_03','mid',0.16),('spine_02','mid',0.15),('pelvis','head',0.13),('neck_01','tail',0.09),
+            ('upperarm_l','tail',0.06),('upperarm_r','tail',0.06),('lowerarm_l','tail',0.05),('lowerarm_r','tail',0.05),
+            ('hand_l','tail',0.035),('hand_r','tail',0.035),('thigh_l','mid',0.085),('thigh_r','mid',0.085),
+            ('calf_l','head',0.07),('calf_r','head',0.07),('calf_l','tail',0.06),('calf_r','tail',0.06),('ball_l','tail',0.03),('ball_r','tail',0.03)]
+def body_min_z():
+    bpy.context.view_layer.update(); m=1e9
+    for b,where,r in GROUND_PTS:
+        pb=P[b]; pt=pb.head if where=='head' else pb.tail if where=='tail' else (pb.head+pb.tail)/2
+        m=min(m,pt.z-r)
+    return m
+GUN_PTS=[V((0,0,0)),V((0,0.45,0.08)),V((0,-0.16,0.05)),V((0,0.1,0.14)),V((0,0,-0.07))]   # weapon_r local (Y barrel, Z up)
+def damp(t,t0,amp,freq=4.0,tau=0.12):
+    if t<t0: return 0.0
+    x=t-t0; return amp*math.exp(-x/tau)*math.sin(2*math.pi*freq*x)
+def ein(x): x=max(0.0,min(1.0,x)); return x*x          # gravity-like ease-in (accelerating fall)
+def eout(x): x=max(0.0,min(1.0,x)); return 1-(1-x)**2
+def death_clip(name,dur,tl,release,gun_vel,gun_spin,t_contact,notes,start='aim'):
+    """tl(t) -> (d, feet, ik{'armL','armR','legs'}, fk{bone:(pitch,yaw,roll)}). The blaster leaves the hand at
+    `release` with velocity gun_vel (m/s, armature space) and spin (deg/s about its own axes) and is simulated
+    with gravity, ground bounce and friction. The body never goes below the ground; after t_contact it rests on it."""
+    new(name,lhand_on=0); N=round(dur*FPS); dt=1.0/FPS
+    gun=None; prevW=None; contact_off=None
     for f in range(N+1):
         t=f/FPS
-        u1=ss(t/0.25); u2=ss((t-0.2)/0.6); u3=ss((t-0.75)/0.5); u4=ss((t-1.25)/0.3)
-        d=dict(aim)
-        d.update(pp=lerp(-8*u1,-88,u3), pz=-0.03-0.30*u2-0.50*u3, py=0.05*u1+0.12*u3, pyw=10-25*u2,
-                 s2p=-10*u1+6*u2-14*u3, s3p=-12*u1+4*u2-10*u3, hp=-15*u1+20*u2-20*u3, hy=25*u4, hr=-10*u4,
-                 gdz=-0.08*u2, gdp=-25*u2-45*u3, gdyaw=30*u3, gdr=50*u3, gdx=-0.04*u3, gdy=0.06*u3, curlR=0.9-0.3*u4, idxR=0.4, curlL=0.5, capeP=18*u3)
-        fl=foot_mat('l',(0.02,-0.12-0.18*u2-0.22*u3,0.02*u3),pitch=-40*u3,yaw=8+10*u3)
-        fr=foot_mat('r',(-0.04,0.12-0.22*u2-0.38*u3,0.0+0.04*u3),pitch=-30*u3,yaw=-25+10*u3)
-        apply(d,{'l':fl,'r':fr}); bpy.context.view_layer.update()
-        # left arm flops out to the side
-        ongun=P['ctrl_hand_l'].matrix.copy()
-        free=P['spine_03'].matrix@REST['spine_03'].inverted()@lh_mat((0.48,-0.05,1.05),pitch=-20,roll=-30)
-        k=ss((t-0.15)/0.6)
-        P['ctrl_hand_l'].matrix=M.Translation(ongun.translation.lerp(free.translation,k))@ongun.to_quaternion().slerp(free.to_quaternion(),k).to_matrix().to_4x4()
+        d,feet,ik,fk=tl(t)
+        apply(d,feet)
+        K.limb_ik(ao,'arm','l',ik.get('armL',1)); K.limb_ik(ao,'arm','r',ik.get('armR',1)); 
+        K.limb_ik(ao,'leg','l',ik.get('legs',1)); K.limb_ik(ao,'leg','r',ik.get('legs',1))
+        for b,(pi,ya,ro) in fk.items(): K.rot(P[b],pi,ya,ro)
+        # ground: never penetrate; rest on the floor once the body has landed
+        mz=body_min_z()
+        off=0.0
+        if mz<0.0: off=-mz
+        if t>=t_contact: off=-mz
+        if off:
+            K.loc_world(P['pelvis'],(d['px'],d['py'],d['pz']+off)); bpy.context.view_layer.update()
+        # blaster: carried until release, then a rigid body
+        bpy.context.view_layer.update()
+        Wcur=P['weapon_r'].matrix.copy()
+        if t<release:
+            prevW=Wcur
+        else:
+            if gun is None:
+                vel=(Wcur.translation-prevW.translation)/dt+V(gun_vel)
+                gun=dict(pos=Wcur.translation.copy(),rot=Wcur.to_quaternion(),vel=vel,spin=V(gun_spin),rest=False)
+            else:
+                g=gun
+                if not g['rest']:
+                    g['vel'].z-=9.81*dt; g['pos']+=g['vel']*dt
+                    q=g['rot']; w=g['spin']*dt
+                    g['rot']=(q@E((R(w.x),R(w.y),R(w.z))).to_quaternion()).normalized()
+                    m=M.Translation(g['pos'])@g['rot'].to_matrix().to_4x4()
+                    low=min((m@p).z for p in GUN_PTS)
+                    if low<0.012:
+                        g['pos'].z+=0.012-low
+                        if abs(g['vel'].z)>0.6: g['vel'].z=-g['vel'].z*0.28; g['vel'].x*=0.55; g['vel'].y*=0.55; g['spin']*=0.4
+                        else: g['rest']=True
+                if g['rest']:
+                    # settle onto its side: gun X (lateral) vertical, keep its heading
+                    fwd=g['rot']@V((0,1,0)); fwd.z=0
+                    if fwd.length<1e-3: fwd=V((0,1,0))
+                    fwd.normalize(); up=V((0,0,1)); xax=up; yax=fwd; zax=xax.cross(yax)
+                    target=M((xax,yax,zax)).transposed().to_quaternion()
+                    g['rot']=g['rot'].slerp(target,0.35)
+                    g['vel']*=0.5; g['pos']+=V((g['vel'].x,g['vel'].y,0))*dt
+                    m=M.Translation(g['pos'])@g['rot'].to_matrix().to_4x4()
+                    low=min((m@p).z for p in GUN_PTS); g['pos'].z+=0.012-low
+            P['weapon_r'].matrix=M.Translation(gun['pos'])@gun['rot'].to_matrix().to_4x4()
         key(f)
-    finish('die',N,False,0,'Shot, knees buckle, falls backward; ends lying on the ground.')
-death()
+    finish(name,N,False,0,notes)
+
+def mixd(a,b,u):
+    out={}
+    for k in set(a)|set(b):
+        va=a.get(k,b.get(k)); vb=b.get(k,a.get(k))
+        out[k]=lerp(va,vb,u) if isinstance(va,(int,float)) and isinstance(vb,(int,float)) else (mix(va,vb,u) if isinstance(va,tuple) else (va if u<0.5 else vb))
+    return out
+def segs(t,keys):
+    """keys: [(t, dict, ease)] ; ease of the segment ending at that key: 's' smooth, 'i' gravity ease-in, 'o' ease-out"""
+    if t<=keys[0][0]: return dict(keys[0][1])
+    for (t0,a,_),(t1,b,e) in zip(keys,keys[1:]):
+        if t<=t1:
+            x=(t-t0)/(t1-t0) if t1>t0 else 1.0
+            u={'s':ss,'i':ein,'o':eout}[e](x)
+            return mixd(a,b,u)
+    return dict(keys[-1][1])
+LIMBS0=dict(ulp=0,ulr=0,urp=0,urr=0,llp=0,lrp=0,tlp=0,tlr=0,trp=0,trr=0,clp=0,crp=0)
+def fk_of(x):
+    return {'upperarm_l':(x['ulp'],0,x['ulr']),'upperarm_r':(x['urp'],0,x['urr']),'lowerarm_l':(x['llp'],0,0),'lowerarm_r':(x['lrp'],0,0),
+            'thigh_l':(x['tlp'],0,x['tlr']),'thigh_r':(x['trp'],0,x['trr']),'calf_l':(x['clp'],0,0),'calf_r':(x['crp'],0,0)}
+AIMFEET={'l':foot_mat('l',(0.02,-0.12,0),yaw=8),'r':foot_mat('r',(-0.04,0.12,0),yaw=-25)}
+
+# 1) chest hit: jolt back, stagger a step, knees give, drop to the knees, pitch forward onto the face
+def die_front():
+    K0=dict(aim,**LIMBS0,armL=1,armR=1,legs=1)
+    keys=[(0.00,K0,'s'),
+          (0.07,dict(K0,s2p=-14,s3p=-10,hp=-14,pp=-6,py=0.04,pz=-0.04,gdp=22,gdz=0.04,curlL=0.4,armL=0.6),'o'),
+          (0.30,dict(K0,s2p=-8,s3p=-6,hp=-6,pp=-3,py=0.08,pz=-0.12,pyw=18,gdp=-10,gdz=-0.08,armL=0,ulp=-5,ulr=-12,llp=-30),'s'),
+          (0.62,dict(K0,s2p=14,s3p=10,hp=26,np_=10,pp=16,py=0.02,pz=-0.50,pyw=22,armL=0,armR=0.2,ulp=-12,ulr=-6,llp=-25,urp=-15,urr=8,lrp=-35,legs=1),'i'),
+          (0.80,dict(K0,s2p=18,s3p=12,hp=30,np_=12,pp=28,py=-0.02,pz=-0.62,pyw=22,armL=0,armR=0,ulp=-30,ulr=-8,llp=-30,urp=-30,urr=10,lrp=-30,legs=0.6,
+                      tlp=-70,trp=-65,clp=110,crp=105),'s'),
+          (1.12,dict(K0,s2p=6,s3p=4,hp=-10,np_=-5,hy=0,pp=88,py=-0.55,pz=-0.70,pyw=26,armL=0,armR=0,ulp=-150,ulr=-35,llp=-50,urp=-40,urr=30,lrp=-25,legs=0,
+                      tlp=-6,trp=-4,tlr=-6,trr=8,clp=25,crp=10),'i'),
+          (1.35,dict(K0,s2p=2,s3p=2,hp=-14,np_=-6,hy=55,hr=18,pp=90,py=-0.58,pz=-0.70,pyw=26,armL=0,armR=0,ulp=-160,ulr=-40,llp=-60,urp=-20,urr=35,lrp=-15,legs=0,
+                      tlp=-4,trp=-2,tlr=-8,trr=10,clp=10,crp=6),'o'),
+          (1.9,dict(K0,s2p=2,s3p=2,hp=-14,np_=-6,hy=58,hr=20,pp=90,py=-0.58,pz=-0.70,pyw=26,armL=0,armR=0,ulp=-160,ulr=-40,llp=-62,urp=-18,urr=35,lrp=-14,legs=0,
+                      tlp=-4,trp=-2,tlr=-8,trr=10,clp=10,crp=6,curlR=0.4,curlL=0.4),'s')]
+    def tl(t):
+        x=segs(t,keys)
+        # secondary motion after the faceplant (t=1.12): head and limbs bounce, settle
+        b=damp(t,1.12,1.0,3.5,0.11)
+        x['hp']+=6*b; x['pz']+=0.0; x['ulp']+=10*b; x['urp']+=8*b; x['clp']+=12*b; x['crp']+=10*b; x['s2p']+=3*b
+        x['capeP']=10*ss((t-0.6)/0.6)-15*ss((t-0.95)/0.3)
+        # one stagger step back with the right foot
+        st=ss((t-0.1)/0.22)
+        feet={'l':AIMFEET['l'],'r':foot_mat('r',(-0.04,0.12+0.16*st,0.07*math.sin(math.pi*min(1,max(0,(t-0.1)/0.22)))),yaw=-25)}
+        fk=fk_of(x); return x,feet,dict(armL=x['armL'],armR=x['armR'],legs=x['legs']),fk
+    death_clip('die',1.9,tl,release=0.50,gun_vel=(0.3,-0.6,0.8),gun_spin=(-200,40,250),t_contact=1.12,
+               notes='Chest hit: jolts back, staggers a step, knees give, drops to the knees, falls on his face. Blaster flies from his hands.')
+
+# 2) blown back: violent jolt, two stumbling steps back, falls onto his back, legs bounce
+def die_back():
+    K0=dict(aim,**LIMBS0,armL=1,armR=1,legs=1)
+    keys=[(0.00,K0,'s'),
+          (0.06,dict(K0,s2p=-24,s3p=-16,hp=-24,np_=-8,pp=-14,py=0.10,pz=-0.02,gdp=35,gdz=0.06,armL=0.2,armR=0.5),'o'),
+          (0.20,dict(K0,s2p=-20,s3p=-12,hp=-18,pp=-16,py=0.30,pz=-0.06,armL=0,armR=0,ulp=-50,ulr=-45,llp=-25,urp=-45,urr=40,lrp=-30),'s'),
+          (0.40,dict(K0,s2p=-16,s3p=-10,hp=-10,pp=-24,py=0.50,pz=-0.18,armL=0,armR=0,ulp=-60,ulr=-60,llp=-20,urp=-55,urr=55,lrp=-25,legs=0.5,
+                      tlp=-25,trp=-10,clp=30,crp=15),'s'),
+          (0.74,dict(K0,s2p=-8,s3p=-4,hp=-25,np_=-8,pp=-86,py=0.75,pz=-0.72,armL=0,armR=0,ulp=-80,ulr=-65,llp=-25,urp=-70,urr=70,lrp=-30,legs=0,
+                      tlp=-35,trp=-20,clp=40,crp=25),'i'),
+          (1.0,dict(K0,s2p=-4,s3p=-2,hp=-4,np_=0,hy=-35,hr=-10,pp=-90,py=0.78,pz=-0.72,armL=0,armR=0,ulp=-100,ulr=-75,llp=-35,urp=-80,urr=80,lrp=-40,legs=0,
+                      tlp=-12,trp=-6,tlr=-8,trr=6,clp=18,crp=10),'o'),
+          (1.6,dict(K0,s2p=-4,s3p=-2,hp=-4,np_=0,hy=-40,hr=-12,pp=-90,py=0.78,pz=-0.72,armL=0,armR=0,ulp=-100,ulr=-78,llp=-38,urp=-78,urr=82,lrp=-42,legs=0,
+                      tlp=-10,trp=-5,tlr=-9,trr=7,clp=16,crp=9,curlR=0.4,curlL=0.4),'s')]
+    def tl(t):
+        x=segs(t,keys)
+        b=damp(t,0.74,1.0,3.0,0.13)
+        x['tlp']-=18*b; x['trp']-=14*b; x['hp']-=10*b; x['ulp']-=8*b; x['urp']-=8*b; x['s2p']-=3*b
+        x['capeP']=-12*ss((t-0.1)/0.3)+20*ss((t-0.6)/0.3)
+        s1=ss((t-0.06)/0.16); s2=ss((t-0.18)/0.18)
+        feet={'l':foot_mat('l',(0.02,-0.12+0.30*s1,0.08*math.sin(math.pi*min(1,max(0,(t-0.06)/0.16)))),yaw=8),
+              'r':foot_mat('r',(-0.04,0.12+0.34*s2,0.08*math.sin(math.pi*min(1,max(0,(t-0.18)/0.18)))),yaw=-25)}
+        return x,feet,dict(armL=x['armL'],armR=x['armR'],legs=x['legs']),fk_of(x)
+    death_clip('die_back',1.6,tl,release=0.10,gun_vel=(-0.8,0.4,1.6),gun_spin=(380,-60,140),t_contact=0.74,
+               notes='Blown backward: violent jolt, two stumbling steps back, lands on his back, legs bounce. Blaster flung away.')
+
+# 3) headshot: lights out, straight-down crumple, slumps onto his side
+def die_headshot():
+    K0=dict(aim,**LIMBS0,armL=1,armR=1,legs=1)
+    keys=[(0.00,K0,'s'),
+          (0.05,dict(K0,hp=-28,np_=-10,s3p=-6,gdp=10,armL=0.4,armR=0.5),'o'),
+          (0.16,dict(K0,hp=-10,np_=-4,s2p=4,s3p=4,pz=-0.10,armL=0,armR=0,ulp=-10,llp=-20,urp=-10,lrp=-25),'s'),
+          (0.48,dict(K0,hp=35,np_=15,s1p=8,s2p=14,s3p=10,pp=12,pz=-0.60,pr=-6,armL=0,armR=0,ulp=5,llp=-10,urp=5,lrp=-10,legs=0.7,
+                      tlp=-80,trp=-75,clp=120,crp=115),'i'),
+          (0.82,dict(K0,hp=20,np_=10,hr=-25,s1p=6,s2p=9,s3p=6,pp=10,pz=-0.70,pr=-88,px=-0.30,armL=0,armR=0,ulp=-30,ulr=25,llp=-40,urp=-60,urr=-20,lrp=-50,legs=0,
+                      tlp=-30,trp=-18,clp=45,crp=35),'i'),
+          (1.3,dict(K0,hp=18,np_=8,hr=-28,s1p=6,s2p=8,s3p=6,pp=10,pz=-0.70,pr=-90,px=-0.32,armL=0,armR=0,ulp=-35,ulr=28,llp=-45,urp=-62,urr=-22,lrp=-55,legs=0,
+                      tlp=-28,trp=-16,clp=46,crp=36,curlR=0.4,curlL=0.4),'o')]
+    def tl(t):
+        x=segs(t,keys); b=damp(t,0.82,1.0,3.5,0.1)
+        x['hr']+=8*b; x['ulp']+=10*b; x['urp']+=10*b; x['clp']+=8*b
+        x['capeP']=6*ss((t-0.2)/0.4); x['capeR']=18*ss((t-0.55)/0.4)
+        return x,AIMFEET,dict(armL=x['armL'],armR=x['armR'],legs=x['legs']),fk_of(x)
+    death_clip('die_headshot',1.3,tl,release=0.12,gun_vel=(0.0,-0.2,0.2),gun_spin=(90,0,200),t_contact=0.82,
+               notes='Headshot: instant limp collapse straight down, slumps onto his side. Blaster drops from his hands.')
+
+# 4) shot while running: momentum carries him forward into a sliding faceplant
+def die_run():
+    st=stance('port'); K0=dict(st,**LIMBS0,armL=1,armR=1,legs=1,s1p=st['s1p']+5,s2p=st['s2p']+4,hp=st['hp']-6)
+    # forward travel: running speed 4.2 m/s decaying to zero (body slides on landing)
+    def travel(t): v0=4.2; k=3.2; return -(v0/k)*(1-math.exp(-k*t))
+    keys=[(0.00,dict(K0,pz=-0.06),'s'),
+          (0.08,dict(K0,pz=-0.08,s2p=-6,hp=-12,gdp=10,armL=0.4,armR=0.6),'o'),
+          (0.30,dict(K0,pz=-0.22,pp=30,s2p=10,s3p=8,hp=10,armL=0,armR=0,ulp=-60,ulr=-15,llp=-20,urp=-55,urr=15,lrp=-25,legs=0.4,tlp=-30,trp=15,clp=40,crp=60),'s'),
+          (0.58,dict(K0,pz=-0.72,pp=88,s2p=4,s3p=2,hp=-12,armL=0,armR=0,ulp=-140,ulr=-25,llp=-35,urp=-120,urr=25,lrp=-40,legs=0,tlp=-6,trp=4,clp=30,crp=15),'i'),
+          (0.95,dict(K0,pz=-0.72,pp=90,s2p=2,s3p=2,hp=-14,hy=-50,hr=-15,armL=0,armR=0,ulp=-155,ulr=-30,llp=-50,urp=-30,urr=25,lrp=-20,legs=0,tlp=-4,trp=2,tlr=-6,trr=6,clp=14,crp=10),'o'),
+          (1.4,dict(K0,pz=-0.72,pp=90,s2p=2,s3p=2,hp=-14,hy=-55,hr=-16,armL=0,armR=0,ulp=-158,ulr=-32,llp=-52,urp=-25,urr=26,lrp=-18,legs=0,tlp=-4,trp=2,tlr=-6,trr=6,clp=14,crp=8,curlR=0.4,curlL=0.4),'s')]
+    def tl(t):
+        x=segs(t,keys); x['py']=travel(t)
+        b=damp(t,0.58,1.0,3.5,0.11); x['ulp']+=10*b; x['urp']+=10*b; x['hp']+=6*b; x['clp']+=15*b; x['crp']+=10*b
+        x['capeP']=-14*ss(t/0.3)+10*ss((t-0.5)/0.3)
+        u=ss(t/0.3)
+        feet={'l':foot_mat('l',(0,-0.10+travel(t)*0.5*u,0.10*u),pitch=30*u),'r':foot_mat('r',(0,0.25+travel(t)*0.5*u,0.18*u),pitch=40*u)}
+        return x,feet,dict(armL=x['armL'],armR=x['armR'],legs=x['legs']),fk_of(x)
+    death_clip('die_run',1.4,tl,release=0.14,gun_vel=(0.2,-3.2,1.2),gun_spin=(-420,30,120),t_contact=0.58,
+               notes='Shot while running: momentum throws him forward into a sliding faceplant (travels ~1.3 m). Blaster flies ahead.')
+die_front(); die_back(); die_headshot(); die_run()
 # jump (in place: capsule moves in Unreal)
 hold('jump',0.9,[(0,ready),(0.12,dict(ready,pz=-0.09,s2p=10,s3p=6)),(0.22,dict(ready,pz=0.0,s2p=-2)),(0.55,dict(ready,pz=0.0,s2p=4,capeP=-12)),(0.7,dict(ready,pz=-0.11,s2p=12,s3p=8)),(0.9,ready)],loop=False,
      feetfn=lambda t:{s:foot_mat(s,(0,0,0.16*ss((t-0.2)/0.12)*(1-ss((t-0.5)/0.15))),pitch=25*ss((t-0.15)/0.1)*(1-ss((t-0.45)/0.15))) for s in 'lr'},notes='Jump: crouch, push, tuck, land.')
@@ -343,8 +590,8 @@ walkcycle('aim_walk_fwd',0.96,1.3,(0,-1),'aim',s=0.62,lift=0.09,bob=0.012,lean=2
 walkcycle('aim_walk_bwd',1.0,1.1,(0,1),'aim',s=0.62,lift=0.08,bob=0.011,roll='bwd',lean=2,gun=0.45,notes='Backpedal while aiming (toe-first contact). 1.1 m/s.')
 walkcycle('aim_strafe_l',0.86,1.2,(1,0),'aim',s=0.55,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.03,notes='Strafe left while aiming. 1.2 m/s.')
 walkcycle('aim_strafe_r',0.86,1.2,(-1,0),'aim',s=0.55,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.03,notes='Strafe right while aiming. 1.2 m/s.')
-gait('run',0.66,4.2,0.30,(0,-1),0.16,0.035,0.015,8,dict(curlR=0.9),'port',lean=12,pz=-0.035,flight=True,cape=9,notes='Combat jog, rifle at port. 4.2 m/s.')
-gait('sprint',0.58,6.2,0.26,(0,-1),0.22,0.045,0.012,10,{},'sprint',lean=20,pz=-0.05,flight=True,cape=12,notes='Sprint, rifle across chest. 6.2 m/s.')
+runcycle('run',0.70,4.2,0.30,'port',dict(curlR=0.9),bias=0.12,heel=0.30,bob=0.035,lean=10,strike='mid',yawamp=8,listamp=4,gun=1.0,cape=9,notes='Combat jog, rifle at port: midfoot landing, heel recovery, flight phase. 4.2 m/s.')
+runcycle('sprint',0.62,6.2,0.24,'sprint',{},bias=0.06,heel=0.44,bob=0.04,lean=18,strike='fore',yawamp=10,listamp=5,gun=1.2,cape=12,notes='Sprint, rifle across chest: forefoot landing, high heel recovery and knee drive. 6.2 m/s.')
 # melee: rifle-butt strike
 hold('melee',0.9,[(0,ready),(0.2,dict(ready,s2y=-25,s3y=-20,pyw=-10,gpos=(-0.1,-0.18,1.32),gyaw=60,gpitch=10,groll=-80,curlL=1.0)),
                   (0.36,dict(ready,s2y=22,s3y=18,pyw=12,s2p=8,gpos=(-0.02,-0.42,1.38),gyaw=-40,gpitch=40,groll=-90,curlL=1.0)),(0.55,dict(ready,s2y=10,s3y=8,gpos=(-0.04,-0.36,1.3),gyaw=-20,gpitch=20,groll=-60)),(0.9,ready)],

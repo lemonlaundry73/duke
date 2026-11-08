@@ -12,6 +12,7 @@
 class UPointLightComponent;
 class UDukeTrooperAnimInstance;
 class USoundBase;
+struct FDamageEvent;
 
 UENUM()
 enum class EDukeTrooperState : uint8 { Patrol, Alert, Combat, Dead };
@@ -76,5 +77,6 @@ private:
 	void TickCombat(float Dt, float Now);
 	void FireBolt(float Now);
 	void EnterCombat(AActor* Who, float Now, bool bSignal);
-	void Die();
+	void Die(FName DeathClip);
+	FName PickDeath(const FDamageEvent& DamageEvent, AActor* From, float Damage) const;
 };

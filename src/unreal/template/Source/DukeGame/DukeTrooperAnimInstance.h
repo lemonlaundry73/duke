@@ -21,6 +21,7 @@ struct FDukeTrooperAnimState
 	bool bCrouched = false;
 	bool bFalling = false;
 	bool bDead = false;
+	FName DeathClip = NAME_None;                 // die, die_back, die_headshot, die_run
 	FName IdleVariant = NAME_None;                // e.g. patrol_look
 	FName Action = NAME_None;                     // shoot, shoot_burst, reload, hit_front, ...
 	int32 ActionSerial = 0;                       // bump to restart the same action

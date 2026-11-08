@@ -81,11 +81,21 @@ def curl(ao,side,amt=1.0,index=None,thumb=0.6):
             pb.rotation_quaternion=Q(V((0,0,1)),R(sg*base*a))
     for i,base in ((1,15),(2,25),(3,25)):
         pbs[f'thumb_0{i}_{side}'].rotation_quaternion=Q(V((0,0,1)),R(base*thumb))
+LIMB_CONSTRAINT_BONES=('lowerarm_l','lowerarm_r','hand_l','hand_r','calf_l','calf_r','foot_l','foot_r')
 def key_all(ao,frame):
     for pb in ao.pose.bones:
         pb.keyframe_insert('location',frame=frame,group=pb.name); pb.keyframe_insert('rotation_quaternion',frame=frame,group=pb.name)
+    # IK on/off is animated (limp limbs in deaths), so every clip keys it explicitly
+    for b in LIMB_CONSTRAINT_BONES:
+        for c in ao.pose.bones[b].constraints: c.keyframe_insert('influence',frame=frame,group=b)
 def reset(ao):
     for pb in ao.pose.bones: pb.location=V(); pb.rotation_quaternion=Q(); pb.scale=V((1,1,1))
+    for b in LIMB_CONSTRAINT_BONES:
+        for c in ao.pose.bones[b].constraints: c.influence=1.0
+def limb_ik(ao,limb,side,influence):
+    # limb: 'arm' or 'leg'. 0 = free (FK), 1 = locked to its control (gun / foot target)
+    for b in (('lowerarm','hand') if limb=='arm' else ('calf','foot')):
+        for c in ao.pose.bones[f'{b}_{side}'].constraints: c.influence=max(0.0,min(1.0,influence))
 def hand_error(ao):
     pbs=ao.pose.bones; bpy.context.view_layer.update()
     return max((pbs[f'hand_{s}'].head-pbs[f'ctrl_hand_{s}'].head).length for s in 'lr'), max((pbs[f'foot_{s}'].head-pbs[f'ctrl_foot_{s}'].head).length for s in 'lr')
