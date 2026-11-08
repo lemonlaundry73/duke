@@ -10,7 +10,7 @@
 static float ClipSpeed(FName N)
 {
 	static const TMap<FName, float> Speeds = {
-		{ TEXT("walk"), 130.f }, { TEXT("run"), 420.f }, { TEXT("sprint"), 620.f },
+		{ TEXT("walk"), 130.f }, { TEXT("walk_limp"), 90.f }, { TEXT("drag_rescuer"), 90.f }, { TEXT("carry_crate"), 100.f }, { TEXT("wounded_crawl"), 30.f }, { TEXT("run"), 420.f }, { TEXT("sprint"), 620.f },
 		{ TEXT("aim_walk_fwd"), 130.f }, { TEXT("aim_walk_bwd"), 110.f }, { TEXT("aim_strafe_l"), 120.f }, { TEXT("aim_strafe_r"), 120.f },
 		{ TEXT("crouch_walk"), 100.f } };
 	const float* V = Speeds.Find(N);
@@ -67,6 +67,21 @@ void FDukeTrooperAnimProxy::BuildBase(TArray<FDukeClipRef>& Out, FName& OutKey)
 		Add(Death, 1.f, S.DeathTime, false);
 		return;
 	}
+	if (S.bDragged) { OutKey = TEXT("drag_wounded"); Add(TEXT("drag_wounded"), 1.f, Cyc(TEXT("drag_rescuer"))); return; }
+	if (S.bWounded)
+	{
+		if (Speed > 10.f) { OutKey = TEXT("wounded_crawl"); Add(TEXT("wounded_crawl"), 1.f, Cyc(TEXT("wounded_crawl"))); }
+		else { OutKey = TEXT("wounded_down"); Add(TEXT("wounded_down"), 1.f, IdleTime); }
+		return;
+	}
+	if (S.bDragging) { OutKey = TEXT("drag_rescuer"); Add(TEXT("drag_rescuer"), 1.f, Cyc(TEXT("drag_rescuer"))); return; }
+	if (S.DutyClip != NAME_None && Clip(S.DutyClip))
+	{
+		// moving duties (carry_crate) cycle with the gait; standing duties loop on their own clock
+		OutKey = S.DutyClip;
+		Add(S.DutyClip, 1.f, ClipSpeed(S.DutyClip) > 1.f ? Cyc(S.DutyClip) : IdleTime, true);
+		return;
+	}
 	if (S.bClimbing)
 	{
 		OutKey = TEXT("climb_ladder");
@@ -115,6 +130,14 @@ void FDukeTrooperAnimProxy::BuildBase(TArray<FDukeClipRef>& Out, FName& OutKey)
 		Add(Idle, 1.f, IdleTime);
 		return;
 	}
+	if (S.bLimping)
+	{
+		OutKey = TEXT("limp");
+		const float Ramp = FMath::Clamp((Speed - 25.f) / 60.f, 0.f, 1.f);
+		Add(TEXT("idle"), 1.f - Ramp, IdleTime);
+		Add(TEXT("walk_limp"), Ramp, Cyc(TEXT("walk_limp")));
+		return;
+	}
 	OutKey = TEXT("move");
 	// walk -> run -> sprint by speed, all phase-locked
 	const float W2R = FMath::Clamp((Speed - 200.f) / 150.f, 0.f, 1.f);
@@ -140,6 +163,10 @@ void FDukeTrooperAnimProxy::Update(float DeltaSeconds)
 	FName Gait = TEXT("walk");
 	if (S.bCrouched) Gait = TEXT("crouch_walk");
 	else if (S.bAiming) Gait = FMath::Abs(S.LocalVelocity.Y) > FMath::Abs(S.LocalVelocity.X) ? FName(S.LocalVelocity.Y > 0 ? TEXT("aim_strafe_r") : TEXT("aim_strafe_l")) : FName(S.LocalVelocity.X >= 0 ? TEXT("aim_walk_fwd") : TEXT("aim_walk_bwd"));
+	else if (S.bLimping) Gait = TEXT("walk_limp");
+	if (S.bDragging || S.bDragged) Gait = TEXT("drag_rescuer");      // the pair shares one clock, so hands and collar stay together
+	else if (S.bWounded) Gait = TEXT("wounded_crawl");
+	else if (S.DutyClip == TEXT("carry_crate")) Gait = TEXT("carry_crate");
 	else if (Speed > 525.f) Gait = TEXT("sprint");
 	else if (Speed > 275.f) Gait = TEXT("run");
 	if (const UAnimSequence* G = Clip(Gait))

@@ -20,10 +20,17 @@ CV = {c['clip']: c for c in json.load(open(f'{w}/cut_variants.json'))}
 bpy.context.preferences.edit.keyframe_new_interpolation_type = 'LINEAR'
 
 # limp moment per death (seconds into the clip) and when the blaster leaves the hands
-LIMP = {'die': 0.30, 'die_back': 0.10, 'die_headshot': 0.05, 'die_run': 0.10,
+LIMP = {'die': 1.92, 'die_back': 0.10, 'die_headshot': 0.06, 'die_headshot_back': 0.06, 'die_run': 0.10,
         'saber_death_arm': 0.75, 'saber_death_leg': 0.12, 'saber_death_head': 0.30, 'saber_death_half': 0.10, 'saber_death_diagonal': 0.30,
         'death_explosion': 0.05, 'death_explosion_arm': 0.05, 'death_explosion_leg': 0.05, 'death_explosion_armleg': 0.05}
-RELEASE = {'saber_death_arm': 0.07, 'saber_death_diagonal': 0.07, 'death_explosion': 0.0, 'death_explosion_arm': 0.0, 'death_explosion_leg': 0.0, 'death_explosion_armleg': 0.0}
+# muscle tone after physics takes over (Battlefront / CoD): (start strength 0..1, seconds to fade). It always cuts to zero
+# the moment the torso, hips or head reach the ground, so the body ends completely limp, flat on the floor.
+TONE = {'die': (0.12, 0.35), 'die_back': (0.6, 0.7), 'die_headshot': (0.85, 1.2), 'die_headshot_back': (0.85, 1.2), 'die_run': (0.5, 0.6),
+        'saber_death_arm': (0.4, 0.8), 'saber_death_leg': (0.5, 0.7), 'saber_death_head': (0.35, 0.8), 'saber_death_half': (0.4, 0.6), 'saber_death_diagonal': (0.4, 0.6),
+        'death_explosion': (0.35, 1.0), 'death_explosion_arm': (0.35, 1.0), 'death_explosion_leg': (0.35, 1.0), 'death_explosion_armleg': (0.35, 1.0)}
+# full-tone joint stiffness (N*m/rad) toward a natural standing posture: enough to hold the body up against gravity
+STIFF = {'abdomen': 420, 'chest': 420, 'head': 60, 'upperarm': 60, 'lowerarm': 25, 'hand': 6, 'thigh': 380, 'calf': 260, 'foot': 30}
+RELEASE = {'die': 1.30, 'saber_death_arm': 0.07, 'saber_death_diagonal': 0.07, 'death_explosion': 0.0, 'death_explosion_arm': 0.0, 'death_explosion_leg': 0.0, 'death_explosion_armleg': 0.0}
 SETTLE = 3.7   # seconds of simulation after going limp
 
 # ---------------- body layout ----------------
@@ -98,6 +105,11 @@ for name, bone, parent, shape, mass, merge in BODIES:
     else:
         lo = np.percentile(loc, 3, axis=0); hi = np.percentile(loc, 97, axis=0); c = (lo + hi) / 2; dims = np.maximum(hi - lo, 0.04)
         O = B @ M.Translation(V(c)); mesh = box_mesh('rd_' + name, dims)
+    # the collision shape wraps the part's actual armour: convex hull of its outermost vertices (in this body's frame)
+    lp = in_frame(pts, O) if len(pts) else np.zeros((4, 3))
+    dirs3 = np.random.default_rng(7).normal(size=(160, 3)); dirs3 /= np.linalg.norm(dirs3, axis=1)[:, None]
+    ext = lp[np.unique(np.argmax(lp @ dirs3.T, axis=0))]
+    mesh = bpy.data.meshes.new('rd_' + name); mesh.from_pydata([tuple(p_) for p_ in ext], [], []); shape = 'CONVEX_HULL'
     o = new_obj('RD_' + name, mesh); o.matrix_world = O
     BODY[name] = dict(obj=o, bone=bone, parent=parent, shape=shape, mass=mass, rest=O.copy(), offset=O.inverted() @ BREST[bone])
 
@@ -108,7 +120,7 @@ def segdist(a0, a1, b0, b1):
     for t in np.linspace(0, 1, 11):
         p = a0 + (a1 - a0) * t; ab = b1 - b0; u = np.clip(np.dot(p - b0, ab) / np.dot(ab, ab), 0, 1); best = min(best, np.linalg.norm(p - (b0 + ab * u)))
     return best
-caps = [k for k in BODY if BODY[k]['shape'] == 'CAPSULE']
+caps = []   # hull shapes: rest overlaps are handled per death at the hand-over pose
 adj = {(k, BODY[k]['parent']) for k in BODY} | {(BODY[k]['parent'], k) for k in BODY}
 for i, a_ in enumerate(caps):
     for b_ in caps[i + 1:]:
@@ -131,7 +143,7 @@ names_ = list(BODY)
 for i, a_ in enumerate(names_):
     for b_ in names_[i + 1:]:
         if (a_, b_) in adj or (b_, a_) in adj: continue
-        if overlaps(a_, b_) and not (BODY[a_]['shape'] == 'CAPSULE' and BODY[b_]['shape'] == 'CAPSULE'): REST_OVERLAP.append((a_, b_))
+        pass   # (no permanent exclusions)
 print('rest-overlap pairs excluded from collision', REST_OVERLAP)
 bpy.ops.rigidbody.world_add(); RW = sc.rigidbody_world
 RW.collection = col if RW.collection is None else RW.collection
@@ -141,7 +153,7 @@ for b in BODY.values():
     for x in sc.objects: x.select_set(False)
     bpy.context.view_layer.objects.active = o; o.select_set(True); bpy.ops.rigidbody.object_add(type='ACTIVE')
     rb = o.rigid_body; rb.collision_shape = b['shape']; rb.mass = b['mass']; rb.friction = 0.85; rb.restitution = 0.05
-    rb.linear_damping = 0.15; rb.angular_damping = 0.6; rb.use_margin = True; rb.collision_margin = 0.004
+    rb.linear_damping = 0.1; rb.angular_damping = 0.45 if b['bone'] in ('pelvis', 'spine_01', 'spine_03') else 0.25; rb.use_margin = True; rb.collision_margin = 0.004
 # floor
 floor = new_obj('RD_floor', box_mesh('rd_floor', (600, 600, 1))); floor.location = (0, 0, -0.5)
 for x in sc.objects: x.select_set(False)
@@ -149,19 +161,22 @@ bpy.context.view_layer.objects.active = floor; floor.select_set(True); bpy.ops.r
 floor.rigid_body.collision_shape = 'BOX'; floor.rigid_body.friction = 0.9; floor.rigid_body.restitution = 0.05
 floor.rigid_body.collision_collections = [i in (0, 1) for i in range(20)]
 # joints
-JOINT = {}
+JOINT = {}; EMPTY_REST = {}
 for name, bone, parent, shape, mass, merge in BODIES:
     if not parent: continue
     e = bpy.data.objects.new('RJ_' + name, None); col.objects.link(e)
     e.matrix_world = M.Translation(BREST[bone].translation) @ BREST[bone].to_3x3().to_4x4()
     for x in sc.objects: x.select_set(False)
-    bpy.context.view_layer.objects.active = e; e.select_set(True); bpy.ops.rigidbody.constraint_add(type='GENERIC')
+    bpy.context.view_layer.objects.active = e; e.select_set(True); bpy.ops.rigidbody.constraint_add(type='GENERIC_SPRING')
     c = e.rigid_body_constraint; c.object1 = BODY[parent]['obj']; c.object2 = BODY[name]['obj']; c.disable_collisions = True
+    c.spring_type = 'SPRING2'
+    for ax in 'xyz':
+        setattr(c, f'use_spring_ang_{ax}', True); setattr(c, f'spring_stiffness_ang_{ax}', 0.0); setattr(c, f'spring_damping_ang_{ax}', 1.0)
     for ax in 'xyz':
         setattr(c, f'use_limit_lin_{ax}', True); setattr(c, f'limit_lin_{ax}_lower', 0.0); setattr(c, f'limit_lin_{ax}_upper', 0.0)
     for ax, (lo, hi) in zip('xyz', LIMITS[name]):
         setattr(c, f'use_limit_ang_{ax}', True); setattr(c, f'limit_ang_{ax}_lower', math.radians(lo)); setattr(c, f'limit_ang_{ax}_upper', math.radians(hi))
-    JOINT[name] = e
+    JOINT[name] = e; EMPTY_REST[name] = e.matrix_world.copy()
 for a_, b_ in REST_OVERLAP:
     e = bpy.data.objects.new(f'RX_{a_}_{b_}', None); col.objects.link(e)
     for x in sc.objects: x.select_set(False)
@@ -212,6 +227,7 @@ def piece_body(objname, idx):
     rb.collision_collections = [i == 1 for i in range(20)]
     return o, M.Translation(V(c0))
 
+FOOTV = {sd: np.isin(top, [f'foot_{sd}', f'ball_{sd}']) for sd in 'lr'}
 PRE = 3   # sim frames before clip frame 0: bodies in the rest pose so joint limits are anatomical
 def simulate(clip):
     act = bpy.data.actions[clip]; ao.animation_data.action = act
@@ -248,20 +264,24 @@ def simulate(clip):
         for b in BODY:
             if b in sev: continue
             o = BODY[b]['obj']; m = mats[b]
-            for corner in o.bound_box: low = min(low, (m @ V(corner)).z)
+            for v in o.data.vertices: low = min(low, (m @ v.co).z)
         return low
     lift = max(0.0, 0.006 - body_low(track[limpF]))
-    # ...and every joint must start inside its limits: widen a limit just enough to contain the hand-over pose
+    # The body's physics world is built 2 frames before it goes limp, with every joint frame placed at THAT pose: the springs
+    # (muscle tone) then hold the posture he is in (kneeling, toppling), and the anatomical limits are re-expressed from it.
+    buildF = max(0, limpF - 2)
+    upm = lambda f: M.Translation((0, 0, lift * max(0.0, 1 - (limpF - f) / 4.0)))
     for jn, e in JOINT.items():
         par = BODY[jn]['parent']
+        e.matrix_world = upm(buildF) @ track[buildF][par] @ BODY[par]['rest'].inverted() @ EMPTY_REST[jn]
         if jn in sev or par in sev: continue
         Cw = BREST[BODY[jn]['bone']].to_3x3().to_4x4()
         Fp = BODY[par]['rest'].inverted() @ Cw; Fc = BODY[jn]['rest'].inverted() @ Cw
-        A = track[limpF][par] @ Fp; Bm = track[limpF][jn] @ Fc
+        A = track[buildF][par] @ Fp; Bm = track[buildF][jn] @ Fc
         eul = [-x for x in (A.inverted() @ Bm).to_euler('XYZ')]; c = e.rigid_body_constraint   # Bullet's sign convention
         for ax, val in zip('xyz', eul):
             lo, hi = math.radians(LIMITS[jn]['xyz'.index(ax)][0]), math.radians(LIMITS[jn]['xyz'.index(ax)][1])
-            setattr(c, f'limit_ang_{ax}_lower', min(lo, val - math.radians(4))); setattr(c, f'limit_ang_{ax}_upper', max(hi, val + math.radians(4)))
+            setattr(c, f'limit_ang_{ax}_lower', min(lo - val, -math.radians(3))); setattr(c, f'limit_ang_{ax}_upper', max(hi - val, math.radians(3)))
     for f in range(0, min(N0, max(limpF, relF, (cutF or 0) + 2)) + 1):
         s = f + PRE
         if f <= limpF:
@@ -291,17 +311,94 @@ def simulate(clip):
         po.rigid_body.keyframe_insert('kinematic', frame=handF + PRE)
         po.rigid_body.kinematic = False; po.rigid_body.keyframe_insert('kinematic', frame=handF + 1 + PRE)
         piece_hand[cb] = handF
-    # 3) run the simulation
-    RW.point_cache.frame_start = 0; RW.point_cache.frame_end = N + PRE; sc.frame_start = 0; sc.frame_end = N + PRE
-    ao.animation_data.action = None
-    try: bpy.ops.ptcache.free_bake_all()
-    except Exception: pass
-    RW.enabled = False; RW.enabled = True
+    # parts that already overlap in the hand-over pose (e.g. a folded kneeling leg: foot against thigh) would be shoved
+    # apart explosively: let exactly those pairs pass each other for this death (everything else still collides)
+    def pts_of(b, f):
+        o = BODY[b]['obj']; m = upm(f) @ track[f][b]
+        return [m @ v.co for v in o.data.vertices] + [m @ ((o.data.vertices[i].co + o.data.vertices[j].co) / 2) for i, j in [(e.vertices[0], e.vertices[1]) for e in o.data.edges]]
+    def inside(p, b, f):
+        o = BODY[b]['obj']; q = (upm(f) @ track[f][b]).inverted() @ p
+        lo = [min(c[k] for c in o.bound_box) for k in range(3)]; hi = [max(c[k] for c in o.bound_box) for k in range(3)]
+        return all(lo[k] - 0.005 < q[k] < hi[k] + 0.005 for k in range(3))
+    tmp_ex = []
+    live = [b for b in BODY if b not in sev]
+    for i_, a_ in enumerate(live):
+        for b_ in live[i_ + 1:]:
+            if (a_, b_) in adj or (b_, a_) in adj or (a_, b_) in REST_OVERLAP or (b_, a_) in REST_OVERLAP: continue
+            if any(inside(p_, b_, buildF) for p_ in pts_of(a_, buildF)) or any(inside(p_, a_, buildF) for p_ in pts_of(b_, buildF)):
+                e2 = bpy.data.objects.new(f'RT_{a_}_{b_}', None); col.objects.link(e2)
+                for x in sc.objects: x.select_set(False)
+                bpy.context.view_layer.objects.active = e2; e2.select_set(True); bpy.ops.rigidbody.constraint_add(type='GENERIC')
+                c2 = e2.rigid_body_constraint; c2.object1 = BODY[a_]['obj']; c2.object2 = BODY[b_]['obj']; c2.disable_collisions = True
+                for ax in 'xyz':
+                    setattr(c2, f'use_limit_lin_{ax}', False); setattr(c2, f'use_limit_ang_{ax}', False)
+                # only while they separate: collisions between this pair switch back on 0.3 s after the hand-over
+                c2.enabled = True; c2.keyframe_insert('enabled', frame=limpF + PRE + 9)
+                c2.enabled = False; c2.keyframe_insert('enabled', frame=limpF + PRE + 10)
+                tmp_ex.append(e2)
+    if tmp_ex: print(clip, 'hand-over overlaps allowed:', [e2.name[3:] for e2 in tmp_ex])
+    # muscle tone: keyed spring stiffness that fades, and drops to zero at ground contact (found in a first pass)
+    t0, fade = TONE.get(clip, (0.4, 0.7))
+    def key_tone(contactF):
+        for jn, e in JOINT.items():
+            c = e.rigid_body_constraint; e.animation_data_clear()
+            base = STIFF[jn.split('_')[0]]
+            for s_ in range(limpF + PRE, N + PRE + 1, 2):
+                t = (s_ - PRE - limpF) / FPS; k = t0 * max(0.0, 1.0 - t / fade) ** 1.5
+                if contactF is not None and s_ - PRE >= contactF: k *= max(0.0, 1.0 - (s_ - PRE - contactF) / 4.0)
+                for ax in 'xyz':
+                    setattr(c, f'spring_stiffness_ang_{ax}', base * k); c.keyframe_insert(f'spring_stiffness_ang_{ax}', frame=s_)
+    def first_contact():
+        RW.point_cache.frame_start = buildF + PRE; RW.point_cache.frame_end = N + PRE; ao.animation_data.action = None
+        try: bpy.ops.ptcache.free_bake_all()
+        except Exception: pass
+        RW.enabled = False; RW.enabled = True
+        for s_ in range(0, N + PRE + 1):
+            sc.frame_set(s_)
+            if s_ - PRE <= limpF: continue
+            for b in ('pelvis', 'abdomen', 'chest', 'head'):
+                if b in sev: continue
+                o = BODY[b]['obj']
+                if min((o.matrix_world @ V(cn)).z for cn in o.bound_box) < 0.06: return s_ - PRE
+        return None
+    def strip_kin(o):
+        ad = o.animation_data
+        if ad and ad.action:
+            for fc in [fc for fc in ad.action.fcurves if fc.data_path == 'rigid_body.kinematic']: ad.action.fcurves.remove(fc)
+        o.rigid_body.kinematic = True
+    def run_world(start):
+        RW.point_cache.frame_start = start; RW.point_cache.frame_end = N + PRE; sc.frame_start = 0; sc.frame_end = N + PRE
+        ao.animation_data.action = None
+        try: bpy.ops.ptcache.free_bake_all()
+        except Exception: pass
+        RW.enabled = False; RW.enabled = True
+        rec = {}
+        for s_ in range(0, N + PRE + 1):
+            sc.frame_set(s_)
+            if s_ - PRE >= 0: rec[s_ - PRE] = s_
+            yield s_
+    # pass A: the blaster and severed pieces from frame 0 (they collide with the floor only, so the body can be kinematic here)
+    body_kin = {}
+    for b in BODY:
+        o = BODY[b]['obj']; ad = o.animation_data
+        body_kin[b] = [(k.co[0], k.co[1]) for fc in (ad.action.fcurves if ad and ad.action else []) if fc.data_path == 'rigid_body.kinematic' for k in fc.keyframe_points]
+        strip_kin(o)
+    props = {}
+    for s_ in run_world(0):
+        if s_ - PRE >= 0: props[s_ - PRE] = (gun.matrix_world.copy(), [(po.matrix_world.copy(), poff, cb) for po, poff, cb in pieces])
+    # pass B: the body, built at the hand-over pose, two-pass muscle tone (contact found first)
+    for b in BODY:
+        o = BODY[b]['obj']
+        for fr, val in body_kin[b]:
+            o.rigid_body.kinematic = bool(val); o.rigid_body.keyframe_insert('kinematic', frame=int(fr))
+    strip_kin(gun)
+    for po, _, _ in pieces: strip_kin(po)
+    key_tone(None); contactF = first_contact(); key_tone(contactF)
     out = {}
-    for s in range(0, N + PRE + 1):
-        sc.frame_set(s)
-        if s - PRE >= 0:
-            out[s - PRE] = ({b: BODY[b]['obj'].matrix_world.copy() for b in BODY}, gun.matrix_world.copy(), [(po.matrix_world.copy(), poff, cb) for po, poff, cb in pieces])
+    for s_ in run_world(buildF + PRE):
+        if s_ - PRE >= 0:
+            gm_, pcs_ = props[s_ - PRE]
+            out[s_ - PRE] = ({b: BODY[b]['obj'].matrix_world.copy() for b in BODY}, gm_, pcs_)
     if DEBUG:
         for f in range(limpF, min(N, limpF + 8)):
             sp = sorted(((out[f + 1][0][b].translation - out[f][0][b].translation).length * FPS, b) for b in BODY if b not in sev)[-3:]
@@ -344,27 +441,33 @@ def simulate(clip):
     # ground pass: the real skinned mesh never goes below the floor -> lift the body (not the free pieces / blaster) where needed
     body_mesh = [T]
     if cv: body_mesh_cut = [bpy.data.objects[cv['remainder']]]
-    need = {}
-    for f in range(min(limpF, relF), N + 1):
-        sc.frame_set(f); dg = bpy.context.evaluated_depsgraph_get()
-        ms = body_mesh_cut if (cv and f >= cv['frame']) else body_mesh
-        low = 1e9
-        for o in ms:
-            em = o.evaluated_get(dg).to_mesh(); nn = len(em.vertices); cc = np.empty(nn * 3); em.vertices.foreach_get('co', cc)
-            low = min(low, float(cc.reshape(nn, 3)[:, 2].min())); o.evaluated_get(dg).to_mesh_clear()
-        need[f] = max(0.0, 0.002 - low)
-    fs = sorted(need); vals = [need[f] for f in fs]
-    sm = [max(vals[max(0, i - 2):i + 3]) for i in range(len(vals))]
-    sm = [max(sum(sm[max(0, i - 2):i + 3]) / len(sm[max(0, i - 2):i + 3]), v) for i, v in enumerate(vals)]
-    for f, dz in zip(fs, sm):
-        if dz <= 1e-4: continue
-        sc.frame_set(f); bpy.context.view_layer.update()
-        keep = {b: P[b].matrix.copy() for b in ('weapon_r', 'cut_a', 'cut_b')}
-        P['pelvis'].matrix = M.Translation((0, 0, dz)) @ P['pelvis'].matrix; bpy.context.view_layer.update()
-        for b, m in keep.items():
-            if (b == 'weapon_r' and f > relF) or (b != 'weapon_r' and cv and f > cv['frame']): P[b].matrix = m; bpy.context.view_layer.update()
-        for b in ['pelvis', 'weapon_r', 'cut_a', 'cut_b']:
-            P[b].keyframe_insert('location', frame=f, group=b); P[b].keyframe_insert('rotation_quaternion', frame=f, group=b)
+    maxlift = 0.0
+    for f in range(0, N + 1):   # in order (like the FBX bake); the authored hit reaction too (e.g. a knee on the floor)
+        for it in range(8):
+            sc.frame_set(f); dg = bpy.context.evaluated_depsgraph_get()
+            ms = body_mesh_cut if (cv and f >= cv['frame']) else body_mesh
+            low = 1e9
+            for o in ms:
+                em = o.evaluated_get(dg).to_mesh(); nn = len(em.vertices); cc = np.empty(nn * 3); em.vertices.foreach_get('co', cc)
+                low = min(low, float(cc.reshape(nn, 3)[:, 2].min())); o.evaluated_get(dg).to_mesh_clear()
+            if low >= -0.001: break
+            dz = 0.002 - low; maxlift = max(maxlift, dz); bpy.context.view_layer.update()
+            if f <= limpF and not (cv and f >= cv['frame']):
+                # before the ragdoll the legs are IK: if a foot is lowest, raise that foot target instead of the hips
+                em = T.evaluated_get(dg).to_mesh(); nn = len(em.vertices); cc = np.empty(nn * 3); em.vertices.foreach_get('co', cc); cc = cc.reshape(nn, 3)
+                iv = int(np.argmin(cc[:, 2])); T.evaluated_get(dg).to_mesh_clear()
+                side = 'l' if FOOTV['l'][iv] else 'r' if FOOTV['r'][iv] else None
+                if side:
+                    b = f'ctrl_foot_{side}'; P[b].matrix = M.Translation((0, 0, dz)) @ P[b].matrix; bpy.context.view_layer.update()
+                    P[b].keyframe_insert('location', frame=f, group=b); P[b].keyframe_insert('rotation_quaternion', frame=f, group=b)
+                    continue
+            keep = {b: P[b].matrix.copy() for b in ('weapon_r', 'cut_a', 'cut_b')}
+            P['pelvis'].matrix = M.Translation((0, 0, dz)) @ P['pelvis'].matrix; bpy.context.view_layer.update()
+            for b, m in keep.items():
+                if (b == 'weapon_r' and f > relF) or (b != 'weapon_r' and cv and f > cv['frame']): P[b].matrix = m; bpy.context.view_layer.update()
+            for b in ['pelvis', 'weapon_r', 'cut_a', 'cut_b']:
+                P[b].keyframe_insert('location', frame=f, group=b); P[b].keyframe_insert('rotation_quaternion', frame=f, group=b)
+    sm = [maxlift]
     print(clip, 'ground pass: max lift cm', round(max(sm) * 100, 1))
     # the blaster rests on the floor too (contact jitter can leave it a centimetre low)
     for f in range(relF + 1, N + 1):
@@ -375,11 +478,12 @@ def simulate(clip):
             P['weapon_r'].matrix = M.Translation((0, 0, 0.002 - lowg)) @ P['weapon_r'].matrix; bpy.context.view_layer.update()
             P['weapon_r'].keyframe_insert('location', frame=f, group='weapon_r'); P['weapon_r'].keyframe_insert('rotation_quaternion', frame=f, group='weapon_r')
     for po, _, _ in pieces: bpy.data.objects.remove(po)
+    for e2 in tmp_ex: bpy.data.objects.remove(e2)
     # settle report: body speeds over the last 0.3 s
     lastp = out[N][0]; prevp = out[N - 9][0]
     v = max((lastp[b].translation - prevp[b].translation).length / 0.3 for b in BODY if b not in sev)
     low = min(lastp[b].translation.z for b in BODY if b not in sev)
-    print(clip, 'lift cm', round(lift * 100, 1), 'limp at', limpF, 'frames', N, 'max body speed at end m/s', round(v, 3), 'lowest body centre z', round(low, 3))
+    print(clip, 'ground contact frame', contactF, 'lift cm', round(lift * 100, 1), 'limp at', limpF, 'frames', N, 'max body speed at end m/s', round(v, 3), 'lowest body centre z', round(low, 3))
     return dict(clip=clip, limp_frame=limpF, frames=N, settled_speed=round(v, 3))
 
 import os

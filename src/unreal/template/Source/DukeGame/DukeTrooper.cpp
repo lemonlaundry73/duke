@@ -13,7 +13,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
 #include "AIController.h"
+#include "PhysicsEngine/PhysicalAnimationComponent.h"
 #include "Engine/DamageEvents.h"
+#include "Components/StaticMeshComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 const TCHAR* ADukeTrooper::AssetRoot = TEXT("/Game/DukeForge/Characters/CloneTrooper");
 
@@ -25,11 +28,25 @@ const TArray<FName>& ADukeTrooper::ClipNames()
 		TEXT("aim_walk_fwd"), TEXT("aim_walk_bwd"), TEXT("aim_strafe_l"), TEXT("aim_strafe_r"),
 		TEXT("shoot"), TEXT("shoot_burst"), TEXT("shoot_hip"), TEXT("reload"),
 		TEXT("crouch_aim"), TEXT("crouch_shoot"), TEXT("crouch_walk"),
-		TEXT("hit_front"), TEXT("hit_back"), TEXT("die"), TEXT("die_back"), TEXT("die_headshot"), TEXT("die_run"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup"),
+		TEXT("hit_front"), TEXT("hit_back"), TEXT("die"), TEXT("die_back"), TEXT("die_headshot"), TEXT("die_headshot_back"), TEXT("die_run"), TEXT("hit_foot"), TEXT("walk_limp"),
+		TEXT("wounded_down"), TEXT("wounded_crawl"), TEXT("drag_rescuer"), TEXT("drag_wounded"), TEXT("stack_up"), TEXT("breach_clear"), TEXT("stairs_up_aim"),
+		TEXT("carry_crate"), TEXT("crate_pickup"), TEXT("crate_putdown"), TEXT("radio_call"), TEXT("mortar_load"), TEXT("grenade_throw"), TEXT("suppress"),
+		TEXT("checkpoint_halt"), TEXT("check_credentials"), TEXT("inspect_freight"), TEXT("attention"), TEXT("command_point"), TEXT("command_advance"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup"),
 		TEXT("roll_to_kneel"), TEXT("kneel_aim"), TEXT("kneel_shoot"), TEXT("climb_ladder"), TEXT("mantle"),
 		TEXT("saber_hit_1"), TEXT("saber_hit_2"), TEXT("saber_death_arm"), TEXT("saber_death_leg"), TEXT("saber_death_head"), TEXT("saber_death_half"), TEXT("saber_death_diagonal"),
 		TEXT("death_explosion"), TEXT("death_explosion_arm"), TEXT("death_explosion_leg"), TEXT("death_explosion_armleg") };
 	return Names;
+}
+
+// Same limp moments and muscle tone as tools/rigging/ragdoll.py (seconds into the death clip; tone start, fade seconds)
+struct FDukeLimp { const TCHAR* Clip; float Limp, Tone, Fade; };
+static const FDukeLimp GLimp[] = {
+	{ TEXT("die"), 1.92f, 0.12f, 0.35f }, { TEXT("die_back"), 0.10f, 0.6f, 0.7f }, { TEXT("die_headshot"), 0.06f, 0.85f, 1.2f },
+	{ TEXT("die_headshot_back"), 0.06f, 0.85f, 1.2f }, { TEXT("die_run"), 0.10f, 0.5f, 0.6f }, { TEXT("death_explosion"), 0.05f, 0.35f, 1.0f }, { TEXT("wounded_down"), 0.0f, 0.f, 0.1f } };
+static const FDukeLimp* FindLimp(FName Clip)
+{
+	for (const FDukeLimp& L : GLimp) if (Clip == FName(L.Clip)) return &L;
+	return nullptr;
 }
 
 static float CutTime(FName Clip)
@@ -59,6 +76,13 @@ ADukeTrooper::ADukeTrooper()
 	GetMesh()->SetAnimInstanceClass(UDukeTrooperAnimInstance::StaticClass());
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::OnlyTickPoseWhenRendered;
 
+	PhysAnim = CreateDefaultSubobject<UPhysicalAnimationComponent>(TEXT("PhysAnim"));
+	PropMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PropMesh"));
+	PropMesh->SetupAttachment(GetMesh(), TEXT("prop"));
+	PropMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	PropMesh->SetVisibility(false);
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> PropCube(TEXT("/Engine/BasicShapes/Cube.Cube"));
+	if (PropCube.Succeeded()) PropMesh->SetStaticMesh(PropCube.Object);
 	MuzzleFlash = CreateDefaultSubobject<UPointLightComponent>(TEXT("MuzzleFlash"));
 	MuzzleFlash->SetupAttachment(GetMesh(), TEXT("muzzle"));
 	MuzzleFlash->SetIntensity(0.f);
@@ -143,11 +167,16 @@ void ADukeTrooper::Tick(float Dt)
 	{
 		APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
 		if (State == EDukeTrooperState::Patrol && Player && CanSee(Player)) EnterCombat(Player, Now, true);
-		if (State == EDukeTrooperState::Patrol) TickPatrol(Dt, Now);
+		if (bWounded && Now - WoundedAt > BleedOutSeconds) Die(TEXT("wounded_down"));   // bled out
+		if (Squad.IsValid() && Order.Type != EDukeOrder::None) { if (State == EDukeTrooperState::Patrol || State == EDukeTrooperState::Combat) TickOrder(Dt, Now); }
+		else if (State == EDukeTrooperState::Patrol) TickPatrol(Dt, Now);
 		else if (State == EDukeTrooperState::Alert) { if (Now > ActionLock) { State = EDukeTrooperState::Combat; StateSince = Now; } }
-		else if (State == EDukeTrooperState::Combat) TickCombat(Dt, Now);
+		else if (State == EDukeTrooperState::Combat && !(Squad.IsValid() && Order.Type != EDukeOrder::None)) TickCombat(Dt, Now);
 	}
 	TickMoves(Dt, Now);
+	if (State == EDukeTrooperState::Dead && bLiveRagdoll && !bRagdoll)
+		if (const FDukeLimp* L = FindLimp(DeathClipName)) if (Now - DeathAt >= L->Limp) StartRagdoll(Now);
+	if (bRagdoll) TickRagdoll(Now);
 	if (State == EDukeTrooperState::Dead && !bCutApplied)
 	{
 		const float CT = CutTime(DeathClipName);
@@ -167,6 +196,18 @@ void ADukeTrooper::Tick(float Dt)
 		A->State.DeathTime = State == EDukeTrooperState::Dead ? Now - DeathAt : 0.f;
 		A->State.bKneeling = State == EDukeTrooperState::Combat && Now < KneelUntil && RollStart < 0.f;
 		A->State.bClimbing = bClimbing;
+		A->State.bLimping = bLimping;
+		A->State.bWounded = bWounded && !bBeingDragged;
+		A->State.bDragged = bBeingDragged;
+		A->State.bDragging = DragPartner.IsValid() && !bWounded;
+		const bool bDutyOrder = Order.Type == EDukeOrder::Duty || Order.Type == EDukeOrder::Attention || Order.Type == EDukeOrder::Stack;
+		A->State.DutyClip = (bDutyOrder && !bWounded && !DragPartner.IsValid()) ? Order.Clip : NAME_None;
+		// props: a supply crate while hauling, a datapad while checking papers (Unreal cube scaled; swap in real meshes on a Blueprint)
+		const FName DC = A->State.DutyClip;
+		const bool bCrate = DC == TEXT("carry_crate"), bPad = DC == TEXT("check_credentials");
+		PropMesh->SetVisibility(bCrate || bPad);
+		PropMesh->SetRelativeScale3D(bCrate ? FVector(0.40f, 0.40f, 0.34f) : FVector(0.12f, 0.02f, 0.18f));
+		if (Order.Type == EDukeOrder::Cover || Order.Type == EDukeOrder::Suppress || Order.Type == EDukeOrder::Breach) A->State.bAiming = true;
 		A->State.ClimbSpeed = bClimbing ? 50.f : 0.f;
 		const FVector V = GetActorTransform().InverseTransformVectorNoScale(GetVelocity());
 		A->State.LocalVelocity = FVector(V.X, V.Y, 0.f);
@@ -219,6 +260,7 @@ void ADukeTrooper::EnterCombat(AActor* Who, float Now, bool bSignal)
 		if (bSignal) { A->PlayAction(TEXT("signal_halt"), 1.6f); ActionLock = Now + A->ClipLength(TEXT("signal_halt")) / 1.6f * 0.7f; }
 	}
 	State = bSignal ? EDukeTrooperState::Alert : EDukeTrooperState::Combat;
+	if (Squad.IsValid() && Who) Squad->ReportThreat(this, Who);
 	StateSince = Now;
 	NextShot = Now + (bSignal ? 1.1f : 0.35f);
 	BurstLeft = BurstSize;
@@ -310,7 +352,22 @@ float ADukeTrooper::TakeDamage(float DamageAmount, FDamageEvent const& DamageEve
 	}
 	Health -= Dmg;
 	if (DT && DT->IsChildOf(UDukeExplosionDamageType::StaticClass()) && Health <= 0.f) { Die(PickExplosionEnding(DamageEvent, From)); return Dmg; }
+	if (Health > 0.f && DamageEvent.IsOfType(FPointDamageEvent::ClassID))
+	{
+		const FHitResult& H = static_cast<const FPointDamageEvent&>(DamageEvent).HitInfo;
+		const float FeetZ = GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+		const FString B = H.BoneName.ToString();
+		if (B.StartsWith(TEXT("foot")) || B.StartsWith(TEXT("ball")) || (!H.ImpactPoint.IsNearlyZero() && H.ImpactPoint.Z < FeetZ + 22.f))
+		{
+			if (UDukeTrooperAnimInstance* A = Anim()) A->PlayAction(TEXT("hit_foot"));
+			bLimping = true; ActionLock = Now + 0.8f;
+			PatrolSpeed = FMath::Min(PatrolSpeed, 90.f); CombatMoveSpeed = FMath::Min(CombatMoveSpeed, 90.f);
+			if (State != EDukeTrooperState::Combat && From) EnterCombat(From, Now, false);
+			return Dmg;
+		}
+	}
 	if (Health <= 0.f) { Die(PickDeath(DamageEvent, From, Dmg)); return Dmg; }
+	if (!bWounded && Squad.IsValid() && Health < MaxHealth * 0.35f && FMath::FRand() < WoundChance) { BecomeWounded(Now); if (From) Squad->ReportThreat(this, From); return Dmg; }
 	if (UDukeTrooperAnimInstance* A = Anim())
 	{
 		const bool bFront = !From || FVector::DotProduct(GetActorForwardVector(), From->GetActorLocation() - GetActorLocation()) > 0.f;
@@ -336,7 +393,12 @@ FName ADukeTrooper::PickDeath(const FDamageEvent& DamageEvent, AActor* From, flo
 	}
 	const bool bHead = Bone == TEXT("head") || Bone == TEXT("neck_01") ||
 		(!HitAt.IsNearlyZero() && HitAt.Z > GetActorLocation().Z + GetCapsuleComponent()->GetScaledCapsuleHalfHeight() * 0.62f);
-	if (bHead) return TEXT("die_headshot");
+	if (bHead)
+	{
+		// limp while standing, then falls away from the shot: backward if hit from the front, forward if from behind
+		const bool bFromFront = !From || FVector::DotProduct(GetActorForwardVector(), (From->GetActorLocation() - GetActorLocation()).GetSafeNormal2D()) > 0.f;
+		return bFromFront ? FName(TEXT("die_headshot_back")) : FName(TEXT("die_headshot"));
+	}
 	const bool bFromBehind = From && FVector::DotProduct(GetActorForwardVector(), (From->GetActorLocation() - GetActorLocation()).GetSafeNormal2D()) < -0.2f;
 	if (bFromBehind || Damage >= MaxHealth * 0.5f || FMath::FRand() < 0.3f) return TEXT("die_back");
 	return TEXT("die");
@@ -346,6 +408,8 @@ void ADukeTrooper::Die(FName DeathClip)
 {
 	if (UDukeTrooperAnimInstance* A = Anim()) A->State.DeathClip = DeathClip;
 	DeathClipName = DeathClip; DeathAt = GetWorld()->GetTimeSeconds(); bCutApplied = false;
+	if (DragPartner.IsValid()) { if (bBeingDragged) DragPartner->EndDrag(); else EndDrag(); }
+	if (Squad.IsValid()) Squad->ReportDown(this);
 	bClimbing = false; RollStart = -1.f; MantleStart = -1.f;
 	State = EDukeTrooperState::Dead;
 	GetCharacterMovement()->DisableMovement();
@@ -440,5 +504,152 @@ void ADukeTrooper::TickMoves(float Dt, float Now)
 	{
 		AddActorWorldOffset(FVector(0, 0, 50.f * Dt), true);
 		if (GetActorLocation().Z >= ClimbTop) { bClimbing = false; Mantle(40.f); }
+	}
+}
+
+// ---------------- live ragdoll with fading muscle tone ----------------
+void ADukeTrooper::StartRagdoll(float Now)
+{
+	const FDukeLimp* L = FindLimp(DeathClipName);
+	ToneStart = L ? L->Tone : 0.3f; ToneFade = L ? L->Fade : 0.6f;
+	bRagdoll = true; RagdollAt = Now; bGrounded = false;
+	USkeletalMeshComponent* M = GetMesh();
+	M->SetCollisionProfileName(TEXT("Ragdoll"));
+	M->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	PhysAnim->SetSkeletalMeshComponent(M);
+	FPhysicalAnimationData D; D.bIsLocalSimulation = false;
+	D.OrientationStrength = 1500.f * ToneStart; D.AngularVelocityStrength = 100.f * ToneStart; D.PositionStrength = 0.f; D.VelocityStrength = 0.f;
+	PhysAnim->ApplyPhysicalAnimationSettingsBelow(TEXT("pelvis"), D, true);
+	M->SetAllBodiesBelowSimulatePhysics(TEXT("pelvis"), true, true);   // momentum carries over from the animation
+	M->SetAllBodiesBelowPhysicsBlendWeight(TEXT("pelvis"), 1.f);
+}
+
+void ADukeTrooper::TickRagdoll(float Now)
+{
+	USkeletalMeshComponent* M = GetMesh();
+	// ground contact: the pelvis or chest within 30 cm of whatever is under it (floor, crate, stair)
+	if (!bGrounded)
+		for (const TCHAR* B : { TEXT("pelvis"), TEXT("spine_03"), TEXT("head") })
+		{
+			const FVector P = M->GetBoneLocation(B);
+			FHitResult H; FCollisionQueryParams Q(SCENE_QUERY_STAT(DukeRagdollGround), false, this);
+			if (GetWorld()->LineTraceSingleByChannel(H, P, P - FVector(0, 0, 30.f), ECC_Visibility, Q)) { bGrounded = true; break; }
+		}
+	const float T = Now - RagdollAt;
+	float K = ToneStart * FMath::Pow(FMath::Max(0.f, 1.f - T / ToneFade), 1.5f);
+	if (bGrounded) K = 0.f;   // completely limp once it lies on something
+	FPhysicalAnimationData D; D.bIsLocalSimulation = false;
+	D.OrientationStrength = 1500.f * K; D.AngularVelocityStrength = 100.f * K;
+	PhysAnim->ApplyPhysicalAnimationSettingsBelow(TEXT("pelvis"), D, true);
+}
+
+// ---------------- squad orders ----------------
+void ADukeTrooper::PlayGesture(FName Clip) { if (UDukeTrooperAnimInstance* A = Anim()) A->PlayAction(Clip); }
+
+void ADukeTrooper::MoveToward(const FVector& Where, float Speed, bool bBackward)
+{
+	const FVector To = (Where - GetActorLocation()) * FVector(1, 1, 0);
+	if (To.Size() < 40.f) return;
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
+	if (!bBackward) SetActorRotation(FMath::RInterpTo(GetActorRotation(), To.Rotation(), GetWorld()->GetDeltaSeconds(), 6.f));
+	AddMovementInput(To.GetSafeNormal(), 1.f);
+}
+
+void ADukeTrooper::BecomeWounded(float Now)
+{
+	bWounded = true; WoundedAt = Now;
+	GetCharacterMovement()->MaxWalkSpeed = 30.f;
+	if (DragPartner.IsValid()) EndDrag();
+	if (Squad.IsValid()) Squad->ReportWounded(this);
+}
+
+void ADukeTrooper::Revive()
+{
+	if (!bWounded || IsDead()) return;
+	bWounded = false; Health = MaxHealth * 0.5f;
+	GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
+}
+
+void ADukeTrooper::BeginDrag(ADukeTrooper* W)
+{
+	if (!W || W->bBeingDragged) return;
+	DragPartner = W; W->DragPartner = this; W->bBeingDragged = true;
+	W->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	W->GetCharacterMovement()->DisableMovement();
+	W->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+	W->SetActorRelativeLocation(FVector(DragForward, -DragLeft, 0.f));   // Unreal +Y is the character's right
+	W->SetActorRelativeRotation(FRotator::ZeroRotator);      // same heading: lying on his back, head toward the rescuer
+}
+
+void ADukeTrooper::EndDrag()
+{
+	ADukeTrooper* W = DragPartner.Get();
+	DragPartner = nullptr;
+	if (!W) return;
+	W->DragPartner = nullptr; W->bBeingDragged = false;
+	W->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	W->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	W->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	W->SetActorRotation(FRotator(0.f, W->GetActorRotation().Yaw, 0.f));
+}
+
+void ADukeTrooper::TickOrder(float Dt, float Now)
+{
+	AActor* Tgt = Order.Target.Get();
+	if (bBeingDragged) return;                                   // carried by the rescuer
+	if (bWounded) { MoveToward(Order.Location, 30.f); return; }  // crawls toward cover
+	const float Dist = FVector::Dist2D(GetActorLocation(), Order.Location);
+	auto Face = [&](const FVector& P) { SetActorRotation(FMath::RInterpTo(GetActorRotation(), ((P - GetActorLocation()) * FVector(1, 1, 0)).Rotation(), Dt, 7.f)); };
+	auto ShootIfSeen = [&](bool bBlind)
+	{
+		if (!Tgt || Now < NextShot || Now < ReloadUntil) return;
+		if (Ammo <= 0) { PlayGesture(TEXT("reload")); ReloadUntil = Now + 2.2f; Ammo = MagazineSize; return; }
+		if (bBlind || CanSee(Tgt)) { Target = Tgt; FireBolt(Now); --Ammo; NextShot = Now + (bBlind ? 0.14f : ShotInterval) * (--BurstLeft > 0 ? 1.f : 4.f); if (BurstLeft <= 0) BurstLeft = BurstSize; }
+	};
+	switch (Order.Type)
+	{
+	case EDukeOrder::Move:
+		MoveToward(Order.Location, Dist > 800.f ? 420.f : PatrolSpeed);   // jog when far, walk otherwise
+		break;
+	case EDukeOrder::Cover:
+		if (Dist > 60.f) { MoveToward(Order.Location, Dist > 500.f ? 420.f : CombatMoveSpeed, false); if (Tgt && Dist < 500.f) Face(Tgt->GetActorLocation()); }
+		else { CrouchUntil = Now + 0.5f; if (Tgt) Face(Tgt->GetActorLocation()); ShootIfSeen(false); }
+		break;
+	case EDukeOrder::Suppress:
+		if (Dist > 60.f) MoveToward(Order.Location, CombatMoveSpeed);
+		if (Tgt) { Face(Tgt->GetActorLocation()); ShootIfSeen(true); }  // keeps their heads down even without a clear shot
+		break;
+	case EDukeOrder::Rescue:
+	{
+		ADukeTrooper* W = Cast<ADukeTrooper>(Tgt);
+		if (!W || W->IsDead() || !W->IsWounded()) { EndDrag(); Order.Type = EDukeOrder::None; break; }
+		if (DragPartner.Get() == W)
+		{
+			// walk backward to cover, dragging him, blaster pointed back toward the enemy
+			const FVector Away = (Order.Location - GetActorLocation()).GetSafeNormal2D();
+			SetActorRotation(FMath::RInterpTo(GetActorRotation(), (-Away).Rotation(), Dt, 5.f));
+			GetCharacterMovement()->MaxWalkSpeed = 90.f; AddMovementInput(Away, 1.f);
+			if (Dist < 80.f) { EndDrag(); if (Duty == EDukeDuty::Medic) W->Revive(); }
+		}
+		else
+		{
+			const float ToW = FVector::Dist2D(GetActorLocation(), W->GetActorLocation());
+			const bool bAtCover = FVector::Dist2D(W->GetActorLocation(), Order.Location) < 150.f;
+			if (ToW > 110.f) MoveToward(W->GetActorLocation() + (GetActorLocation() - W->GetActorLocation()).GetSafeNormal2D() * 100.f, 420.f);
+			else if (!bAtCover) BeginDrag(W);
+			else if (Duty == EDukeDuty::Medic) { CrouchUntil = Now + 0.5f; if (Now - W->WoundedAt > 6.f) W->Revive(); }   // treats him there
+			else CrouchUntil = Now + 0.5f;                                                                                  // guards him
+		}
+		break;
+	}
+	case EDukeOrder::Duty: case EDukeOrder::Attention: case EDukeOrder::Stack:
+		if (Dist > 50.f) MoveToward(Order.Location, Order.Clip == TEXT("carry_crate") ? 100.f : (Order.Type == EDukeOrder::Stack ? CombatMoveSpeed : PatrolSpeed));
+		else if (Tgt) Face(Tgt->GetActorLocation());
+		break;
+	case EDukeOrder::Breach:
+		if (Dist > 60.f) { MoveToward(Order.Location, 200.f); }
+		else if (Tgt) Face(Tgt->GetActorLocation());
+		break;
+	default: break;
 	}
 }

@@ -10,6 +10,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "DukeSquad.h"
+#include "DukeDragPair.h"
 #include "DukeTrooper.generated.h"
 
 class UPointLightComponent;
@@ -49,8 +51,32 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Trooper|Combat") float SpreadDegrees = 2.2f;
 	UPROPERTY(EditAnywhere, Category = "Trooper|Combat") FLinearColor BoltColor = FLinearColor(1.f, 0.06f, 0.04f);
 	UPROPERTY(EditAnywhere, Category = "Trooper") float MaxHealth = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Trooper|Squad") EDukeRank Rank = EDukeRank::Trooper;
+	UPROPERTY(EditAnywhere, Category = "Trooper|Squad") EDukeDuty Duty = EDukeDuty::Rifleman;
+	UPROPERTY(EditAnywhere, Category = "Trooper|Squad") float WoundChance = 0.6f;     // heavy non-lethal hits put him down instead
+	UPROPERTY(EditAnywhere, Category = "Trooper|Squad") float BleedOutSeconds = 45.f;
+
+	// Squad interface
+	TWeakObjectPtr<ADukeSquad> Squad;
+	FDukeOrderData Order;
+	void GiveOrder(const FDukeOrderData& O) { Order = O; }
+	bool IsWounded() const { return bWounded; }
+	bool CanFight() const { return !IsDead() && !bWounded && !bBeingDragged; }
+	bool IsBusyRescuing() const { return DragPartner.IsValid(); }
+	AActor* GetThreat() const { return Target.Get(); }
+	void BeginDrag(ADukeTrooper* Wounded);     // rescuer takes the wounded man by the collar
+	void EndDrag();                             // at cover: lets go
+	void Revive();                              // medic patched him up
+	void PlayGesture(FName Clip);               // one-shot upper-body/full-body action (signals, radio, commands)
+	static constexpr float DragForward = DUKE_DRAG_FORWARD_CM;   // wounded root ahead of the rescuer, measured by tools/rigging/drag_pair.py
+	static constexpr float DragLeft = DUKE_DRAG_LEFT_CM;
 
 	UPROPERTY(VisibleAnywhere) TObjectPtr<UPointLightComponent> MuzzleFlash;
+	UPROPERTY(VisibleAnywhere) TObjectPtr<class UStaticMeshComponent> PropMesh;   // crate / datapad on the prop bone during duties
+	// Live ragdoll (level-aware: drapes over crates, stairs, slopes). Muscle tone from the Physical Animation component
+	// fades after the limp moment and drops to zero when the body reaches the ground. Dismemberment endings use their baked clips.
+	UPROPERTY(VisibleAnywhere) TObjectPtr<class UPhysicalAnimationComponent> PhysAnim;
+	UPROPERTY(EditAnywhere, Category = "Trooper|Death") bool bLiveRagdoll = true;
 
 	UPROPERTY(EditAnywhere, Category = "Trooper|Combat") float RollChance = 0.15f;    // chance after a burst to dive into a kneeling position
 	UPROPERTY(EditAnywhere, Category = "Trooper|Combat") float KneelSeconds = 3.f;
@@ -83,6 +109,15 @@ private:
 	TArray<TObjectPtr<USoundBase>> FireSounds;
 	// lightsaber / explosion / movement extras
 	int32 SaberHits = 0;
+	bool bLimping = false;   // shot in the foot
+	bool bWounded = false, bBeingDragged = false; float WoundedAt = 0.f;
+	TWeakObjectPtr<ADukeTrooper> DragPartner;
+	void TickOrder(float Dt, float Now);
+	void BecomeWounded(float Now);
+	void MoveToward(const FVector& Where, float Speed, bool bBackward = false);
+	bool bRagdoll = false; float RagdollAt = 0.f, ToneStart = 0.3f, ToneFade = 0.6f; bool bGrounded = false;
+	void StartRagdoll(float Now);
+	void TickRagdoll(float Now);
 	float DeathAt = 0.f;
 	FName DeathClipName = NAME_None;
 	bool bCutApplied = false;

@@ -32,6 +32,36 @@ def segd(a0, a1, b0, b1):
         p = a0 + (a1 - a0) * t; ab = b1 - b0; u = np.clip(np.dot(p - b0, ab) / max(np.dot(ab, ab), 1e-9), 0, 1)
         best = min(best, np.linalg.norm(p - (b0 + ab * u)))
     return best
+from mathutils.bvhtree import BVHTree
+REGS = {'torso': {'pelvis', 'spine_01', 'spine_02', 'spine_03'}, 'head': {'head', 'neck_01'},
+        'uarm_l': {'upperarm_l'}, 'uarm_r': {'upperarm_r'}, 'farm_l': {'lowerarm_l', 'hand_l'}, 'farm_r': {'lowerarm_r', 'hand_r'},
+        'thigh_l': {'thigh_l'}, 'thigh_r': {'thigh_r'}, 'calf_l': {'calf_l', 'foot_l', 'ball_l'}, 'calf_r': {'calf_r', 'foot_r', 'ball_r'}}
+NONADJ = [('torso', 'farm_l'), ('torso', 'farm_r'), ('head', 'farm_l'), ('head', 'farm_r'), ('head', 'uarm_l'), ('head', 'uarm_r'),
+          ('farm_l', 'farm_r'), ('farm_l', 'thigh_l'), ('farm_l', 'thigh_r'), ('farm_r', 'thigh_l'), ('farm_r', 'thigh_r'),
+          ('farm_l', 'calf_l'), ('farm_l', 'calf_r'), ('farm_r', 'calf_l'), ('farm_r', 'calf_r'),
+          ('calf_l', 'calf_r'), ('thigh_l', 'calf_r'), ('thigh_r', 'calf_l'), ('torso', 'calf_l'), ('torso', 'calf_r'), ('uarm_l', 'uarm_r')]
+def region_polys(obj):
+    gi = {g.index: g.name for g in obj.vertex_groups}
+    own = [gi[max(v.groups, key=lambda g: g.weight).group] if v.groups else '' for v in obj.data.vertices]
+    out = {}
+    for rn, bones in REGS.items():
+        out[rn] = [p.vertices[:] for p in obj.data.polygons if all(own[i] in bones for i in p.vertices)]
+    return out
+RPC = {}
+def self_hits(obj, gone):
+    if obj.name not in RPC: RPC[obj.name] = region_polys(obj)
+    rp = RPC[obj.name]; dg = bpy.context.evaluated_depsgraph_get()
+    em = obj.evaluated_get(dg).to_mesh(); co = [v.co.copy() for v in em.vertices]; obj.evaluated_get(dg).to_mesh_clear()
+    trees = {}
+    res = {}
+    for a, b in NONADJ:
+        if a in gone or b in gone or not rp[a] or not rp[b]: continue
+        for k in (a, b):
+            if k not in trees: trees[k] = BVHTree.FromPolygons(co, rp[k])
+        res[(a, b)] = len(trees[a].overlap(trees[b]))
+    return res
+ao.animation_data.action = bpy.data.actions['idle']; sc.frame_set(0)
+BASE = self_hits(T, set())     # contacts already present in the sculpt (e.g. hands resting on the armour)
 out = {}
 for clip, r in RD.items():
     act = bpy.data.actions[clip]; ao.animation_data.action = act; N = int(act.frame_range[1])
@@ -42,32 +72,30 @@ for clip, r in RD.items():
     G_ = bpy.data.objects['SK_Trooper_Blaster']
     meshes_before = [T, G_]; meshes_after = ([bpy.data.objects[n] for n in ([cv['remainder']] + cv['pieces'])] + [G_]) if cv else [T, G_]
     floor = 1e9; selfpen = 0.0; worst = None
-    for f in range(1, N + 1, 2):   # every frame: the authored hit reaction and the ragdoll
+    for f in range(0, N + 1):   # every frame in order (as the FBX bake evaluates it): hit reaction and ragdoll
         sc.frame_set(f); dg = bpy.context.evaluated_depsgraph_get()
         ms = meshes_after if (cv and f >= cv['frame']) else meshes_before
         for o in ms:
             em = o.evaluated_get(dg).to_mesh(); n = len(em.vertices); c = np.empty(n * 3); em.vertices.foreach_get('co', c)
             z = (np.array(o.matrix_world) @ np.c_[c.reshape(n, 3), np.ones(n)].T)[2]
             floor = min(floor, float(np.percentile(z, 0.05))); o.evaluated_get(dg).to_mesh_clear()
+        if f % 2: continue
         gone = set()
         if cv and f >= cv['frame']:
-            if clip in ('saber_death_arm', 'death_explosion_armleg'): gone |= {'upperarm_r', 'lowerarm_r'}
-            if clip == 'death_explosion_arm': gone |= {'upperarm_l', 'lowerarm_l'}
+            if clip in ('saber_death_arm', 'death_explosion_armleg'): gone |= {'uarm_r', 'farm_r'}
+            if clip == 'death_explosion_arm': gone |= {'uarm_l', 'farm_l'}
             if clip in ('saber_death_leg', 'death_explosion_armleg'): gone |= {'thigh_l', 'calf_l'}
             if clip == 'death_explosion_leg': gone |= {'thigh_r', 'calf_r'}
             if clip == 'saber_death_head': gone |= {'head'}
             if clip == 'saber_death_half': gone |= {'thigh_l', 'calf_l', 'thigh_r', 'calf_r'}
-            if clip == 'saber_death_diagonal': gone |= {'head', 'upperarm_l', 'upperarm_r', 'lowerarm_l', 'lowerarm_r'}
-        names = [x for x in LIMBS if x not in gone]
-        for i, a in enumerate(names):
-            for b in names[i + 1:]:
-                if frozenset((a, b)) in ADJ: continue
-                if cv and clip.startswith(('saber_death_arm', 'death_explosion')) and any(x in a + b for x in ('_r' if 'armleg' in clip or clip == 'saber_death_arm' else '_l',)): pass
-                d = segd(*seg_of(a), *seg_of(b)) - LIMBS[a] - LIMBS[b]
-                if -d > selfpen: selfpen = -d; worst = (a, b, f)
+            if clip == 'saber_death_diagonal': gone |= {'head', 'uarm_l', 'uarm_r', 'farm_l', 'farm_r'}
+        body = bpy.data.objects[cv['remainder']] if (cv and f >= cv['frame']) else T
+        for pair, n_ in self_hits(body, gone).items():
+            ex = n_ - BASE.get(pair, 0)
+            if ex > selfpen: selfpen = ex; worst = (pair, f)
     sc.frame_set(N)
     pel = P['pelvis'].head.z; chest = ((P['spine_03'].head + P['spine_03'].tail) / 2).z
-    out[clip] = dict(lowest_vertex_cm=round(floor * 100, 1), deepest_limb_overlap_cm=round(selfpen * 100, 1), worst_pair=worst,
+    out[clip] = dict(lowest_vertex_cm=round(floor * 100, 1), intersecting_tris_over_idle=int(selfpen), worst_pair=worst,
                      final_pelvis_cm=round(pel * 100, 1), final_chest_cm=round(chest * 100, 1), settled_speed=r['settled_speed'])
     print(clip, out[clip])
 json.dump(out, open(f'{w}/' + ('body_qa.json' if os.environ.get('QA_ALL') else 'death_qa.json'), 'w'), indent=1)

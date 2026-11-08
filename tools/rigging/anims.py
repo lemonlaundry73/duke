@@ -158,7 +158,7 @@ def gait(name,T,v,s,stride_dir,lift,bob,sway,yawamp,stanceKw,stanceName,lean=0,w
     print(name,'pelvis drop cm min/max',round(min(sm)*100,1),round(max(sm)*100,1))
     finish(name,N,True,v,notes)
 # ---------------- human walk (reference-based, overlapping action) ----------------
-def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.018,roll='fwd',cycles=1,crouch=0.0,
+def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.018,roll='fwd',cycles=1,crouch=0.0,injured=None,
               lean=3.0,scan=0.0,gun=1.0,width=0.0,cape=0.0,notes=''):
     """Walk built from gait reference: heel strike -> foot flat -> heel rise -> toe-off; swing foot peaks early
     and reaches before contact; pelvis bob/list/rotation/sway/surge; spine, head, gun and cape trail the pelvis
@@ -214,8 +214,20 @@ def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.01
     def frame(f,drop):
         g=f/N*cycles; p=g%1.0; feet={}; balls={}
         for side,ph in (('l',0.0),('r',0.5)):
+            if injured:
+                # limp: spend less of the cycle on the hurt foot (it lands after a long step of the good leg)
+                ph=0.0 if side!=injured else 0.40
             feet[side],balls[side]=foot(side,(p+ph)%1.0)
+            if injured==side:   # hurt foot: flat, no push-off, kept short of the floor roll
+                feet[side]=feet[side]@M.Identity(4)
         d=dict(d0)
+        if injured:
+            sgi=1 if injured=='l' else -1
+            qh=(p+0.40)%1.0; on_hurt=qh<s
+            dip=math.sin(math.pi*min(1.0,qh/s)) if on_hurt else 0.0
+            d['pz']=d0['pz']-0.035*dip           # sinks over the hurt leg
+            d['s2r']=d0['s2r']+sgi*8*dip; d['s3r']=d0['s3r']+sgi*4*dip   # leans the weight off it
+            d['hp']=d0['hp']+4*dip
         surge=-0.010*Sn(2*p)                              # decelerate after contact, push off
         d['px']=d0['px']+0.022*Sn(p-0.08)+dx*surge
         d['py']=d0['py']+dy*surge
@@ -459,11 +471,19 @@ def fk_clip(name,dur,tl,release,gun_vel,gun_spin,t_contact,notes,loop=False,gun_
             off=-body_min_z(core)
         if off:
             K.loc_world(P['pelvis'],(d['px'],d['py'],d['pz']+off)); bpy.context.view_layer.update()
+        bpy.context.view_layer.update()
+        CH=P['spine_03'].matrix@REST['spine_03'].inverted()
+        for kk in ('handL','handR','prop'):
+            if d.get(kk+'_rel') is not None: d[kk]=CH@d[kk+'_rel']
         # free hands (rungs, ledges, clutching a wound): armature-space targets
         for sd in 'lr':
             hm=d.get('hand'+sd.upper())
             if hm is not None:
                 bpy.context.view_layer.update(); P[f'ctrl_hand_{sd}'].matrix=hm
+            pass
+        if d.get('prop') is not None:
+            bpy.context.view_layer.update(); P['prop'].matrix=d['prop']
+        for sd in 'lr':
             ep=d.get('elbow'+sd.upper())          # elbow pole position (armature space) for poses like clutching a wound
             if ep is not None:
                 bpy.context.view_layer.update(); m=P[f'ctrl_elbow_{sd}'].matrix.copy(); m.translation=ep; P[f'ctrl_elbow_{sd}'].matrix=m
@@ -619,7 +639,47 @@ def die_run():
         return x,feet,dict(armL=x['armL'],armR=x['armR'],legs=x['legs']),fk_of(x)
     death_clip('die_run',1.4,tl,release=0.14,gun_vel=(0.2,-3.2,1.2),gun_spin=(-420,30,120),t_contact=0.58,
                notes='Shot while running: momentum throws him forward into a sliding faceplant (travels ~1.3 m). Blaster flies ahead.')
-die_front(); die_back(); die_headshot(); die_run()
+
+# ---- blaster death, Battlefront / Call of Duty style: hit, slow sag to the knees, sway, topple (physics takes over mid-topple) ----
+def die_knees():
+    K0=dict(aim,**LIMBS0,armL=1,armR=1,legs=1)
+    KN={'l':foot_mat('l',(0.03,-0.04,0),yaw=8),'r':foot_mat('r',(-0.05,0.10,0.0),yaw=-18)}
+    keys=[(0.00,K0,'s'),
+          (0.08,dict(K0,s2p=-12,s3p=-9,hp=-12,pp=-5,py=0.03,gdp=18,gdz=0.03,curlL=0.4),'o'),            # bolt hits the chest
+          (0.40,dict(K0,s2p=6,s3p=4,hp=8,pp=4,py=0.03,pz=-0.08,gdp=-25,gdz=-0.06,gdx=-0.06,armL=0,ulp=-5,ulr=-10,llp=-35),'s'),   # left hand drops off the gun
+          (1.10,dict(K0,s2p=14,s3p=10,hp=22,np_=8,pp=8,py=0.06,pz=-0.56,gdp=-40,gdz=-0.12,gdx=-0.12,gdyaw=-20,armL=0,ulp=-2,ulr=-8,llp=-25),'s'),  # slow sag onto the knees
+          (1.45,dict(K0,s2p=18,s3p=12,hp=28,np_=10,pp=12,pr=4,py=0.06,pz=-0.58,gdp=-40,gdz=-0.12,gdx=-0.13,gdyaw=-22,armL=0,ulp=0,ulr=-6,llp=-20),'s'),  # kneeling, swaying
+          (1.75,dict(K0,s2p=22,s3p=14,hp=30,np_=12,pp=26,pr=8,py=0.02,pz=-0.60,gdp=-40,gdz=-0.12,gdx=-0.13,gdyaw=-22,armL=0,ulp=-10,ulr=-6,llp=-20),'i'),  # tipping forward
+          (2.00,dict(K0,s2p=30,s3p=18,hp=34,np_=14,pp=50,pr=24,px=0.06,py=-0.20,pz=-0.66,gdp=-40,gdz=-0.12,gdx=-0.13,gdyaw=-22,armL=0,ulp=-14,ulr=-6,llp=-20),'i')]  # past the tipping point
+    def tl(t):
+        x=segs(t,keys)
+        k=ss((t-0.35)/0.75)
+        tip=ss((t-1.70)/0.30)
+        feet={'l':foot_mat('l',(0.03,-0.04*k-0.12*(1-k)+0.14*tip,0),yaw=8),'r':foot_mat('r',(-0.05,0.12*(1-k)+0.10*k+0.10*tip,0.0),pitch=55*k,pivot='ball',yaw=-18)}
+        return x,feet,dict(armL=x['armL'],armR=x['armR'],legs=1),fk_of(x)
+    death_clip('die',2.0,tl,release=1.30,gun_vel=(0.1,-0.3,0.0),gun_spin=(60,0,90),t_contact=None,
+               notes='Blaster bolt: hit, slow sag to the knees, sway, topple forward; physics ragdoll from the topple (muscle tone fades), flat and limp on the ground.')
+# ---- headshot: limp while still standing; physics takes over at once and he falls nearly straight, flat ----
+def die_headshot_fb(name,back):
+    K0=dict(aim,**LIMBS0,armL=1,armR=1,legs=1)
+    jolt=dict(K0,hp=(-30 if back else 24),np_=(-12 if back else 12),s3p=(-6 if back else 10),s2p=(0 if back else 6),pp=(-5 if back else 8),py=(0.04 if back else -0.05),armL=0.3,armR=0.4)
+    keys=[(0.00,K0,'s'),(0.06,jolt,'o')]
+    def tl(t):
+        x=segs(t,keys); return x,AIMFEET,dict(armL=x['armL'],armR=x['armR'],legs=1),fk_of(x)
+    death_clip(name,0.4,tl,release=0.07,gun_vel=(0,0.2 if back else -0.2,0.1),gun_spin=(90,0,160),t_contact=None,
+               notes='Headshot: goes limp while standing and falls '+('backward' if back else 'forward')+' nearly straight, flat on the ground (physics ragdoll).')
+# ---- shot in the foot: stumble, then a limping walk ----
+def hit_foot():
+    K0=dict(aim,**LIMBS0,armL=1,armR=1,legs=1)
+    keys=[(0.0,K0,'s'),(0.10,dict(K0,s2p=10,s3p=6,hp=12,pz=-0.06,pr=-6,gdp=-15),'o'),(0.45,dict(K0,s2p=6,hp=6,pz=-0.04,pr=-4),'s'),(0.9,dict(K0,s2p=3,pr=-2),'s')]
+    def tl(t):
+        x=segs(t,keys); u=math.sin(math.pi*min(1,max(0,(t-0.05)/0.5)))
+        feet={'l':AIMFEET['l'],'r':foot_mat('r',(-0.04,0.12-0.04*u,0.10*u),pitch=-20*u,yaw=-25)}   # right foot jerks up off the ground
+        return x,feet,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('hit_foot',0.9,tl,99,(0,0,0),(0,0,0),None,lhand_on=1,notes='Shot in the right foot: the foot jerks up, he hops and staggers.')
+die_knees(); die_headshot_fb('die_headshot',False); die_headshot_fb('die_headshot_back',True); hit_foot()
+die_back(); die_run()
+
 # jump (in place: capsule moves in Unreal)
 hold('jump',0.9,[(0,ready),(0.12,dict(ready,pz=-0.09,s2p=10,s3p=6)),(0.22,dict(ready,pz=0.0,s2p=-2)),(0.55,dict(ready,pz=0.0,s2p=4,capeP=-12)),(0.7,dict(ready,pz=-0.11,s2p=12,s3p=8)),(0.9,ready)],loop=False,
      feetfn=lambda t:{s:foot_mat(s,(0,0,0.16*ss((t-0.2)/0.12)*(1-ss((t-0.5)/0.15))),pitch=25*ss((t-0.15)/0.1)*(1-ss((t-0.45)/0.15))) for s in 'lr'},notes='Jump: crouch, push, tuck, land.')
@@ -631,6 +691,7 @@ hold('crouch_shoot',0.3,recoil_keys(cra,1,0.3),loop=True,feetfn=lambda t:FE_CR,n
 walkcycle('crouch_walk',1.1,1.0,(0,-1),'aim',dict(pp=14,s1p=8,s2p=6,s3p=-2,hp=2,idxR=0.35),s=0.64,lift=0.08,bob=0.010,crouch=0.30,lean=0,gun=0.45,cape=6,notes='Crouched advance, rifle up. 1.0 m/s.')
 # walking
 walkcycle('walk',1.04,1.3,(0,-1),'patrol',s=0.60,lift=0.10,bob=0.014,cycles=2,lean=2.5,scan=8,gun=0.8,notes='Patrol walk: relaxed low ready, full heel-to-toe roll with toe bend and ankle push-off, slow scan. 1.3 m/s.')
+walkcycle('walk_limp',1.25,0.9,(0,-1),'patrol',s=0.62,lift=0.07,bob=0.012,cycles=1,lean=4,gun=0.6,injured='r',notes='Injured (shot in the right foot): limping walk, weight kept off the right leg. 0.9 m/s.')
 walkcycle('aim_walk_fwd',0.96,1.3,(0,-1),'aim',s=0.62,lift=0.09,bob=0.012,lean=2,gun=0.45,cape=3,notes='Tactical walk forward while aiming (soft knees, stable rifle). 1.3 m/s.')
 walkcycle('aim_walk_bwd',1.0,1.1,(0,1),'aim',s=0.62,lift=0.08,bob=0.011,roll='bwd',lean=2,gun=0.45,notes='Backpedal while aiming (toe-first contact). 1.1 m/s.')
 walkcycle('aim_strafe_l',0.86,1.2,(1,0),'aim',s=0.45,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.09,notes='Strafe left while aiming. 1.2 m/s.')
@@ -915,6 +976,196 @@ def explosions():
                      dict(bone='thigh_l',at=0.06,region='thigh_l',side='child',motion=dict(kind='sim',vel=(1.6,-0.8,1.2),spin=(-400,300,-500)))],
                excl=ARM_R+LEGS_L,final=dict(pr=-180),limbs=dict(ulp=-30,ulr=-20,urp=-30,urr=20,tlp=-25,trp=-35,clp=40,crp=50,hp=5,hy=20))
 roll_to_kneel(); kneel_clips(); climb_ladder(); mantle(); saber_hits(); saber_endings(); explosions()
+# ================= squad duties and tactics =================
+def hmat(side,pos,pitch=0,yaw=0,roll=0):
+    """hand target in rest-armature space: rest hand orientation rotated by pitch/yaw/roll (deg), at pos"""
+    m=(E((R(pitch),R(roll),R(yaw))).to_matrix()@REST[f'hand_{side}'].to_3x3()).to_4x4(); m.translation=V(pos); return m
+def pmat(pos,yaw=0): m=M.Rotation(R(yaw),4,'Z'); m.translation=V(pos); return m
+HIDE=M.Translation((0,0,-20))     # prop parked out of sight
+def step_feet(t,T,L,travel=(0,-1),s=0.62,lift=0.09,rise=0.0,width=0.0):
+    """planted-in-world stepping (no slide): stance feet move opposite to travel at exactly the clip speed;
+    swing feet arc forward. rise: height gained per step (stairs)."""
+    p=(t/T)%1.0; out={}
+    for side,ph in (('l',0.0),('r',0.5)):
+        q=(p+ph)%1.0; sg=1 if side=='l' else -1
+        rs=rise*s   # height the body gains while this foot is planted
+        if q<s: u=q/s; off=L*(0.5-u); z=rs*(1-u); lz=0.0; pitch=0.0
+        else:
+            w=(q-s)/(1-s); off=-L/2+L*ss(w); z=rs*ss(w); lz=lift*math.sin(math.pi*w); pitch=12*math.sin(math.pi*w)
+        out[side]=foot_mat(side,(travel[0]*off+sg*width,travel[1]*off,z+lz),pitch=pitch)
+    return out
+RDY=dict(stance('ready'),**LIMBS0); RDY.update(armL=1,armR=1,legs=1)
+BACK=dict(stance('ready'),**LIMBS0); BACK.update(armL=0,armR=0,legs=1)     # blaster slung on the back, both hands free (hands set per clip)
+LIE=dict(stance('ready'),**LIMBS0); LIE.update(armL=0,armR=1,legs=0,pp=-88,pz=-0.74,s2p=-4,hp=-10,
+         gpos=(-0.04,-0.20,1.26),gyaw=10,gpitch=60,groll=-20,tlp=-28,trp=-12,clp=45,crp=20)
+def osc(t,per,a,ph=0.0): return a*math.sin(2*math.pi*(t/per+ph))
+
+def wounded_clips():
+    def tl(t):
+        x=dict(LIE); x['s2p']+=osc(t,2.2,3); x['hr']=osc(t,3.1,8); x['tlp']+=osc(t,2.6,8); x['clp']+=osc(t,2.6,10)
+        x['handL_rel']=hmat('l',(-0.02,-0.25,1.08),pitch=-80,yaw=70)        # pressing the wound (on the armour, not in it)
+        return x,None,dict(armL=1,armR=1,legs=0),fk_of(x)
+    fk_clip('wounded_down',4.4,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=0,notes='Wounded on his back: presses the wound, writhes, blaster held across the chest. Loop.')
+    def tl(t):
+        p=(t/1.4)%1.0; x=dict(LIE)
+        x['tlp']=-35-30*math.sin(2*math.pi*p); x['trp']=-35-30*math.sin(2*math.pi*(p+0.5))
+        x['clp']=60+40*math.sin(2*math.pi*p); x['crp']=60+40*math.sin(2*math.pi*(p+0.5))
+        x['py']=0.03*math.sin(2*math.pi*p); x['hr']=osc(t,1.4,6)
+        x['handL_rel']=hmat('l',(0.25,0.05,0.95),pitch=-60)                  # left hand pushing on the ground
+        return x,None,dict(armL=1,armR=1,legs=0),fk_of(x)
+    fk_clip('wounded_crawl',1.4,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=0,notes='Wounded: pushes himself backward along the ground with his legs, 0.3 m/s. Loop.')
+
+DRAG_T=1.2; DRAG_V=0.9
+def drag_clips():
+    # rescuer: bent over, walking backward, left hand on the wounded man's collar, blaster one-handed scanning
+    K=dict(stance('aim'),**LIMBS0,armL=0,armR=1,legs=1,pz=-0.24,pp=32,s1p=14,s2p=12,s3p=-6,hp=-26,gpos=(-0.10,-0.30,1.20),gyaw=-8,gpitch=-5)
+    def tl(t):
+        x=dict(K); x['pz']+=-0.012*math.cos(4*math.pi*t/DRAG_T)
+        x['handL']=hmat('l',(0.16,-0.62,0.52),pitch=-100,yaw=10)            # gripping the collar (armature space: low, in front)
+        return x,step_feet(t,DRAG_T,DRAG_V*DRAG_T*0.62,travel=(0,1),lift=0.06),dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('drag_rescuer',DRAG_T,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=0,
+            notes='Rescuer drags a wounded trooper to safety: walks backward bent over, left hand on the collar, blaster up one-handed. 0.9 m/s. Pair with drag_wounded.')
+    # wounded being dragged: on his back, torso lifted by the collar, heels sliding, arms trailing
+    Kw=dict(LIE,armR=0,pp=-58,pz=-0.56,s2p=-8,hp=-14,tlp=-18,trp=-24,clp=12,crp=20)
+    def tl(t):
+        x=dict(Kw); x['pr']=osc(t,DRAG_T,4); x['hr']=osc(t,DRAG_T,6,0.2)
+        x.update(ulp=-20+osc(t,DRAG_T,6),ulr=-60,urp=-20+osc(t,DRAG_T,6,0.5),urr=60,llp=-25,lrp=-25)
+        return x,None,dict(armL=0,armR=0,legs=0),fk_of(x)
+    fk_clip('drag_wounded',DRAG_T,tl,99,(0,0,0),(0,0,0),None,loop=True,gun_mode='back',
+            notes='Wounded trooper being dragged by the collar: torso lifted, heels sliding, arms trailing. Pair with drag_rescuer (offset in drag_pair.json).')
+
+def cqb_clips():
+    # stack up on a door: crouched, rifle low, left hand on the shoulder of the man in front (squeeze to go)
+    K=dict(stance('ready'),**LIMBS0,armL=0,armR=1,legs=1,pz=-0.16,pp=10,s2p=6,hp=2,gpos=(-0.08,-0.24,1.08),gyaw=8,gpitch=-35)
+    FE={'l':foot_mat('l',(0.04,-0.14,0),yaw=8),'r':foot_mat('r',(-0.05,0.16,0),yaw=-15)}
+    def tl(t):
+        x=dict(K); x['s2p']+=osc(t,2.5,1.2); x['handL']=hmat('l',(0.10,-0.62,1.22),pitch=-30,yaw=-10)
+        return x,FE,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('stack_up',2.5,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=0,notes='Stacked on a door: crouched, rifle low, left hand on the shoulder of the trooper in front. Loop.')
+    # breach and clear: steps through the doorway rifle up, slicing the pie left to right (root motion 1.6 m)
+    A=dict(stance('aim'),**LIMBS0,armL=1,armR=1,legs=1)
+    def tl(t):
+        T=1.5; u=min(1.0,t/1.1); x=dict(A); sweep=40*math.cos(math.pi*ss(u))
+        x['rooty']=-1.6*ss(min(1.0,t/1.2)); x['s1y']+=sweep*0.25; x['s2y']+=sweep*0.35; x['s3y']+=sweep*0.4; x['pyw']+=sweep*0.15
+        x['pz']+=-0.04
+        steps=step_feet(t,0.6,0.55,lift=0.07) if t<1.2 else AIMFEET
+        return x,steps,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('breach_clear',1.5,tl,99,(0,0,0),(0,0,0),None,lhand_on=1,notes='Breach and clear: steps through the doorway rifle up, sweeping the room left to right. Root motion 1.6 m.')
+    # stairs up, aiming: two steps per cycle, 18 cm rise / 28 cm run (in place; the character moves up)
+    def tl(t):
+        x=dict(A); x['pz']+=-0.04+0.015*math.cos(4*math.pi*t/1.0); x['s1p']+=4
+        return x,step_feet(t,1.0,0.56,rise=0.36,lift=0.10),dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('stairs_up_aim',1.0,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=1,notes='Climbing stairs while aiming: 2 steps per loop, 18 cm rise, 28 cm run (0.56 m forward, 0.36 m up per loop).')
+
+CRATE_W=0.40
+def logistics_clips():
+    held=lambda: dict(handL_rel=hmat('l',(CRATE_W/2,-0.30,1.00),pitch=-10,yaw=90,roll=0),handR_rel=hmat('r',(-CRATE_W/2,-0.30,1.00),pitch=-10,yaw=-90),prop_rel=pmat((0,-0.30,1.06)))
+    K=dict(BACK,s2p=-4,s3p=-3,hp=4,pz=-0.07)
+    def tl(t):
+        x=dict(K); x['pz']+=-0.012*math.cos(4*math.pi*t/1.1); x['pr']=osc(t,1.1,2); x.update(held())
+        return x,step_feet(t,1.1,1.0*1.1*0.62,lift=0.08),dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('carry_crate',1.1,tl,99,(0,0,0),(0,0,0),None,loop=True,gun_mode='back',notes='Logistics: carries a supply crate in both hands, blaster slung. 1.0 m/s. Crate on the prop bone.')
+    def lift(rev):
+        def tl(t):
+            u=ss(t/0.8)*(1-ss((t-1.0)/0.7))     # squat down, then stand up (both directions)
+            g=ss((t-0.75)/0.2)   # crate gripped / lifted
+            up=1-u if not rev else u
+            x=dict(BACK,pz=-0.78*u,pp=34*u,s1p=16*u,s2p=18*u,hp=-12*u,tlp=0)
+            ground=(0,-0.34,0.22); chest=(0,-0.30,1.06)
+            lifted=g if not rev else 1-ss((t-0.85)/0.2)
+            c=V(ground).lerp(V(chest),max(0.0,1-u) if lifted>0.5 else 0.0) if True else None
+            cpos=V(ground) if lifted<0.5 else V(ground).lerp(V(chest),1-u)
+            x['prop']=pmat(cpos)
+            gw=ss((t-0.10)/0.65) if not rev else 1-ss((t-1.05)/0.6)     # hands go to the crate as he squats (and leave it after)
+            gl=V((cpos.x+CRATE_W/2,cpos.y,cpos.z-0.06)); gr=V((cpos.x-CRATE_W/2,cpos.y,cpos.z-0.06))
+            bpy.context.view_layer.update(); CH_=P['spine_03'].matrix@REST['spine_03'].inverted()
+            homeL=CH_@V((0.24,-0.06,0.98)); homeR=CH_@V((-0.24,-0.06,0.98))
+            x['handL']=hmat('l',tuple(homeL.lerp(gl,gw)),pitch=-10*gw,yaw=90*gw); x['handR']=hmat('r',tuple(homeR.lerp(gr,gw)),pitch=-10*gw,yaw=-90*gw)
+            FE={'l':foot_mat('l',(0.06,0.0,0),yaw=12),'r':foot_mat('r',(-0.06,0.0,0),yaw=-12)}
+            return x,FE,dict(armL=1,armR=1,legs=1),fk_of(x)
+        return tl
+    fk_clip('crate_pickup',1.8,lift(False),99,(0,0,0),(0,0,0),None,gun_mode='back',notes='Logistics: squats, grips a crate on the ground, lifts it to the chest (ends in carry_crate hold).')
+    fk_clip('crate_putdown',1.8,lift(True),99,(0,0,0),(0,0,0),None,gun_mode='back',notes='Logistics: squats and sets the crate down, stands up.')
+
+def comms_artillery_clips():
+    def tl(t):
+        x=dict(RDY,armL=0,hp=6+osc(t,1.6,4),hr=-10,hy=osc(t,3.2,8)); x['handL_rel']=hmat('l',(0.13,-0.06,1.63),pitch=-70,yaw=-40,roll=60)
+        return x,FE_RDY,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('radio_call',3.2,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=0,notes='Radio operator: hand to the helmet comlink, talking, scanning. Loop.')
+    # mortar: kneeling, drops a round into the tube, ducks and covers, back up
+    MUZ=V((0.0,-0.46,0.62)); FEk=kneel_feet()
+    def tl(t):
+        x=dict(BACK,pz=-0.50,pp=8,s2p=4)
+        raise_=ss((t-0.2)/0.5)*(1-ss((t-0.85)/0.15)); drop=ss((t-0.85)/0.12); duck=ss((t-1.1)/0.3)*(1-ss((t-2.2)/0.3))
+        hold=V((0.0,-0.30,1.05)).lerp(MUZ+V((0,0,0.12)),raise_)
+        x['prop']=HIDE if drop>0.99 else pmat(hold.lerp(MUZ-V((0,0,0.3)),drop))
+        hp=hold+V((0,0,-0.04))
+        x['handL']=hmat('l',(hp.x+0.06,hp.y,hp.z),pitch=-40,yaw=70); x['handR']=hmat('r',(hp.x-0.06,hp.y,hp.z),pitch=-40,yaw=-70)
+        if duck>0.01:
+            x['s2p']+=30*duck; x['hp']+=25*duck; x['pp']+=10*duck
+            x['handL_rel']=hmat('l',(0.14,-0.02,1.60),pitch=-90,yaw=-30); x['handR_rel']=hmat('r',(-0.14,-0.02,1.60),pitch=-90,yaw=30)
+        return x,FEk,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('mortar_load',2.6,tl,99,(0,0,0),(0,0,0),None,gun_mode='back',notes='Artillery crew: kneeling at the mortar, drops a round down the tube, ducks and covers his helmet, back up. Round on the prop bone.')
+    # thermal detonator throw (left hand), back on the blaster
+    def tl(t):
+        x=dict(RDY,armL=0); k1=ss(t/0.25); k2=ss((t-0.35)/0.25); k3=ss((t-0.6)/0.12); back=ss((t-0.95)/0.3)
+        belt=V((0.16,-0.12,1.02)); wind=V((0.38,0.22,1.62)); rel=V((0.18,-0.62,1.62))
+        pos=belt.lerp(wind,k2).lerp(rel,k3)
+        x['s2y']=-25*k2+30*k3; x['s3y']=-15*k2+20*k3; x['pyw']=-10*k2+12*k3
+        if back<0.999: x['handL_rel']=hmat('l',tuple(pos),pitch=-60)
+        x['prop']=None if t<0.72 else HIDE
+        if t<0.72:
+            x['prop_rel']=pmat(pos+V((0,-0.03,0)))
+        return x,FE_RDY,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('grenade_throw',1.4,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Throws a thermal detonator with the left hand (released at 0.72 s), back on the blaster. Detonator on the prop bone.')
+    def tl(t):
+        x=shots(t,[i*0.12 for i in range(5)],dict(aim)); x.update(LIMBS0); x.update(armL=1,armR=1,legs=1)
+        return x,AIMFEET,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('suppress',0.6,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=1,notes='Suppressing fire: sustained bolts every 0.12 s with recoil. Loop.')
+
+def checkpoint_clips():
+    def tl(t):
+        x=dict(RDY,armL=0,hp=2); x['handL_rel']=hmat('l',(0.20,-0.58,1.48),pitch=-95,yaw=-15,roll=0)
+        x['s2p']+=osc(t,2.0,1)
+        return x,FE_RDY,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('checkpoint_halt',2.0,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=0,notes='Roadblock: left palm raised, halting the vehicle or person, blaster low ready. Loop.')
+    def tl(t):
+        x=dict(RDY,armL=0); out_=ss(t/0.5)*(1-ss((t-0.9)/0.4)); read=ss((t-0.9)/0.4)*(1-ss((t-2.9)/0.4)); give=ss((t-2.9)/0.4)*(1-ss((t-3.6)/0.4))
+        reach=V((0.18,-0.55,1.25)); readp=V((0.08,-0.34,1.30)); home=V((0.16,-0.14,1.10))
+        pos=home.lerp(reach,out_).lerp(readp,read)
+        if give>0: pos=readp.lerp(reach,give)
+        x['hp']=4+16*read; x['hy']=osc(t,1.3,6)*read
+        x['handL_rel']=hmat('l',tuple(pos),pitch=-70+20*read,yaw=-30)
+        x['prop_rel']=HIDE if (t<0.75 or t>3.55) else pmat(pos+V((-0.02,-0.04,0.05)))
+        return x,FE_RDY,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('check_credentials',4.0,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Roadblock: takes the travel papers / datapad, reads and checks them, hands them back. Datapad on the prop bone.')
+    def tl(t):
+        x=dict(BACK,s2p=40,s3p=12,hp=18,pz=-0.14,pp=18,hy=osc(t,1.7,14))
+        lid=ss(t/0.5)*(1-ss((t-3.4)/0.5))
+        x['handL']=hmat('l',(0.20,-0.56,0.92+0.22*lid),pitch=-120*lid-20,yaw=0)
+        x['handR']=hmat('r',(-0.10+0.08*math.sin(2*math.pi*t/1.1),-0.55,0.80+0.04*math.sin(2*math.pi*t/0.7)),pitch=-80)
+        FE={'l':foot_mat('l',(0.04,-0.10,0),yaw=8),'r':foot_mat('r',(-0.05,0.10,0),yaw=-12)}
+        return x,FE,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('inspect_freight',4.0,tl,99,(0,0,0),(0,0,0),None,gun_mode='back',notes='Roadblock: bends over a cargo crate, lifts the lid, searches inside for weapons, closes it. Blaster slung.')
+
+def rank_clips():
+    PORT=dict(stance('ready'),**LIMBS0,armL=1,armR=1,legs=1,gpos=(0.0,-0.20,1.28),gyaw=50,gpitch=55,groll=-30,s2p=-2,hp=-2)
+    FEa={'l':foot_mat('l',(-0.02,0,0),yaw=12),'r':foot_mat('r',(0.02,0,0),yaw=-12)}
+    def tl(t):
+        x=dict(PORT); x['s2p']+=osc(t,4.0,0.6); return x,FEa,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('attention',4.0,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=1,notes='At attention, blaster at port arms, heels together: standing for an officer. Loop.')
+    def tl(t):
+        x=dict(RDY,armL=0); k=ss(t/0.35)*(1-ss((t-1.2)/0.35))
+        x['s2y']=12*k; x['hy']=20*k; x['handL_rel']=hmat('l',tuple(V((0.16,-0.14,1.10)).lerp(V((0.48,-0.55,1.52)),k)),pitch=-90*k,yaw=-20)
+        return x,FE_RDY,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('command_point',1.6,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Officer / sergeant: points the squad to a position.')
+    def tl(t):
+        x=dict(RDY,armL=0); a=ss(t/0.3); b=ss((t-0.35)/0.35); back=ss((t-0.9)/0.3)
+        pos=V((0.16,-0.14,1.10)).lerp(V((0.22,-0.10,1.85)),a).lerp(V((0.22,-0.65,1.45)),b).lerp(V((0.16,-0.14,1.10)),back)
+        x['handL_rel']=hmat('l',tuple(pos),pitch=-90,yaw=-10); return x,FE_RDY,dict(armL=1,armR=1,legs=1),fk_of(x)
+    fk_clip('command_advance',1.3,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Officer / sergeant: arm up, then chops forward: "advance".')
+
+wounded_clips(); drag_clips(); cqb_clips(); logistics_clips(); comms_artillery_clips(); checkpoint_clips(); rank_clips()
 json.dump(CUTS,open(f'{w}/cuts.json','w'),indent=1)
 bpy.context.scene.frame_set(0)
 for o in bpy.context.scene.objects: o.select_set(False)
