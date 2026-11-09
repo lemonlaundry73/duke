@@ -1180,7 +1180,7 @@ def logistics_clips():
 
 def comms_artillery_clips():
     def tl(t):
-        x=dict(RDY,armL=0,hp=6+osc(t,1.6,4),hr=-10,hy=osc(t,3.2,8)); x['handL_rel']=hmat('l',(0.13,-0.06,1.63),pitch=-70,yaw=-40,roll=60)
+        x=dict(RDY,armL=0,hp=6+osc(t,1.6,4),hr=-10,hy=osc(t,3.2,8)); x['handL_rel']=hmat('l',(0.195,-0.05,1.62),pitch=-70,yaw=-40,roll=60)   # outside the helmet's cheek guard
         return x,FE_RDY,dict(armL=1,armR=1,legs=1),fk_of(x)
     fk_clip('radio_call',3.2,tl,99,(0,0,0),(0,0,0),None,loop=True,lhand_on=0,notes='Radio operator: hand to the helmet comlink, talking, scanning. Loop.')
     # mortar: kneeling, drops a round into the tube, ducks and covers, back up
@@ -1193,8 +1193,8 @@ def comms_artillery_clips():
         hp=hold+V((0,0,-0.04))
         x['handL']=hmat('l',(hp.x+0.06,hp.y,hp.z),pitch=-40,yaw=70); x['handR']=hmat('r',(hp.x-0.06,hp.y,hp.z),pitch=-40,yaw=-70)
         if duck>0.01:
-            x['s2p']+=30*duck; x['hp']+=25*duck; x['pp']+=10*duck
-            x['handL_rel']=hmat('l',(0.14,-0.02,1.60),pitch=-90,yaw=-30); x['handR_rel']=hmat('r',(-0.14,-0.02,1.60),pitch=-90,yaw=30)
+            x['s2p']+=30*duck; x['hp']+=12*duck; x['pp']+=10*duck
+            x['handL_rel']=hmat('l',(0.20,-0.05,1.76),pitch=-90,yaw=-30); x['handR_rel']=hmat('r',(-0.20,-0.05,1.76),pitch=-90,yaw=30)   # hands over the helmet's sides, clear of the cheek guards
         return x,FEk,dict(armL=1,armR=1,legs=1),fk_of(x)
     fk_clip('mortar_load',2.6,tl,99,(0,0,0),(0,0,0),None,gun_mode='back',notes='Artillery crew: kneeling at the mortar, drops a round down the tube, ducks and covers his helmet, back up. Round on the prop bone.')
     # thermal detonator throw (left hand), back on the blaster
@@ -1231,7 +1231,7 @@ def checkpoint_clips():
         return x,FE_RDY,dict(armL=1,armR=1,legs=1),fk_of(x)
     fk_clip('check_credentials',4.0,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Roadblock: takes the travel papers / datapad, reads and checks them, hands them back. Datapad on the prop bone.')
     def tl(t):
-        x=dict(BACK,s2p=40,s3p=12,hp=18,pz=-0.14,pp=18,hy=osc(t,1.7,14))
+        x=dict(BACK,s2p=40,s3p=12,hp=0,np_=-4,pz=-0.14,pp=18,hy=8+osc(t,1.7,7))   # head motion kept small: the rigid helmet clears the shoulders
         lid=ss(t/0.5)*(1-ss((t-3.4)/0.5))
         x['handL']=hmat('l',(0.20,-0.56,0.92+0.22*lid),pitch=-120*lid-20,yaw=0)
         x['handR']=hmat('r',(-0.10+0.08*math.sin(2*math.pi*t/1.1),-0.55,0.80+0.04*math.sin(2*math.pi*t/0.7)),pitch=-80)
