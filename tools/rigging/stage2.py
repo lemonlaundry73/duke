@@ -165,7 +165,13 @@ for i,k in enumerate(names):
     if legchain(k):
         sgn=1 if k.endswith('_l') else -1; D[sgn*x<-0.03,i]=big; D[z>1.02,i]=big; D[cape,i]=big
         D[(np.abs(x)>0.23)&(z>0.72),i]=big   # hands hang beside the thighs
-    if k.split('_')[0] in('thumb','index','middle','ring','pinky'): D[z>0.915,i]=big
+    if k.split('_')[0] in('thumb','index','middle','ring','pinky'):   # finger skin only below this character's own wrist
+        D[z>J[f"hand_{k[-1]}"][0][2]-0.02,i]=big
+    if k in ('hand_l','hand_r','lowerarm_l','lowerarm_r') and CFG.get('finger_skin_below_knuckles',False):
+        # the palm bone ends at the knuckles, so it can win the nearest-bone test for the skin between the fingers;
+        # below the knuckle line the skin belongs to the fingers (bare hands with fused or webbed fingers)
+        kz=np.mean([J[f'{f}_01_{k[-1]}'][0][2] for f in FING])
+        D[(z<kz-0.008)&(np.abs(x)>abs(J[f'hand_{k[-1]}'][0][0])-0.01),i]=big
     if k in('head',): D[z<1.50,i]=big
     if k.split('_')[0] in ('spine','pelvis','neck','head','clavicle') and False: pass
 # cape verts: only cape chains + upper torso
@@ -173,6 +179,27 @@ for i,k in enumerate(names):
     if not(iscape(k) or k in('spine_03','spine_02','neck_01','clavicle_l','clavicle_r','head')): D[cape,i]=big
     if k=='head': D[cape,i]=big
 prim=D.argmin(1)
+if CFG.get('finger_skin_below_knuckles',False):
+    # hand skin reachable from the hand over the mesh surface never belongs to the torso or legs: a thumb or fingertip
+    # that hangs past its detected bone otherwise loses to the wide torso bones and stays behind when the hand moves
+    _ev=np.empty(len(t.data.edges)*2,np.int32); t.data.edges.foreach_get('vertices',_ev); _ev=_ev.reshape(-1,2)
+    _body=[idx[k] for k in names if armchain(k) is False and not iscape(k)]
+    for s_ in ('l','r'):
+        a_=np.array(J[f'hand_{s_}'][0]); b_=np.array(J[f'hand_{s_}'][1]); ab_=b_-a_
+        tt_=np.clip(((np.stack([x,y,z],1)-a_)@ab_)/(ab_@ab_),0,1)
+        near_=np.linalg.norm(np.stack([x,y,z],1)-(a_+tt_[:,None]*ab_),axis=1)<0.11
+        zone_=near_&(z<a_[2]+0.005)
+        handb_=[idx[k] for k in names if k.endswith('_'+s_) and k.split('_')[0] in ('hand','thumb','index','middle','ring','pinky')]
+        reach_=np.isin(prim,handb_)&zone_
+        for _ in range(10):
+            nb_=np.zeros(n,bool); nb_[_ev[:,1][reach_[_ev[:,0]]]]=True; nb_[_ev[:,0][reach_[_ev[:,1]]]]=True
+            new_=nb_&zone_&~reach_
+            if not new_.any(): break
+            reach_|=new_
+        fix_=reach_&np.isin(prim,_body)
+        if fix_.any():
+            D[np.ix_(fix_,_body)]=big; prim[fix_]=D[fix_].argmin(1)
+        print('hand skin reclaimed',s_,int(fix_.sum()))
 children={k:[c for c,p in PARENT.items() if p==k] for k in names}
 allowed=np.zeros((n,len(names)),bool)
 for i,k in enumerate(names):

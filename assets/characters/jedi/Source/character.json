@@ -27,5 +27,6 @@
  "saber_path_shift": [
   -0.08,
   -0.04
- ]
+ ],
+ "finger_skin_below_knuckles": true
 }
