@@ -9,25 +9,25 @@
   "clip": "die_back",
   "limp_frame": 3,
   "frames": 114,
-  "settled_speed": 0.022
+  "settled_speed": 0.015
  },
  {
   "clip": "die_headshot",
   "limp_frame": 2,
   "frames": 113,
-  "settled_speed": 0.043
+  "settled_speed": 0.007
  },
  {
   "clip": "die_headshot_back",
   "limp_frame": 2,
   "frames": 113,
-  "settled_speed": 0.015
+  "settled_speed": 0.003
  },
  {
   "clip": "die_run",
   "limp_frame": 3,
   "frames": 114,
-  "settled_speed": 0.062
+  "settled_speed": 0.023
  },
  {
   "clip": "saber_death_arm",
@@ -39,37 +39,37 @@
   "clip": "saber_death_leg",
   "limp_frame": 4,
   "frames": 115,
-  "settled_speed": 0.026
+  "settled_speed": 0.024
  },
  {
   "clip": "saber_death_head",
   "limp_frame": 9,
   "frames": 120,
-  "settled_speed": 0.007
+  "settled_speed": 0.029
  },
  {
   "clip": "saber_death_half",
   "limp_frame": 3,
   "frames": 114,
-  "settled_speed": 0.003
+  "settled_speed": 0.009
  },
  {
   "clip": "saber_death_diagonal",
   "limp_frame": 9,
   "frames": 120,
-  "settled_speed": 0.022
+  "settled_speed": 0.17
  },
  {
   "clip": "death_explosion",
   "limp_frame": 2,
   "frames": 113,
-  "settled_speed": 0.063
+  "settled_speed": 0.012
  },
  {
   "clip": "death_explosion_arm",
   "limp_frame": 2,
   "frames": 113,
-  "settled_speed": 0.034
+  "settled_speed": 0.01
  },
  {
   "clip": "death_explosion_leg",
@@ -81,6 +81,6 @@
   "clip": "death_explosion_armleg",
   "limp_frame": 2,
   "frames": 113,
-  "settled_speed": 0.015
+  "settled_speed": 0.012
  }
 ]

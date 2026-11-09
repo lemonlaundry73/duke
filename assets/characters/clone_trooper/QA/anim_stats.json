@@ -1,13 +1,13 @@
 {
  "idle": {
-  "frames": 120,
-  "seconds": 4.0,
+  "frames": 75,
+  "seconds": 2.5,
   "loop": true,
-  "speed_m_s": 0,
+  "speed_m_s": 0.0,
   "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
-  "notes": "Relaxed low-ready idle with breathing. Loop."
+  "notes": "Idle, weight shifting and breathing (Universal Animation Library, retargeted)"
  },
  "patrol_look": {
   "frames": 180,
@@ -190,14 +190,14 @@
   "notes": "Shot while running: momentum throws him forward into a sliding faceplant (travels ~1.3 m). Blaster flies ahead."
  },
  "jump": {
-  "frames": 27,
-  "seconds": 0.9,
+  "frames": 92,
+  "seconds": 3.067,
   "loop": false,
-  "speed_m_s": 0,
+  "speed_m_s": 0.0,
   "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
-  "notes": "Jump: crouch, push, tuck, land."
+  "notes": "Jump: take-off, airborne, landing (Universal Animation Library, retargeted)."
  },
  "crouch_aim": {
   "frames": 90,
@@ -220,24 +220,24 @@
   "notes": "Crouched bolt."
  },
  "crouch_walk": {
-  "frames": 33,
-  "seconds": 1.1,
+  "frames": 60,
+  "seconds": 2.0,
   "loop": true,
-  "speed_m_s": 1.0,
-  "max_hand_gap_cm": 0.29,
-  "max_foot_gap_cm": 0.01,
-  "planted_foot_slip_cm_s": 6.81,
-  "notes": "Crouched advance, rifle up. 1.0 m/s."
+  "speed_m_s": 0.728,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Crouched walk (Universal Animation Library, retargeted)"
  },
  "walk": {
-  "frames": 65,
-  "seconds": 2.167,
+  "frames": 40,
+  "seconds": 1.333,
   "loop": true,
-  "speed_m_s": 1.3,
-  "max_hand_gap_cm": 0.22,
-  "max_foot_gap_cm": 0.01,
-  "planted_foot_slip_cm_s": 8.12,
-  "notes": "Patrol walk: relaxed low ready, full heel-to-toe roll with toe bend and ankle push-off, slow scan. 1.3 m/s."
+  "speed_m_s": 0.946,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Walk (Universal Animation Library, retargeted)"
  },
  "walk_limp": {
   "frames": 38,
@@ -300,24 +300,24 @@
   "notes": "Strafe right while aiming. 1.2 m/s."
  },
  "run": {
-  "frames": 21,
-  "seconds": 0.7,
+  "frames": 28,
+  "seconds": 0.933,
   "loop": true,
-  "speed_m_s": 4.2,
+  "speed_m_s": 5.197,
   "max_hand_gap_cm": 0.0,
-  "max_foot_gap_cm": 0.01,
-  "planted_foot_slip_cm_s": 2.48,
-  "notes": "Combat jog, rifle at port: midfoot landing, heel recovery, flight phase. 4.2 m/s."
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Jog / run (Universal Animation Library, retargeted)"
  },
  "sprint": {
-  "frames": 19,
-  "seconds": 0.633,
+  "frames": 20,
+  "seconds": 0.667,
   "loop": true,
-  "speed_m_s": 6.2,
-  "max_hand_gap_cm": 0.01,
-  "max_foot_gap_cm": 0.01,
-  "planted_foot_slip_cm_s": 9.54,
-  "notes": "Sprint, rifle across chest: forefoot landing, high heel recovery and knee drive. 6.2 m/s."
+  "speed_m_s": 8.004,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Sprint (Universal Animation Library, retargeted)"
  },
  "melee": {
   "frames": 27,
@@ -940,24 +940,24 @@
   "notes": "Prone crawl on elbows and knees, rifle cradled forward. 0.4 m/s. Loop."
  },
  "turn_l90": {
-  "frames": 24,
-  "seconds": 0.8,
+  "frames": 242,
+  "seconds": 8.067,
   "loop": false,
-  "speed_m_s": 0,
+  "speed_m_s": 0.175,
   "max_hand_gap_cm": 0.0,
-  "max_foot_gap_cm": 1.22,
+  "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
-  "notes": "Turn in place 90 deg left, stepping (root rotation; the feet do not skate)."
+  "notes": "Turn on the spot (+132 deg; heading on the root bone), from mixamo/Turns_mixamo.fbx"
  },
  "turn_r90": {
-  "frames": 24,
-  "seconds": 0.8,
+  "frames": 20,
+  "seconds": 0.667,
   "loop": false,
-  "speed_m_s": 0,
+  "speed_m_s": 0.044,
   "max_hand_gap_cm": 0.0,
-  "max_foot_gap_cm": 1.69,
+  "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
-  "notes": "Turn in place 90 deg right, stepping (root rotation; the feet do not skate)."
+  "notes": "Turn on the spot (-6 deg; heading on the root bone), from mixamo/Turns_mixamo.fbx"
  },
  "run_stop": {
   "frames": 24,
@@ -1028,5 +1028,1215 @@
   "max_foot_gap_cm": 0.51,
   "planted_foot_slip_cm_s": 0,
   "notes": "Explosion nearby: ducks low, left arm over the helmet, back up."
+ },
+ "crouch_idle": {
+  "frames": 88,
+  "seconds": 2.933,
+  "loop": true,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Crouched idle (Universal Animation Library, retargeted)"
+ },
+ "walk_formal": {
+  "frames": 40,
+  "seconds": 1.333,
+  "loop": true,
+  "speed_m_s": 0.946,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Formal walk (officers on inspection) (Universal Animation Library, retargeted)"
+ },
+ "roll": {
+  "frames": 44,
+  "seconds": 1.467,
+  "loop": false,
+  "speed_m_s": 0.066,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Dodge roll (Universal Animation Library, retargeted)"
+ },
+ "hit_chest": {
+  "frames": 10,
+  "seconds": 0.333,
+  "loop": false,
+  "speed_m_s": 0.079,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Hit in the chest (Universal Animation Library, retargeted)"
+ },
+ "hit_head": {
+  "frames": 13,
+  "seconds": 0.433,
+  "loop": false,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Hit in the head (Universal Animation Library, retargeted)"
+ },
+ "die_fall": {
+  "frames": 72,
+  "seconds": 2.4,
+  "loop": false,
+  "speed_m_s": 0.186,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Death fall (alternative to the ragdoll deaths) (Universal Animation Library, retargeted)"
+ },
+ "idle_talking": {
+  "frames": 88,
+  "seconds": 2.933,
+  "loop": true,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Talking while standing (Universal Animation Library, retargeted)"
+ },
+ "interact": {
+  "frames": 60,
+  "seconds": 2.0,
+  "loop": false,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Reach out and use a panel or object (Universal Animation Library, retargeted)"
+ },
+ "pickup_table": {
+  "frames": 25,
+  "seconds": 0.833,
+  "loop": false,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pick something up from a table (Universal Animation Library, retargeted)"
+ },
+ "push": {
+  "frames": 80,
+  "seconds": 2.667,
+  "loop": true,
+  "speed_m_s": 0.291,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pushing a heavy object (Universal Animation Library, retargeted)"
+ },
+ "repair_kneeling": {
+  "frames": 156,
+  "seconds": 5.2,
+  "loop": true,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Kneeling repair work (mechanics, logistics) (Universal Animation Library, retargeted)"
+ },
+ "sit_down": {
+  "frames": 39,
+  "seconds": 1.3,
+  "loop": false,
+  "speed_m_s": 0.183,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Sit down (Universal Animation Library, retargeted)"
+ },
+ "sit_idle": {
+  "frames": 50,
+  "seconds": 1.667,
+  "loop": true,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Sitting idle (Universal Animation Library, retargeted)"
+ },
+ "sit_talking": {
+  "frames": 88,
+  "seconds": 2.933,
+  "loop": true,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Sitting and talking (Universal Animation Library, retargeted)"
+ },
+ "sit_up": {
+  "frames": 31,
+  "seconds": 1.033,
+  "loop": false,
+  "speed_m_s": 0.23,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Get up from sitting (Universal Animation Library, retargeted)"
+ },
+ "punch_jab": {
+  "frames": 26,
+  "seconds": 0.867,
+  "loop": false,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Jab (Universal Animation Library, retargeted)"
+ },
+ "punch_cross": {
+  "frames": 30,
+  "seconds": 1.0,
+  "loop": false,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Cross punch (Universal Animation Library, retargeted)"
+ },
+ "drive": {
+  "frames": 50,
+  "seconds": 1.667,
+  "loop": true,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Driving / piloting seat pose (Universal Animation Library, retargeted)"
+ },
+ "dance": {
+  "frames": 30,
+  "seconds": 1.0,
+  "loop": true,
+  "speed_m_s": 0.0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Dance (cantina) (Universal Animation Library, retargeted)"
+ },
+ "turn_l180": {
+  "frames": 202,
+  "seconds": 6.733,
+  "loop": false,
+  "speed_m_s": 0.076,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Turn on the spot (+178 deg; heading on the root bone), from mixamo/Turns_mixamo.fbx"
+ },
+ "turn_l180_04": {
+  "frames": 140,
+  "seconds": 4.667,
+  "loop": false,
+  "speed_m_s": 0.105,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Turn on the spot (+177 deg; heading on the root bone), from mixamo/Turns_mixamo.fbx"
+ },
+ "turn_r180": {
+  "frames": 91,
+  "seconds": 3.033,
+  "loop": false,
+  "speed_m_s": 0.208,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Turn on the spot (-138 deg; heading on the root bone), from mixamo/Turns_mixamo.fbx"
+ },
+ "boxing": {
+  "frames": 516,
+  "seconds": 17.2,
+  "loop": false,
+  "speed_m_s": 0.104,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Boxing combination (from mixamo/Boxing_mixamo.fbx, frames 17-430)"
+ },
+ "kick_front": {
+  "frames": 303,
+  "seconds": 10.1,
+  "loop": false,
+  "speed_m_s": 0.151,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Big front kick (from mixamo/BigFrontKick_mixamo.fbx, frames 17-260)"
+ },
+ "kick_roundhouse": {
+  "frames": 323,
+  "seconds": 10.767,
+  "loop": false,
+  "speed_m_s": 0.24,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Roundhouse kick (from mixamo/RoundHouseKick_mixamo.fbx, frames 17-276)"
+ },
+ "knife_fight": {
+  "frames": 666,
+  "seconds": 22.2,
+  "loop": false,
+  "speed_m_s": 0.045,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Knife fight (from mixamo/KnifeFight_mixamo.fbx, frames 17-550)"
+ },
+ "fight_idle_01": {
+  "frames": 985,
+  "seconds": 32.833,
+  "loop": false,
+  "speed_m_s": 0.004,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Unarmed fighting stance (from mixamo/FightingIdle_mixamo.fbx, frames 17-805)"
+ },
+ "fight_idle_02": {
+  "frames": 530,
+  "seconds": 17.667,
+  "loop": false,
+  "speed_m_s": 0.022,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Unarmed fighting stance (from mixamo/FightingIdle_mixamo.fbx, frames 835-1259)"
+ },
+ "knockout_winner": {
+  "frames": 581,
+  "seconds": 19.367,
+  "loop": false,
+  "speed_m_s": 0.061,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Knock-out: the winner (from mixamo/KnockOut_Winner_mixamo.fbx, frames 17-482)"
+ },
+ "knockout_loser_01": {
+  "frames": 377,
+  "seconds": 12.567,
+  "loop": false,
+  "speed_m_s": 0.066,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Knock-out: the loser (from mixamo/KnockOut_Loser_mixamo.fbx, frames 17-319)"
+ },
+ "knockout_loser_02": {
+  "frames": 145,
+  "seconds": 4.833,
+  "loop": false,
+  "speed_m_s": 0.119,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Knock-out: the loser (from mixamo/KnockOut_Loser_mixamo.fbx, frames 377-493)"
+ },
+ "execution_01": {
+  "frames": 516,
+  "seconds": 17.2,
+  "loop": false,
+  "speed_m_s": 0.055,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Execution (attacker) (from mixamo/Execution_01_mixamo.fbx, frames 17-430)"
+ },
+ "execution_02": {
+  "frames": 588,
+  "seconds": 19.6,
+  "loop": false,
+  "speed_m_s": 0.053,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Execution (attacker) (from mixamo/Execution_02_mixamo.fbx, frames 17-488)"
+ },
+ "execution_killed_01": {
+  "frames": 332,
+  "seconds": 11.067,
+  "loop": false,
+  "speed_m_s": 0.015,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Execution (victim) (from mixamo/Execution_Killed_03_mixamo.fbx, frames 17-283)"
+ },
+ "execution_killed_02": {
+  "frames": 115,
+  "seconds": 3.833,
+  "loop": false,
+  "speed_m_s": 0.193,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Execution (victim) (from mixamo/Execution_Killed_03_mixamo.fbx, frames 307-399)"
+ },
+ "pistol_fight": {
+  "frames": 882,
+  "seconds": 29.4,
+  "loop": false,
+  "speed_m_s": 0.036,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol fight (from mixamo/PistolFight_mixamo.fbx, frames 17-723)"
+ },
+ "pistol_fight_b": {
+  "frames": 838,
+  "seconds": 27.933,
+  "loop": false,
+  "speed_m_s": 0.055,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol fight (from mixamo/PistolFight_01_mixamo.fbx, frames 17-688)"
+ },
+ "pistol_light_01": {
+  "frames": 72,
+  "seconds": 2.4,
+  "loop": false,
+  "speed_m_s": 0.016,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, light (from mixamo/Pistol_Light_mixamo.fbx, frames 313-371)"
+ },
+ "pistol_light_02": {
+  "frames": 250,
+  "seconds": 8.333,
+  "loop": false,
+  "speed_m_s": 0.007,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, light (from mixamo/Pistol_Light_mixamo.fbx, frames 397-597)"
+ },
+ "pistol_light_03": {
+  "frames": 70,
+  "seconds": 2.333,
+  "loop": false,
+  "speed_m_s": 0.079,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, light (from mixamo/Pistol_Light_mixamo.fbx, frames 633-689)"
+ },
+ "pistol_medium_01": {
+  "frames": 40,
+  "seconds": 1.333,
+  "loop": false,
+  "speed_m_s": 0.046,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 17-49)"
+ },
+ "pistol_medium_02": {
+  "frames": 255,
+  "seconds": 8.5,
+  "loop": false,
+  "speed_m_s": 0.008,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 65-269)"
+ },
+ "pistol_medium_03": {
+  "frames": 132,
+  "seconds": 4.4,
+  "loop": false,
+  "speed_m_s": 0.002,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 285-391)"
+ },
+ "pistol_medium_04": {
+  "frames": 57,
+  "seconds": 1.9,
+  "loop": false,
+  "speed_m_s": 0.005,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 413-459)"
+ },
+ "pistol_medium_05": {
+  "frames": 452,
+  "seconds": 15.067,
+  "loop": false,
+  "speed_m_s": 0.003,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 493-855)"
+ },
+ "pistol_medium_06": {
+  "frames": 90,
+  "seconds": 3.0,
+  "loop": false,
+  "speed_m_s": 0.046,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 1013-1085)"
+ },
+ "pistol_medium_07": {
+  "frames": 80,
+  "seconds": 2.667,
+  "loop": false,
+  "speed_m_s": 0.012,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 1165-1229)"
+ },
+ "pistol_medium_08": {
+  "frames": 67,
+  "seconds": 2.233,
+  "loop": false,
+  "speed_m_s": 0.004,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 1291-1345)"
+ },
+ "pistol_medium_09": {
+  "frames": 20,
+  "seconds": 0.667,
+  "loop": false,
+  "speed_m_s": 0.015,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 1369-1385)"
+ },
+ "pistol_medium_10": {
+  "frames": 190,
+  "seconds": 6.333,
+  "loop": false,
+  "speed_m_s": 0.037,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, medium (from mixamo/Pistol_Medium_mixamo.fbx, frames 1447-1599)"
+ },
+ "pistol_heavy_01": {
+  "frames": 37,
+  "seconds": 1.233,
+  "loop": false,
+  "speed_m_s": 0.03,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, heavy (from mixamo/Pistol_Heavy_mixamo.fbx, frames 17-47)"
+ },
+ "pistol_heavy_02": {
+  "frames": 1432,
+  "seconds": 47.733,
+  "loop": false,
+  "speed_m_s": 0.002,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, heavy (from mixamo/Pistol_Heavy_mixamo.fbx, frames 91-1237)"
+ },
+ "pistol_heavy_03": {
+  "frames": 82,
+  "seconds": 2.733,
+  "loop": false,
+  "speed_m_s": 0.043,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, heavy (from mixamo/Pistol_Heavy_mixamo.fbx, frames 1309-1375)"
+ },
+ "pistol_heavy_04": {
+  "frames": 22,
+  "seconds": 0.733,
+  "loop": false,
+  "speed_m_s": 0.015,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, heavy (from mixamo/Pistol_Heavy_mixamo.fbx, frames 1491-1509)"
+ },
+ "pistol_heavy_05": {
+  "frames": 82,
+  "seconds": 2.733,
+  "loop": false,
+  "speed_m_s": 0.084,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Pistol handling, heavy (from mixamo/Pistol_Heavy_mixamo.fbx, frames 1539-1605)"
+ },
+ "rifle_light_01": {
+  "frames": 57,
+  "seconds": 1.9,
+  "loop": false,
+  "speed_m_s": 0.012,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, light (from mixamo/Rifle_Light_mixamo.fbx, frames 17-63)"
+ },
+ "rifle_light_02": {
+  "frames": 122,
+  "seconds": 4.067,
+  "loop": false,
+  "speed_m_s": 0.005,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, light (from mixamo/Rifle_Light_mixamo.fbx, frames 503-601)"
+ },
+ "rifle_light_03": {
+  "frames": 70,
+  "seconds": 2.333,
+  "loop": false,
+  "speed_m_s": 0.007,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, light (from mixamo/Rifle_Light_mixamo.fbx, frames 723-779)"
+ },
+ "rifle_light_04": {
+  "frames": 25,
+  "seconds": 0.833,
+  "loop": false,
+  "speed_m_s": 0.007,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, light (from mixamo/Rifle_Light_mixamo.fbx, frames 963-983)"
+ },
+ "rifle_light_05": {
+  "frames": 122,
+  "seconds": 4.067,
+  "loop": false,
+  "speed_m_s": 0.018,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, light (from mixamo/Rifle_Light_mixamo.fbx, frames 1005-1103)"
+ },
+ "rifle_light_06": {
+  "frames": 105,
+  "seconds": 3.5,
+  "loop": false,
+  "speed_m_s": 0.016,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, light (from mixamo/Rifle_Light_mixamo.fbx, frames 1477-1561)"
+ },
+ "rifle_light_07": {
+  "frames": 61,
+  "seconds": 2.033,
+  "loop": false,
+  "speed_m_s": 0.119,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, light (from mixamo/Rifle_Light_mixamo.fbx, frames 1675-1724)"
+ },
+ "rifle_medium_01": {
+  "frames": 52,
+  "seconds": 1.733,
+  "loop": false,
+  "speed_m_s": 0.019,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, medium (from mixamo/Rifle_Medium_mixamo.fbx, frames 17-59)"
+ },
+ "rifle_medium_02": {
+  "frames": 117,
+  "seconds": 3.9,
+  "loop": false,
+  "speed_m_s": 0.005,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, medium (from mixamo/Rifle_Medium_mixamo.fbx, frames 149-243)"
+ },
+ "rifle_medium_03": {
+  "frames": 115,
+  "seconds": 3.833,
+  "loop": false,
+  "speed_m_s": 0.006,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, medium (from mixamo/Rifle_Medium_mixamo.fbx, frames 269-361)"
+ },
+ "rifle_medium_04": {
+  "frames": 60,
+  "seconds": 2.0,
+  "loop": false,
+  "speed_m_s": 0.006,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, medium (from mixamo/Rifle_Medium_mixamo.fbx, frames 375-423)"
+ },
+ "rifle_medium_05": {
+  "frames": 22,
+  "seconds": 0.733,
+  "loop": false,
+  "speed_m_s": 0.074,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, medium (from mixamo/Rifle_Medium_mixamo.fbx, frames 549-567)"
+ },
+ "rifle_medium_06": {
+  "frames": 177,
+  "seconds": 5.9,
+  "loop": false,
+  "speed_m_s": 0.012,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, medium (from mixamo/Rifle_Medium_mixamo.fbx, frames 825-967)"
+ },
+ "rifle_medium_07": {
+  "frames": 167,
+  "seconds": 5.567,
+  "loop": false,
+  "speed_m_s": 0.005,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, medium (from mixamo/Rifle_Medium_mixamo.fbx, frames 985-1119)"
+ },
+ "rifle_medium_08": {
+  "frames": 335,
+  "seconds": 11.167,
+  "loop": false,
+  "speed_m_s": 0.004,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, medium (from mixamo/Rifle_Medium_mixamo.fbx, frames 1193-1461)"
+ },
+ "rifle_medium_09": {
+  "frames": 67,
+  "seconds": 2.233,
+  "loop": false,
+  "speed_m_s": 0.099,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, medium (from mixamo/Rifle_Medium_mixamo.fbx, frames 1497-1551)"
+ },
+ "rifle_heavy_01": {
+  "frames": 80,
+  "seconds": 2.667,
+  "loop": false,
+  "speed_m_s": 0.016,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, heavy (from mixamo/Rifle_Heavy_mixamo.fbx, frames 195-259)"
+ },
+ "rifle_heavy_02": {
+  "frames": 85,
+  "seconds": 2.833,
+  "loop": false,
+  "speed_m_s": 0.016,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, heavy (from mixamo/Rifle_Heavy_mixamo.fbx, frames 449-517)"
+ },
+ "rifle_heavy_03": {
+  "frames": 22,
+  "seconds": 0.733,
+  "loop": false,
+  "speed_m_s": 0.007,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, heavy (from mixamo/Rifle_Heavy_mixamo.fbx, frames 553-571)"
+ },
+ "rifle_heavy_04": {
+  "frames": 95,
+  "seconds": 3.167,
+  "loop": false,
+  "speed_m_s": 0.005,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, heavy (from mixamo/Rifle_Heavy_mixamo.fbx, frames 723-799)"
+ },
+ "rifle_heavy_05": {
+  "frames": 220,
+  "seconds": 7.333,
+  "loop": false,
+  "speed_m_s": 0.003,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, heavy (from mixamo/Rifle_Heavy_mixamo.fbx, frames 831-1007)"
+ },
+ "rifle_heavy_06": {
+  "frames": 785,
+  "seconds": 26.167,
+  "loop": false,
+  "speed_m_s": 0.016,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle handling, heavy (from mixamo/Rifle_Heavy_mixamo.fbx, frames 1023-1651)"
+ },
+ "rifle_fight": {
+  "frames": 876,
+  "seconds": 29.2,
+  "loop": false,
+  "speed_m_s": 0.04,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rifle fight (from mixamo/RifleFight_mixamo.fbx, frames 17-718)"
+ },
+ "shotgun_fight": {
+  "frames": 753,
+  "seconds": 25.1,
+  "loop": false,
+  "speed_m_s": 0.035,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Shotgun fight (from mixamo/ShotgunFight_mixamo.fbx, frames 17-620)"
+ },
+ "rocket_launcher_01": {
+  "frames": 385,
+  "seconds": 12.833,
+  "loop": false,
+  "speed_m_s": 0.058,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rocket launcher handling (from mixamo/RPGLauncher_mixamo.fbx, frames 17-325)"
+ },
+ "rocket_launcher_02": {
+  "frames": 20,
+  "seconds": 0.667,
+  "loop": false,
+  "speed_m_s": 0.011,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rocket launcher handling (from mixamo/RPGLauncher_mixamo.fbx, frames 349-365)"
+ },
+ "rocket_launcher_03": {
+  "frames": 308,
+  "seconds": 10.267,
+  "loop": false,
+  "speed_m_s": 0.055,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rocket launcher handling (from mixamo/RPGLauncher_mixamo.fbx, frames 401-648)"
+ },
+ "gun_fu": {
+  "frames": 398,
+  "seconds": 13.267,
+  "loop": false,
+  "speed_m_s": 0.106,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Gun-fu close combat (from mixamo/GunFu_JohnWick_mixamo.fbx, frames 37-356)"
+ },
+ "sw_trooper_idle_01": {
+  "frames": 113,
+  "seconds": 3.767,
+  "loop": false,
+  "speed_m_s": 0.003,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper idle (from humanik/StarWars_TrooperIdle_HUMANIK_769.fbx, frames 71-449)"
+ },
+ "sw_trooper_idle_02": {
+  "frames": 159,
+  "seconds": 5.3,
+  "loop": false,
+  "speed_m_s": 0.004,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper idle (from humanik/StarWars_TrooperIdle_HUMANIK_769.fbx, frames 1744-2276)"
+ },
+ "sw_trooper_idle_03": {
+  "frames": 65,
+  "seconds": 2.167,
+  "loop": false,
+  "speed_m_s": 0.09,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper idle (from humanik/StarWars_TrooperIdle_HUMANIK_769.fbx, frames 3305-3522)"
+ },
+ "sw_trooper_idle_04": {
+  "frames": 16,
+  "seconds": 0.533,
+  "loop": false,
+  "speed_m_s": 0.01,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper idle (from humanik/StarWars_TrooperIdle_HUMANIK_769.fbx, frames 3578-3634)"
+ },
+ "sw_trooper_patrol": {
+  "frames": 1188,
+  "seconds": 39.6,
+  "loop": false,
+  "speed_m_s": 0.001,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper patrol (from humanik/StarWars_TrooperPatrol_HUMANIK_769.fbx, frames 71-4034)"
+ },
+ "sw_trooper_guard_tower_01": {
+  "frames": 134,
+  "seconds": 4.467,
+  "loop": false,
+  "speed_m_s": 0.071,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper on guard-tower watch (from humanik/StarWars_TrooperGuardTower_HUMANIK_769.fbx, frames 71-519)"
+ },
+ "sw_trooper_guard_tower_02": {
+  "frames": 67,
+  "seconds": 2.233,
+  "loop": false,
+  "speed_m_s": 0.011,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper on guard-tower watch (from humanik/StarWars_TrooperGuardTower_HUMANIK_769.fbx, frames 757-981)"
+ },
+ "sw_trooper_guard_tower_03": {
+  "frames": 153,
+  "seconds": 5.1,
+  "loop": false,
+  "speed_m_s": 0.026,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper on guard-tower watch (from humanik/StarWars_TrooperGuardTower_HUMANIK_769.fbx, frames 1793-2304)"
+ },
+ "sw_trooper_guard_tower_04": {
+  "frames": 111,
+  "seconds": 3.7,
+  "loop": false,
+  "speed_m_s": 0.055,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper on guard-tower watch (from humanik/StarWars_TrooperGuardTower_HUMANIK_769.fbx, frames 2402-2773)"
+ },
+ "sw_trooper_guard_tower_05": {
+  "frames": 65,
+  "seconds": 2.167,
+  "loop": false,
+  "speed_m_s": 0.202,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper on guard-tower watch (from humanik/StarWars_TrooperGuardTower_HUMANIK_769.fbx, frames 3221-3438)"
+ },
+ "sw_trooper_check_comms_01": {
+  "frames": 151,
+  "seconds": 5.033,
+  "loop": false,
+  "speed_m_s": 0.027,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking comms (from humanik/StarWars_TrooperCheckComms_HUMANIK_769.fbx, frames 71-575)"
+ },
+ "sw_trooper_check_comms_02": {
+  "frames": 48,
+  "seconds": 1.6,
+  "loop": false,
+  "speed_m_s": 0.009,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking comms (from humanik/StarWars_TrooperCheckComms_HUMANIK_769.fbx, frames 631-792)"
+ },
+ "sw_trooper_check_comms_03": {
+  "frames": 33,
+  "seconds": 1.1,
+  "loop": false,
+  "speed_m_s": 0.011,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking comms (from humanik/StarWars_TrooperCheckComms_HUMANIK_769.fbx, frames 1443-1555)"
+ },
+ "sw_trooper_check_comms_04": {
+  "frames": 23,
+  "seconds": 0.767,
+  "loop": false,
+  "speed_m_s": 0.007,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking comms (from humanik/StarWars_TrooperCheckComms_HUMANIK_769.fbx, frames 1814-1891)"
+ },
+ "sw_trooper_check_comms_05": {
+  "frames": 102,
+  "seconds": 3.4,
+  "loop": false,
+  "speed_m_s": 0.004,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking comms (from humanik/StarWars_TrooperCheckComms_HUMANIK_769.fbx, frames 2115-2458)"
+ },
+ "sw_trooper_check_comms_06": {
+  "frames": 73,
+  "seconds": 2.433,
+  "loop": false,
+  "speed_m_s": 0.189,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking comms (from humanik/StarWars_TrooperCheckComms_HUMANIK_769.fbx, frames 3067-3312)"
+ },
+ "sw_trooper_checking_papers_01": {
+  "frames": 399,
+  "seconds": 13.3,
+  "loop": false,
+  "speed_m_s": 0.02,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking papers (from humanik/StarWars_TrooperCheckingPapers_HUMANIK_769.fbx, frames 71-1401)"
+ },
+ "sw_trooper_checking_papers_02": {
+  "frames": 254,
+  "seconds": 8.467,
+  "loop": false,
+  "speed_m_s": 0.001,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking papers (from humanik/StarWars_TrooperCheckingPapers_HUMANIK_769.fbx, frames 1800-2647)"
+ },
+ "sw_trooper_checking_papers_03": {
+  "frames": 69,
+  "seconds": 2.3,
+  "loop": false,
+  "speed_m_s": 0.003,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking papers (from humanik/StarWars_TrooperCheckingPapers_HUMANIK_769.fbx, frames 2780-3011)"
+ },
+ "sw_trooper_checking_papers_04": {
+  "frames": 155,
+  "seconds": 5.167,
+  "loop": false,
+  "speed_m_s": 0.002,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking papers (from humanik/StarWars_TrooperCheckingPapers_HUMANIK_769.fbx, frames 3326-3844)"
+ },
+ "sw_trooper_checking_papers_05": {
+  "frames": 67,
+  "seconds": 2.233,
+  "loop": false,
+  "speed_m_s": 0.206,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Trooper checking papers (from humanik/StarWars_TrooperCheckingPapers_HUMANIK_769.fbx, frames 3970-4194)"
+ },
+ "sw_passing_checkpoint_01": {
+  "frames": 369,
+  "seconds": 12.3,
+  "loop": false,
+  "speed_m_s": 0.066,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Passing a checkpoint (from humanik/StarWars_PassingCheckPoint_HUMANIK_769.fbx, frames 71-1303)"
+ },
+ "sw_passing_checkpoint_02": {
+  "frames": 327,
+  "seconds": 10.9,
+  "loop": false,
+  "speed_m_s": 0.126,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Passing a checkpoint (from humanik/StarWars_PassingCheckPoint_HUMANIK_769.fbx, frames 1688-2780)"
+ },
+ "sw_passing_checkpoint_wookiee_01": {
+  "frames": 516,
+  "seconds": 17.2,
+  "loop": false,
+  "speed_m_s": 0.042,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Passing a checkpoint (Wookiee-style) (from humanik/StarWars_PassingCheckPointWookie_HUMANIK_769.fbx, frames 71-1793)"
+ },
+ "sw_passing_checkpoint_wookiee_02": {
+  "frames": 107,
+  "seconds": 3.567,
+  "loop": false,
+  "speed_m_s": 0.004,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Passing a checkpoint (Wookiee-style) (from humanik/StarWars_PassingCheckPointWookie_HUMANIK_769.fbx, frames 1877-2234)"
+ },
+ "sw_passing_checkpoint_wookiee_03": {
+  "frames": 273,
+  "seconds": 9.1,
+  "loop": false,
+  "speed_m_s": 0.084,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Passing a checkpoint (Wookiee-style) (from humanik/StarWars_PassingCheckPointWookie_HUMANIK_769.fbx, frames 2535-3446)"
+ },
+ "sw_bounty_hunter_idle_01": {
+  "frames": 279,
+  "seconds": 9.3,
+  "loop": false,
+  "speed_m_s": 0.03,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Bounty-hunter idle (from humanik/StarWars_BobaFettIdle_HUMANIK_769.fbx, frames 71-1002)"
+ },
+ "sw_bounty_hunter_idle_02": {
+  "frames": 107,
+  "seconds": 3.567,
+  "loop": false,
+  "speed_m_s": 0.001,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Bounty-hunter idle (from humanik/StarWars_BobaFettIdle_HUMANIK_769.fbx, frames 1100-1457)"
+ },
+ "sw_bounty_hunter_idle_03": {
+  "frames": 29,
+  "seconds": 0.967,
+  "loop": false,
+  "speed_m_s": 0.009,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Bounty-hunter idle (from humanik/StarWars_BobaFettIdle_HUMANIK_769.fbx, frames 1625-1723)"
+ },
+ "sw_bounty_hunter_idle_04": {
+  "frames": 31,
+  "seconds": 1.033,
+  "loop": false,
+  "speed_m_s": 0.078,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Bounty-hunter idle (from humanik/StarWars_BobaFettIdle_HUMANIK_769.fbx, frames 1786-1891)"
+ },
+ "sw_bounty_hunter_idle_05": {
+  "frames": 220,
+  "seconds": 7.333,
+  "loop": false,
+  "speed_m_s": 0.006,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Bounty-hunter idle (from humanik/StarWars_BobaFettIdle_HUMANIK_769.fbx, frames 2108-2843)"
+ },
+ "sw_bounty_hunter_idle_06": {
+  "frames": 50,
+  "seconds": 1.667,
+  "loop": false,
+  "speed_m_s": 0.158,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Bounty-hunter idle (from humanik/StarWars_BobaFettIdle_HUMANIK_769.fbx, frames 3249-3417)"
+ },
+ "sw_bounty_hunter_idle_07": {
+  "frames": 90,
+  "seconds": 3.0,
+  "loop": false,
+  "speed_m_s": 0.21,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Bounty-hunter idle (from humanik/StarWars_BobaFettIdle_HUMANIK_769.fbx, frames 3508-3809)"
+ },
+ "sw_blaster_fight": {
+  "frames": 702,
+  "seconds": 23.4,
+  "loop": false,
+  "speed_m_s": 0.019,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Blaster fight (from humanik/StarWars_BlasterFight_HUMANIK_769.fbx, frames 71-2413)"
+ },
+ "sw_missile_hit_01": {
+  "frames": 373,
+  "seconds": 12.433,
+  "loop": false,
+  "speed_m_s": 0.077,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Hit by a missile (from humanik/StarWars_MissileHit_HUMANIK_769.fbx, frames 71-1317)"
+ },
+ "sw_missile_hit_02": {
+  "frames": 247,
+  "seconds": 8.233,
+  "loop": false,
+  "speed_m_s": 0.119,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Hit by a missile (from humanik/StarWars_MissileHit_HUMANIK_769.fbx, frames 1436-2262)"
+ },
+ "sw_force_choke_victim": {
+  "frames": 524,
+  "seconds": 17.467,
+  "loop": false,
+  "speed_m_s": 0.023,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Force-choke victim (from humanik/StarWars_ForceChokeVictim_HUMANIK_TF1.fbx, frames 71-1818)"
+ },
+ "fall_bounce": {
+  "frames": 691,
+  "seconds": 23.033,
+  "loop": false,
+  "speed_m_s": 0.005,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Falling and bouncing off a ledge (from humanik/Falling_BouncingoffCouch_HUMANIK_TF1.fbx, frames 71-2376)"
  }
 }
