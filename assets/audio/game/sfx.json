@@ -1,0 +1,69 @@
+{
+ "source": "assets/audio/source (PROVENANCE.json)",
+ "sample_rate": 48000,
+ "sounds": [
+  {
+   "name": "S_Blaster_Fire_01",
+   "seconds": 0.55
+  },
+  {
+   "name": "S_Blaster_Fire_02",
+   "seconds": 0.526
+  },
+  {
+   "name": "S_Blaster_Fire_03",
+   "seconds": 0.576
+  },
+  {
+   "name": "S_AllyRifle_Fire_01",
+   "seconds": 0.572
+  },
+  {
+   "name": "S_AllyRifle_Fire_02",
+   "seconds": 0.6
+  },
+  {
+   "name": "S_AllyRifle_Fire_03",
+   "seconds": 0.596
+  },
+  {
+   "name": "S_Saber_On",
+   "seconds": 1.6
+  },
+  {
+   "name": "S_Saber_Off",
+   "seconds": 0.652
+  },
+  {
+   "name": "S_Saber_Hum",
+   "seconds": 4.0,
+   "loop": true,
+   "from_s": 11.7,
+   "loudness_std_db": 1.54
+  },
+  {
+   "name": "S_Saber_Swing_01",
+   "seconds": 1.1
+  },
+  {
+   "name": "S_Saber_Swing_02",
+   "seconds": 0.982
+  },
+  {
+   "name": "S_Saber_Swing_03",
+   "seconds": 1.196
+  },
+  {
+   "name": "S_Saber_Swing",
+   "seconds": 1.1
+  },
+  {
+   "name": "S_Saber_Clash",
+   "seconds": 1.0
+  },
+  {
+   "name": "S_Saber_Clash_Short",
+   "seconds": 0.45
+  }
+ ]
+}

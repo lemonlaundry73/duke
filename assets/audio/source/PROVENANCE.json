@@ -1,0 +1,10 @@
+{
+ "note": "Sound sources supplied by the user (uploaded 2026-11-09). Game-ready sounds are cut from these by tools/audio/build_sfx.py; nothing else is used.",
+ "files": {
+  "Blaster.mp3": {"provider": "user upload", "license": "not stated by the user", "content": "library of 166 separate blaster shots (4 min 48 s)", "used_for": "Empire carbine and Alliance rifle fire"},
+  "freesound_community-swing3-94210.mp3": {"provider": "user upload (freesound_community via Pixabay, by its name)", "license": "Pixabay Content License per the source site; not verified here", "used_for": "lightsaber swing"},
+  "freesound_community-lightsaber-ignition-6816.mp3": {"provider": "user upload (freesound_community via Pixabay, by its name)", "license": "Pixabay Content License per the source site; not verified here", "used_for": "lightsaber ignition; reversed and shortened for switch-off", "note": "uploaded twice under two names; the two files are byte-identical"},
+  "freesound_community-saber-hummingwav-14651.mp3": {"provider": "user upload (freesound_community via Pixabay, by its name)", "license": "Pixabay Content License per the source site; not verified here", "used_for": "lightsaber hum (seamless loop)"},
+  "freesound_community-lightsaber-clash-88733.mp3": {"provider": "user upload (freesound_community via Pixabay, by its name)", "license": "Pixabay Content License per the source site; not verified here", "used_for": "blade-on-blade clash, blocks and bolt deflections"}
+ }
+}

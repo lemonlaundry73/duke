@@ -7,6 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/DamageEvents.h"
 #include "EngineUtils.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
 
 // strike frames of the authored attack clips (seconds), see tools/rigging/jedi_clips.py
 static float StrikeTime(FName N)
@@ -25,21 +27,38 @@ ADukeJedi::ADukeJedi()
 	AssetPath = TEXT("/Game/DukeForge/Characters/Jedi");
 	MaxHealth = 250.f; PatrolSpeed = 130.f; CombatMoveSpeed = 260.f; PreferredRange = FVector2D(120.f, 170.f);
 	WoundChance = 0.f; RollChance = 0.f;
+	HumAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("SaberHum"));
+	HumAudio->SetupAttachment(GetMesh()); HumAudio->bAutoActivate = false;
+}
+static USoundBase* DukeSound(const TCHAR* N) { return LoadObject<USoundBase>(nullptr, *FString::Printf(TEXT("/Game/DukeForge/Audio/%s.%s"), N, N)); }
+void ADukeJedi::PlayAt(USoundBase* S, float Vol)
+{
+	if (!S) return;
+	const FVector P = GetMesh()->DoesSocketExist(TEXT("blade")) ? GetMesh()->GetSocketLocation(TEXT("blade")) : GetActorLocation();
+	UGameplayStatics::PlaySoundAtLocation(this, S, P, Vol, FMath::FRandRange(0.95f, 1.05f));
 }
 
-void ADukeJedi::BeginPlay() { Super::BeginPlay(); }
+void ADukeJedi::BeginPlay()
+{
+	Super::BeginPlay();
+	SndOn = DukeSound(TEXT("S_Saber_On")); SndOff = DukeSound(TEXT("S_Saber_Off")); SndClash = DukeSound(TEXT("S_Saber_Clash_Short")); SndHit = DukeSound(TEXT("S_Saber_Hit"));
+	for (const TCHAR* N : { TEXT("S_Saber_Swing_01"), TEXT("S_Saber_Swing_02"), TEXT("S_Saber_Swing_03") }) if (USoundBase* S = DukeSound(N)) SndSwing.Add(S);
+	if (USoundBase* Hum = DukeSound(TEXT("S_Saber_Hum"))) HumAudio->SetSound(Hum);   // S_Saber_Hum is imported as a looping wave
+	if (GetMesh()->DoesSocketExist(TEXT("blade"))) HumAudio->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, TEXT("blade"));
+}
 
 void ADukeJedi::DrawSaber(float Now)
 {
 	if (bSaberDrawn) return;
 	if (UDukeTrooperAnimInstance* A = Anim()) { A->PlayAction(TEXT("draw_saber")); BusyUntil = Now + A->ClipLength(TEXT("draw_saber")); }
-	bSaberDrawn = true; bDrawing = true; DrawnAt = Now;
+	bSaberDrawn = true; bDrawing = true; DrawnAt = Now; IgniteAt = Now + 0.95f;   // the blade lights at ~0.95 s of draw_saber
 }
 void ADukeJedi::HolsterSaber(float Now)
 {
 	if (!bSaberDrawn) return;
 	if (UDukeTrooperAnimInstance* A = Anim()) { A->PlayAction(TEXT("holster_saber")); BusyUntil = Now + A->ClipLength(TEXT("holster_saber")); }
-	bSaberDrawn = false; bDrawing = false;
+	bSaberDrawn = false; bDrawing = false; IgniteAt = -1.f;
+	PlayAt(SndOff, 0.9f); HumAudio->FadeOut(0.35f, 0.f);
 }
 
 void ADukeJedi::EnterCombat(AActor* Who, float Now, bool bSignal)
@@ -59,6 +78,9 @@ void ADukeJedi::Tick(float Dt)
 		A->State.bAiming = bSaberDrawn && !IsDead();                   // guard locomotion (aim_walk_*) while the saber is out
 		A->State.bCrouched = false;
 	}
+	if (IgniteAt > 0.f && Now >= IgniteAt) { IgniteAt = -1.f; PlayAt(SndOn, 0.9f); HumAudio->FadeIn(0.25f, 0.55f); }
+	if (SwingAt > 0.f && Now >= SwingAt) { SwingAt = -1.f; if (SndSwing.Num()) PlayAt(SndSwing[FMath::RandRange(0, SndSwing.Num() - 1)], 0.9f); }
+	if (IsDead() && HumAudio->IsPlaying()) HumAudio->FadeOut(0.2f, 0.f);              // a dropped hilt switches off
 	if (StrikeAt > 0.f && Now >= StrikeAt) { StrikeAt = -1.f; Strike(Now); }
 	if (ForceAt > 0.f && Now >= ForceAt) { ForceAt = -1.f; DoForce(Now); }
 	// combat over: switch off and hang the hilt back on the belt
@@ -100,7 +122,7 @@ void ADukeJedi::TickCombat(float Dt, float Now)
 		if (UDukeTrooperAnimInstance* A = Anim())
 		{
 			const FName Clip = GCombo[Combo % 4]; ++Combo;
-			A->PlayAction(Clip); StrikeAt = Now + StrikeTime(Clip);
+			A->PlayAction(Clip); StrikeAt = Now + StrikeTime(Clip); SwingAt = Now + FMath::Max(0.f, StrikeTime(Clip) - 0.16f);   // whoosh leads the hit
 			const float Len = A->ClipLength(Clip);
 			BusyUntil = Now + Len * 0.8f;                           // chains into the next swing from the recovery
 			NextAttack = Now + Len * (Combo % 4 == 0 ? 1.4f : 0.85f); // a short pause after the full combo
@@ -115,6 +137,7 @@ void ADukeJedi::Strike(float Now)
 	if (To.Size2D() > StrikeRange || FVector::DotProduct(GetActorForwardVector(), To.GetSafeNormal2D()) < 0.3f) return;   // swung at air
 	FPointDamageEvent E(SaberDamage, FHitResult(), To.GetSafeNormal(), UDukeSaberDamageType::StaticClass());
 	T->TakeDamage(SaberDamage, E, GetController(), this);
+	PlayAt(SndHit, 0.8f);
 }
 
 void ADukeJedi::DoForce(float Now)
@@ -155,6 +178,7 @@ float ADukeJedi::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent,
 			const float Side = FVector::DotProduct(GetActorRightVector(), In);
 			const FName Clip = PE.HitInfo.ImpactPoint.Z > GetActorLocation().Z + 60.f ? FName(TEXT("saber_deflect_high")) : (Side > 0.f ? FName(TEXT("saber_deflect_r")) : FName(TEXT("saber_deflect_l")));
 			if (UDukeTrooperAnimInstance* A = Anim()) A->PlayAction(Clip, 1.4f);
+			PlayAt(SndClash, 1.f);
 			ActionLock = FMath::Max(ActionLock, Now + 0.3f);
 			const FVector From = GetActorLocation() + GetActorForwardVector() * 60.f + FVector(0, 0, 40.f);
 			AActor* Shooter = EventInstigator && EventInstigator->GetPawn() ? EventInstigator->GetPawn() : nullptr;

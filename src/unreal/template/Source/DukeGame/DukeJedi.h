@@ -32,6 +32,9 @@ public:
 
 	bool IsSaberLit() const { return bSaberDrawn && !bDrawing; }
 
+	// lightsaber sound: constant hum while the blade is lit (loops), ignition / switch-off, a swing on every attack, clash on deflects
+	UPROPERTY(VisibleAnywhere) TObjectPtr<class UAudioComponent> HumAudio;
+
 protected:
 	virtual void TickCombat(float Dt, float Now) override;
 	virtual void FireBolt(float Now) override {}                // no blaster
@@ -41,6 +44,10 @@ private:
 	bool bSaberDrawn = false, bDrawing = false;
 	float DrawnAt = -100.f, NextAttack = 0.f, StrikeAt = -1.f, NextForce = 0.f, ForceAt = -1.f, LastEnemySeen = 0.f;
 	int32 Combo = 0; FName ForceKind = NAME_None;
+	float IgniteAt = -1.f, SwingAt = -1.f;
+	UPROPERTY() TObjectPtr<class USoundBase> SndOn; UPROPERTY() TObjectPtr<class USoundBase> SndOff; UPROPERTY() TObjectPtr<class USoundBase> SndClash; UPROPERTY() TObjectPtr<class USoundBase> SndHit;
+	UPROPERTY() TArray<TObjectPtr<class USoundBase>> SndSwing;
+	void PlayAt(class USoundBase* S, float Vol = 1.f);
 	void DrawSaber(float Now);
 	void HolsterSaber(float Now);
 	void Strike(float Now);

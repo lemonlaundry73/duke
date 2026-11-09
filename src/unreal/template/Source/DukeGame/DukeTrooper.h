@@ -60,6 +60,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trooper") EDukeFaction Faction = EDukeFaction::Empire;
 	// Asset folder of this character's pack (SK_Trooper, Anims/A_Trooper_*, Cuts/): CloneTrooper, AllyTrooper, Jedi ...
 	UPROPERTY(EditAnywhere, Category = "Trooper") FString AssetPath = TEXT("/Game/DukeForge/Characters/CloneTrooper");
+	// Each gun has its own sound: S_Blaster_Fire_0x (Empire carbine), S_AllyRifle_Fire_0x (Alliance rifle). Empty = by faction.
+	UPROPERTY(EditAnywhere, Category = "Trooper|Combat") FString FireSoundPrefix;
 	bool IsHostileTo(const AActor* Other) const;
 	static EDukeFaction FactionOf(const AActor* A);
 	UPROPERTY(EditAnywhere, Category = "Trooper|Squad") EDukeRank Rank = EDukeRank::Trooper;

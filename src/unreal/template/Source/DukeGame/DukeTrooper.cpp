@@ -123,8 +123,9 @@ void ADukeTrooper::LoadAssets()
 		if (CutTime(N) > 0.f)
 			if (USkeletalMesh* CM = LoadObject<USkeletalMesh>(nullptr, *FString::Printf(TEXT("%s/Cuts/SK_Trooper_Cut_%s.SK_Trooper_Cut_%s"), *AssetPath, *N.ToString(), *N.ToString())))
 				CutMeshes.Add(N, CM);
+	const FString FirePrefix = !FireSoundPrefix.IsEmpty() ? FireSoundPrefix : (Faction == EDukeFaction::Alliance ? FString(TEXT("S_AllyRifle_Fire")) : FString(TEXT("S_Blaster_Fire")));
 	for (int32 i = 1; i <= 3; ++i)
-		if (USoundBase* S = LoadObject<USoundBase>(nullptr, *FString::Printf(TEXT("/Game/DukeForge/Audio/S_Blaster_Fire_0%d.S_Blaster_Fire_0%d"), i, i)))
+		if (USoundBase* S = LoadObject<USoundBase>(nullptr, *FString::Printf(TEXT("/Game/DukeForge/Audio/%s_0%d.%s_0%d"), *FirePrefix, i, *FirePrefix, i)))
 			FireSounds.Add(S);
 }
 

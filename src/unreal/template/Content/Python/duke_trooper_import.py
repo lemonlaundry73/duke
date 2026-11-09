@@ -218,7 +218,11 @@ def import_audio():
     folder = os.path.join(SRC, 'Audio')
     if not os.path.isdir(folder): err('no Audio folder'); return
     for f in sorted(os.listdir(folder)):
-        if f.lower().endswith('.wav'): run_import(os.path.join(folder, f), AUDIO)
+        if f.lower().endswith('.wav'):
+            paths = run_import(os.path.join(folder, f), AUDIO)
+            if f.startswith('S_Saber_Hum'):   # the lightsaber hum plays as a constant loop while the blade is lit
+                w = first(paths, unreal.SoundWave)
+                if w: w.set_editor_property('looping', True); EAL.save_loaded_asset(w)
 
 def main():
     log('source ' + SRC)

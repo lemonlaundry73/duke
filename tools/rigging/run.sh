@@ -36,6 +36,8 @@ fi
 "$PY" -I "$HERE/stretch.py" "$W/anim.blend" # mesh stretch per clip -> stretch.json
 "$PY" -I "$HERE/export.py" "$W" "$O"        # Unreal/ (FBX + textures), Web/trooper.glb
 mkdir -p "$O/Audio"; "$PY" -I "$HERE/blaster_sfx.py" "$O/Audio"
+# user-supplied sound effects (assets/audio/source -> tools/audio/build_sfx.py) replace the synthesized fire/saber sounds
+if [ -d "$REPO/assets/audio/game" ]; then cp "$REPO/assets/audio/game/"*.wav "$O/Audio/"; fi
 # web preview: meshopt-compressed copy (three.js MeshoptDecoder); the plain GLB stays for tools that cannot decode it
 npx --yes @gltf-transform/cli@4.1.1 meshopt "$O/Web/trooper.glb" "$O/Web/trooper_web.glb"
 "$PY" -I "$HERE/validate.py" "$O"           # re-import everything -> validation.json
