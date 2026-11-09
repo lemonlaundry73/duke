@@ -224,19 +224,19 @@
   "seconds": 1.1,
   "loop": true,
   "speed_m_s": 1.0,
-  "max_hand_gap_cm": 0.39,
+  "max_hand_gap_cm": 0.29,
   "max_foot_gap_cm": 0.01,
-  "planted_foot_slip_cm_s": 6.32,
+  "planted_foot_slip_cm_s": 6.81,
   "notes": "Crouched advance, rifle up. 1.0 m/s."
  },
  "walk": {
-  "frames": 62,
-  "seconds": 2.067,
+  "frames": 65,
+  "seconds": 2.167,
   "loop": true,
   "speed_m_s": 1.3,
-  "max_hand_gap_cm": 0.78,
-  "max_foot_gap_cm": 0.0,
-  "planted_foot_slip_cm_s": 8.59,
+  "max_hand_gap_cm": 0.22,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 8.12,
   "notes": "Patrol walk: relaxed low ready, full heel-to-toe roll with toe bend and ankle push-off, slow scan. 1.3 m/s."
  },
  "walk_limp": {
@@ -244,9 +244,9 @@
   "seconds": 1.267,
   "loop": true,
   "speed_m_s": 0.9,
-  "max_hand_gap_cm": 0.39,
-  "max_foot_gap_cm": 0.0,
-  "planted_foot_slip_cm_s": 5.48,
+  "max_hand_gap_cm": 0.01,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 11.03,
   "notes": "Injured (shot in the right foot): limping walk, weight kept off the right leg. 0.9 m/s."
  },
  "aim_walk_fwd": {
@@ -254,9 +254,9 @@
   "seconds": 0.967,
   "loop": true,
   "speed_m_s": 1.3,
-  "max_hand_gap_cm": 0.39,
+  "max_hand_gap_cm": 0.25,
   "max_foot_gap_cm": 0.0,
-  "planted_foot_slip_cm_s": 9.3,
+  "planted_foot_slip_cm_s": 5.98,
   "notes": "Tactical walk forward while aiming (soft knees, stable rifle). 1.3 m/s."
  },
  "aim_walk_bwd": {
@@ -264,8 +264,8 @@
   "seconds": 1.0,
   "loop": true,
   "speed_m_s": 1.1,
-  "max_hand_gap_cm": 0.39,
-  "max_foot_gap_cm": 0.0,
+  "max_hand_gap_cm": 0.17,
+  "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 7.07,
   "notes": "Backpedal while aiming (toe-first contact). 1.1 m/s."
  },
@@ -274,19 +274,29 @@
   "seconds": 0.867,
   "loop": true,
   "speed_m_s": 1.2,
-  "max_hand_gap_cm": 0.39,
+  "max_hand_gap_cm": 0.23,
   "max_foot_gap_cm": 0.01,
-  "planted_foot_slip_cm_s": 0.97,
+  "planted_foot_slip_cm_s": 0.95,
   "notes": "Strafe left while aiming. 1.2 m/s."
+ },
+ "tiptoe_walk": {
+  "frames": 36,
+  "seconds": 1.2,
+  "loop": true,
+  "speed_m_s": 0.7,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.01,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Sneaking on tiptoe: weight on the balls of the feet, heels never touch, soft knees. 0.7 m/s."
  },
  "aim_strafe_r": {
   "frames": 26,
   "seconds": 0.867,
   "loop": true,
   "speed_m_s": 1.2,
-  "max_hand_gap_cm": 0.39,
+  "max_hand_gap_cm": 0.23,
   "max_foot_gap_cm": 0.01,
-  "planted_foot_slip_cm_s": 0.96,
+  "planted_foot_slip_cm_s": 0.98,
   "notes": "Strafe right while aiming. 1.2 m/s."
  },
  "run": {
@@ -338,6 +348,116 @@
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Patrol hand signal: move up (forward point)."
+ },
+ "look_left": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Head/neck look offset pose (additive: neck and head turn, upper chest follows a little)."
+ },
+ "look_right": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Head/neck look offset pose (additive: neck and head turn, upper chest follows a little)."
+ },
+ "look_up": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Head/neck look offset pose (additive: neck and head turn, upper chest follows a little)."
+ },
+ "look_down": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Head/neck look offset pose (additive: neck and head turn, upper chest follows a little)."
+ },
+ "look_tilt_l": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Head/neck look offset pose (additive: neck and head turn, upper chest follows a little)."
+ },
+ "look_tilt_r": {
+  "frames": 1,
+  "seconds": 0.033,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Head/neck look offset pose (additive: neck and head turn, upper chest follows a little)."
+ },
+ "look_around": {
+  "frames": 180,
+  "seconds": 6.0,
+  "loop": true,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Looks left, up, right and down; the neck leads, the head follows, the chest turns a little. Loop."
+ },
+ "neck_roll": {
+  "frames": 120,
+  "seconds": 4.0,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Neck roll: chin down, ear to the right shoulder, head back, ear to the left, back to centre."
+ },
+ "count_five": {
+  "frames": 180,
+  "seconds": 6.0,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Counts to five on the left hand, palm out: index, middle, ring, pinky, then the thumb, one finger at a time."
+ },
+ "beckon": {
+  "frames": 90,
+  "seconds": 3.0,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Come here: left hand out palm up, the index finger straightens and curls back four times; other fingers folded."
+ },
+ "tiptoe_peek": {
+  "frames": 102,
+  "seconds": 3.4,
+  "loop": false,
+  "speed_m_s": 0,
+  "max_hand_gap_cm": 0.0,
+  "max_foot_gap_cm": 0.0,
+  "planted_foot_slip_cm_s": 0,
+  "notes": "Rises onto the balls of the feet to look over a wall, scans, settles back on the heels."
  },
  "roll_to_kneel": {
   "frames": 78,

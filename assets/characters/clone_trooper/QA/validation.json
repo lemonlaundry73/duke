@@ -156,6 +156,16 @@
    ],
    "curves": 659
   },
+  "A_Trooper_beckon.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     91
+    ]
+   ],
+   "curves": 659
+  },
   "A_Trooper_breach_clear.fbx": {
    "actions": 1,
    "frames": [
@@ -222,6 +232,16 @@
     [
      1,
      49
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_count_five.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     181
     ]
    ],
    "curves": 659
@@ -606,6 +626,76 @@
    ],
    "curves": 659
   },
+  "A_Trooper_look_around.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     181
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_look_down.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_look_left.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_look_right.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_look_tilt_l.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_look_tilt_r.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_look_up.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     2
+    ]
+   ],
+   "curves": 659
+  },
   "A_Trooper_mantle.fbx": {
    "actions": 1,
    "frames": [
@@ -642,6 +732,16 @@
     [
      1,
      79
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_neck_roll.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     121
     ]
    ],
    "curves": 659
@@ -896,6 +996,26 @@
    ],
    "curves": 659
   },
+  "A_Trooper_tiptoe_peek.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     103
+    ]
+   ],
+   "curves": 659
+  },
+  "A_Trooper_tiptoe_walk.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     37
+    ]
+   ],
+   "curves": 659
+  },
   "A_Trooper_turn_l90.fbx": {
    "actions": 1,
    "frames": [
@@ -931,7 +1051,7 @@
    "frames": [
     [
      1,
-     63
+     66
     ]
    ],
    "curves": 659
@@ -978,6 +1098,7 @@
   "aim_walk_bwd",
   "aim_walk_fwd",
   "attention",
+  "beckon",
   "breach_clear",
   "carry_crate",
   "check_credentials",
@@ -985,6 +1106,7 @@
   "climb_ladder",
   "command_advance",
   "command_point",
+  "count_five",
   "cover_high_idle",
   "cover_lean_fire_l",
   "cover_lean_fire_r",
@@ -1023,10 +1145,18 @@
   "jump",
   "kneel_aim",
   "kneel_shoot",
+  "look_around",
+  "look_down",
+  "look_left",
+  "look_right",
+  "look_tilt_l",
+  "look_tilt_r",
+  "look_up",
   "mantle",
   "medic_treat",
   "melee",
   "mortar_load",
+  "neck_roll",
   "patrol_look",
   "prone_aim",
   "prone_crawl",
@@ -1052,6 +1182,8 @@
   "stack_up",
   "stairs_up_aim",
   "suppress",
+  "tiptoe_peek",
+  "tiptoe_walk",
   "turn_l90",
   "turn_r90",
   "vault",

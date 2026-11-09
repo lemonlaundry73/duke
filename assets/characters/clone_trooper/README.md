@@ -13,12 +13,12 @@ Status: **rigged and animated, validated in Blender and the browser. Not yet imp
 |---|---|
 | `Source/` | The original uploads, untouched (Tripo-generated GLB, meshopt-compressed): `trooper_armor_source.glb` (came with Tripo's own 80-joint auto-rig, which is discarded), `blaster_source.glb` (Empire blaster); `character.json` (no cape, place the skeleton on the source's joints); `blaster.json` (grip, handguard, muzzle and scale measured on the blaster) |
 | `Unreal/SK_Trooper.fbx` | Skeletal mesh: trooper (~85k tris) + Empire blaster (~20k tris) skinned to `weapon_r`. 1.83 m. 64 bones |
-| `Unreal/Animations/` | 91 animation FBX files, `A_Trooper_<clip>.fbx`, 30 fps. In place, except the root-motion clips (`roll_to_kneel`, `mantle`, `breach_clear`, `run_stop`, `dive_left`, `dive_right`, `vault`; `turn_l90`/`turn_r90` rotate the root) and the blast deaths (the body travels inside the clip) |
+| `Unreal/Animations/` | 103 animation FBX files, `A_Trooper_<clip>.fbx`, 30 fps. In place, except the root-motion clips (`roll_to_kneel`, `mantle`, `breach_clear`, `run_stop`, `dive_left`, `dive_right`, `vault`; `turn_l90`/`turn_r90` rotate the root) and the blast deaths (the body travels inside the clip) |
 | `Unreal/Cuts/` | 8 dismemberment variants `SK_Trooper_Cut_<clip>.fbx` (same skeleton): remaining body + severed piece(s) with cauterized (saber) or charred (blast) caps. Swap to it at the cut time listed in `cut_variants.json` |
 | `Unreal/SM_Blaster.fbx` | The Empire blaster as a static mesh: origin at the pistol grip, muzzle along +X, 0.63 m long |
 | `Unreal/Textures/` | 4K BaseColor and Normal (OpenGL; flip green in Unreal) for both; ORM (R occlusion, G roughness, B metallic): 4K for the blaster, a flat map for the trooper from its source values (roughness 0.9, metallic 0), since the source has no roughness texture |
 | `Audio/` | Synthesized, no recordings: blaster shots x3 and impact (struck-guy-wire model), explosion, lightsaber hum (loop), swing and burn contact |
-| `Web/trooper.glb` | Everything in one GLB: all 91 clips, the trooper, the blaster and decimated cut variants (2K textures). `trooper_web.glb` is the same, meshopt-compressed (7.7 MB) |
+| `Web/trooper.glb` | Everything in one GLB: all 103 clips, the trooper, the blaster and decimated cut variants (2K textures). `trooper_web.glb` is the same, meshopt-compressed (8.4 MB) |
 | `QA/` | `anim_stats.json` (per-clip IK and foot-slip metrics), `stretch.json` (mesh stretch per clip), `validation.json` (re-import check), renders |
 
 Rebuild everything from `Source/` with `tools/rigging/run.sh <work> <out>`.
@@ -105,10 +105,10 @@ endings use their baked clips.
 
 ## Measured quality (from `QA/`)
 
-- Floor contact (QA/body_qa.json, every frame of every clip, evaluated in order like the FBX bake): the skinned mesh stays within 0.5 cm of the floor surface in 89 of 91 clips; `dive_left` and `dive_right` dip 0.6 and 1.3 cm below it for a few frames as the trailing foot drags through the landing. Every death ends resting on the floor.
-- Armour self-intersection (real triangle crossings between non-adjacent body regions, minus what the idle pose already has): 48 of 91 clips within 60 triangles. Worst: `vault` 847, `crate_pickup` 591, `crate_putdown` 577, `flinch_duck` 545, `roll_to_kneel` 491, `mortar_load` 434, `cover_low_fire` 428 (forearm and hand armour against the torso in close-to-the-body poses).
-- Hands on the blaster while held: no gap in 71 of 91 clips.
-- Re-import check: the FBX has 65 bones, both meshes and materials, and is 1.83 m tall; all 91 animation FBXs and all 8 cut-variant FBXs re-import with keys on every bone; the GLB has all 91 clips.
+- Floor contact (QA/body_qa.json, every frame of every clip, evaluated in order like the FBX bake): the skinned mesh stays within 0.5 cm of the floor surface in 101 of 103 clips; `dive_left` and `dive_right` dip 0.6 and 1.3 cm below it for a few frames as the trailing foot drags through the landing. Every death ends resting on the floor.
+- Armour self-intersection (real triangle crossings between non-adjacent body regions, minus what the idle pose already has): 55 of 103 clips within 60 triangles. Worst: `vault` 847, `crate_pickup` 591, `crate_putdown` 577, `flinch_duck` 545, `roll_to_kneel` 491, `mortar_load` 434, `cover_low_fire` 428 (forearm and hand armour against the torso in close-to-the-body poses).
+- Hands on the blaster while held: no gap in 84 of 103 clips.
+- Re-import check: the FBX has 65 bones, both meshes and materials, and is 1.83 m tall; all 103 animation FBXs and all 8 cut-variant FBXs re-import with keys on every bone; the GLB has all 103 clips.
 
 ## Known limits
 
