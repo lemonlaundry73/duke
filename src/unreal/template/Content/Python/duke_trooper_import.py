@@ -218,6 +218,7 @@ def main():
     EAL.save_loaded_asset(sk)
     log('SK_Trooper imported')
 
+    ROOT_MOTION_CLIPS = {'A_Trooper_' + c for c in ('roll_to_kneel', 'mantle', 'vault', 'turn_l90', 'turn_r90', 'run_stop', 'dive_left', 'dive_right', 'breach_clear')}
     anim_dir = os.path.join(SRC, 'Unreal', 'Animations')
     n = 0
     for f in sorted(os.listdir(anim_dir)):
@@ -225,8 +226,9 @@ def main():
         name = os.path.splitext(f)[0]
         seq = first(run_import(os.path.join(anim_dir, f), ROOT + '/Anims', fbx_ui('anim', skeleton), name=name), unreal.AnimSequence)
         if not seq: err('animation failed: ' + f); continue
-        # roll and mantle carry root motion (the root is locked in the pose; DukeTrooper moves the capsule along the same curve)
-        seq.set_editor_property('enable_root_motion', name in ('A_Trooper_roll_to_kneel', 'A_Trooper_mantle'))
+        # clips that travel or turn the root: the root is locked in the pose so the mesh stays on the capsule
+        # (DukeTrooper moves/turns the capsule itself for roll, mantle, vault and the 90-degree turns)
+        seq.set_editor_property('enable_root_motion', name in ROOT_MOTION_CLIPS)
         EAL.save_loaded_asset(seq); n += 1
     log('%d animations imported' % n)
 

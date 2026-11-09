@@ -39,7 +39,9 @@ Extra bones:
 
 | Group | Clips |
 |---|---|
-| Patrol | `idle` (low ready, breathing), `patrol_look` (scans left/right), `walk` (1.4 m/s, two-stride loop with a slow head scan), `signal_halt`, `signal_moveup` |
+| Patrol | `idle` (low ready, breathing), `patrol_look` (scans left/right), `walk` (1.3 m/s, two-stride loop with a slow head scan; see *Walk* below), `signal_halt`, `signal_moveup`, `tiptoe_walk` (0.7 m/s sneak on the balls of the feet, heels never touch), `tiptoe_peek` (rises onto his toes to see over a wall) |
+| Head and neck | `look_left`, `look_right`, `look_up`, `look_down`, `look_tilt_l`, `look_tilt_r` (single poses for an additive look-at), `look_around` (left, up, right, down; loop), `neck_roll` (chin down, ear to shoulder, head back, other shoulder) |
+| Hand signs | `count_five` (left hand, palm out: index, middle, ring, pinky, thumb, one at a time, from a fist with the thumb tucked), `beckon` (palm up, the index finger straightens and curls back four times: *come here*) |
 | Locomotion | `run` (4.2 m/s, rifle at port, midfoot landing), `sprint` (6.2 m/s, forefoot landing), `jump`, `crouch_walk` (1.0 m/s) |
 | Combat stance | `aim`, `aim_walk_fwd` (1.3 m/s), `aim_walk_bwd` (1.1), `aim_strafe_l` / `aim_strafe_r` (1.2), `crouch_aim` |
 | Aim offsets | `aim_up`, `aim_down`, `aim_left`, `aim_right` (single poses) |
@@ -57,6 +59,11 @@ Extra bones:
 | Movement | `roll_to_kneel` (dive roll over the shoulder, up on one knee aiming down the sights, 3 bolts; root motion 2.3 m), `kneel_aim`, `kneel_shoot`, `climb_ladder` (hand over hand, blaster slung on the back, 0.5 m/s loop), `mantle` (1.1 m ledge, one-handed, blaster kept; root motion) |
 | Lightsaber | `saber_hit_1`, `saber_hit_2` (burns 1 and 2), then the 3rd contact: `saber_death_arm` (clutches the stump, staggers, knees, falls forward), `saber_death_leg` (topples sideways, rolls onto his back), `saber_death_head` (body stands a beat, knees buckle, falls forward; the head rolls), `saber_death_half` (the legs stand then topple; the upper body slides back off), `saber_death_diagonal` (the upper piece slides down the cut; hips and legs crumple) |
 | Explosions | Completely limp and thrown: `death_explosion` (blown back, flips, lands on his back), `death_explosion_arm` (thrown sideways, left arm off), `death_explosion_leg` (launched high, somersault, right leg off), `death_explosion_armleg` (cartwheel, right arm and left leg off) |
+
+Walk: heel strike, then the loading response (the knee flexes and the pelvis sinks), mid-stance (pelvis highest), heel rise as the body rolls over the ball of the foot and the toes bend, and toe-off.
+In swing the knee folds the foot up behind, then the hip flexor carries the thigh through and the foot reaches heel-first. The pelvis rotates (7°), lists (5°), bobs about 4 cm and tilts forward at push-off.
+The spine segments, neck, head and rifle are driven by damped springs (2–3.4 Hz) from that pelvis motion, so the thorax counter-rotates, the trunk flexes slightly on each heel strike and rebounds,
+and the head steadies the gaze with a small lag instead of everything moving in lockstep. The skeleton has no separate arch bone (UE mannequin feet: `foot` and `ball`), so the arch and toe bend are carried by the ankle and the ball joint.
 
 Run and sprint use human running reference: a flight phase, the pelvis lowest at mid-stance and highest in the air, landing under the body,
 heel recovery (heel kicks up behind), knee drive and the foot pawing back into contact, with counter-rotating chest and trailing head and rifle (and cape, on caped characters).

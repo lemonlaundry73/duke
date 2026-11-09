@@ -37,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Trooper|Patrol", meta = (MakeEditWidget = true)) TArray<FVector> PatrolPoints;
 	UPROPERTY(EditAnywhere, Category = "Trooper|Patrol") float PatrolSpeed = 140.f;   // = authored walk clip speed
 	UPROPERTY(EditAnywhere, Category = "Trooper|Patrol") FVector2D PauseSeconds = FVector2D(2.f, 5.f);
+	UPROPERTY(EditAnywhere, Category = "Trooper|Patrol") float LookRange = 1200.f;  // looks at pawns this close (cm)
+	// Sneak: walk on tiptoe (tiptoe_walk, 70 cm/s). Set from Blueprint or level design for infiltration scenes.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trooper|Patrol") bool bSneak = false;
 
 	UPROPERTY(EditAnywhere, Category = "Trooper|Combat") float SightRange = 3500.f;
 	UPROPERTY(EditAnywhere, Category = "Trooper|Combat") float SightHalfAngle = 70.f;
@@ -69,6 +72,7 @@ public:
 	void Revive();                              // medic patched him up
 	void PlayGesture(FName Clip);               // one-shot upper-body/full-body action (signals, radio, commands)
 	void StartVault();                          // over a ~1 m wall ahead (root motion 1.6 m)
+	void UpdateLook(float Dt);                  // head/neck look-at toward the nearest pawn in front (not while aiming)
 	static constexpr float DragForward = DUKE_DRAG_FORWARD_CM;   // wounded root ahead of the rescuer, measured by tools/rigging/drag_pair.py
 	static constexpr float DragLeft = DUKE_DRAG_LEFT_CM;
 

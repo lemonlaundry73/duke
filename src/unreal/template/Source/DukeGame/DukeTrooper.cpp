@@ -17,6 +17,7 @@
 #include "Engine/DamageEvents.h"
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "EngineUtils.h"
 
 const TCHAR* ADukeTrooper::AssetRoot = TEXT("/Game/DukeForge/Characters/CloneTrooper");
 
@@ -35,6 +36,8 @@ const TArray<FName>& ADukeTrooper::ClipNames()
 		TEXT("getup_back"), TEXT("getup_front"), TEXT("medic_treat"), TEXT("cover_low_idle"), TEXT("cover_low_fire"), TEXT("cover_high_idle"),
 		TEXT("cover_lean_fire_r"), TEXT("cover_lean_fire_l"), TEXT("go_prone"), TEXT("prone_aim"), TEXT("prone_shoot"), TEXT("prone_crawl"),
 		TEXT("turn_l90"), TEXT("turn_r90"), TEXT("run_stop"), TEXT("dive_left"), TEXT("dive_right"), TEXT("vault"), TEXT("hit_left"), TEXT("hit_right"), TEXT("flinch_duck"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup"),
+		TEXT("tiptoe_walk"), TEXT("tiptoe_peek"), TEXT("look_left"), TEXT("look_right"), TEXT("look_up"), TEXT("look_down"), TEXT("look_tilt_l"), TEXT("look_tilt_r"),
+		TEXT("look_around"), TEXT("neck_roll"), TEXT("count_five"), TEXT("beckon"),
 		TEXT("roll_to_kneel"), TEXT("kneel_aim"), TEXT("kneel_shoot"), TEXT("climb_ladder"), TEXT("mantle"),
 		TEXT("saber_hit_1"), TEXT("saber_hit_2"), TEXT("saber_death_arm"), TEXT("saber_death_leg"), TEXT("saber_death_head"), TEXT("saber_death_half"), TEXT("saber_death_diagonal"),
 		TEXT("death_explosion"), TEXT("death_explosion_arm"), TEXT("death_explosion_leg"), TEXT("death_explosion_armleg") };
@@ -199,7 +202,7 @@ void ADukeTrooper::Tick(float Dt)
 		A->State.DeathTime = State == EDukeTrooperState::Dead ? Now - DeathAt : 0.f;
 		A->State.bKneeling = State == EDukeTrooperState::Combat && Now < KneelUntil && RollStart < 0.f;
 		A->State.bClimbing = bClimbing;
-		A->State.bLimping = bLimping;
+		A->State.bLimping = bLimping; A->State.bSneak = bSneak && State == EDukeTrooperState::Patrol;
 		A->State.bWounded = bWounded && !bBeingDragged;
 		A->State.bDragged = bBeingDragged;
 		A->State.bDragging = DragPartner.IsValid() && !bWounded;
@@ -233,7 +236,7 @@ void ADukeTrooper::Tick(float Dt)
 void ADukeTrooper::TickPatrol(float Dt, float Now)
 {
 	UCharacterMovementComponent* Move = GetCharacterMovement();
-	Move->MaxWalkSpeed = PatrolSpeed;
+	Move->MaxWalkSpeed = bSneak ? 70.f : PatrolSpeed;   // tiptoe_walk is authored at 70 cm/s
 	if (Now < WaitUntil) return;
 	if (UDukeTrooperAnimInstance* A = Anim()) A->State.IdleVariant = NAME_None;
 	const FVector Goal = PatrolPoints.Num() ? Home + PatrolPoints[PatrolIndex % PatrolPoints.Num()] : Home;
@@ -245,12 +248,19 @@ void ADukeTrooper::TickPatrol(float Dt, float Now)
 		WaitUntil = Now + FMath::FRandRange(PauseSeconds.X, PauseSeconds.Y);
 		if (UDukeTrooperAnimInstance* A = Anim())
 		{
-			if (FMath::FRand() < 0.6f) A->State.IdleVariant = TEXT("patrol_look");
+			// waypoint pause: scan the area, stretch the neck, peek over cover on tiptoe, or wave the next man on
+			const float R = FMath::FRand();
+			if (R < 0.35f) A->State.IdleVariant = TEXT("patrol_look");
+			else if (R < 0.50f) A->State.IdleVariant = TEXT("look_around");
+			else if (R < 0.62f) A->PlayAction(TEXT("neck_roll"));
+			else if (R < 0.74f) A->PlayAction(TEXT("tiptoe_peek"));
+			else if (R < 0.87f) A->PlayAction(TEXT("beckon"));
 			else A->PlayAction(TEXT("signal_moveup"));
 		}
 		return;
 	}
 	SetActorRotation(FMath::RInterpTo(GetActorRotation(), To.Rotation(), Dt, 4.f));
+	UpdateLook(Dt);
 	// walk once roughly facing the goal, so feet and facing agree
 	if (FVector::DotProduct(GetActorForwardVector(), To.GetSafeNormal()) > 0.7f) AddMovementInput(To.GetSafeNormal(), 1.f);
 }
@@ -748,4 +758,23 @@ void ADukeTrooper::StartVault()
 	PlayGesture(TEXT("vault")); VaultStart = GetWorld()->GetTimeSeconds(); VaultFrom = GetActorLocation();
 	BusyUntil = VaultStart + 1.3f;
 	GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+}
+
+// Head look-at while not aiming: turns neck and head toward the nearest pawn in front (within ~12 m), else ahead.
+void ADukeTrooper::UpdateLook(float Dt)
+{
+	UDukeTrooperAnimInstance* A = Anim(); if (!A) return;
+	float Yaw = 0.f, Pitch = 0.f, Best = LookRange;
+	const FVector Eye = GetActorLocation() + FVector(0, 0, 70.f);
+	for (TActorIterator<APawn> It(GetWorld()); It; ++It)
+	{
+		APawn* Other = *It; if (Other == this) continue;
+		const FVector To = Other->GetActorLocation() + FVector(0, 0, 50.f) - Eye; const float D = To.Size();
+		if (D > Best) continue;
+		const FRotator Rel = (GetActorTransform().InverseTransformVectorNoScale(To)).Rotation();
+		if (FMath::Abs(Rel.Yaw) > 100.f) continue;
+		Best = D; Yaw = FMath::Clamp(Rel.Yaw, -80.f, 80.f); Pitch = FMath::Clamp(Rel.Pitch, -40.f, 40.f);
+	}
+	A->State.LookYaw = FMath::FInterpTo(A->State.LookYaw, Yaw, Dt, 3.f);
+	A->State.LookPitch = FMath::FInterpTo(A->State.LookPitch, Pitch, Dt, 3.f);
 }

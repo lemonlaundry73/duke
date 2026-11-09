@@ -12,7 +12,7 @@ static float ClipSpeed(FName N)
 	static const TMap<FName, float> Speeds = {
 		{ TEXT("walk"), 130.f }, { TEXT("walk_limp"), 90.f }, { TEXT("drag_rescuer"), 90.f }, { TEXT("carry_crate"), 100.f }, { TEXT("wounded_crawl"), 30.f }, { TEXT("prone_crawl"), 40.f }, { TEXT("run"), 420.f }, { TEXT("sprint"), 620.f },
 		{ TEXT("aim_walk_fwd"), 130.f }, { TEXT("aim_walk_bwd"), 110.f }, { TEXT("aim_strafe_l"), 120.f }, { TEXT("aim_strafe_r"), 120.f },
-		{ TEXT("crouch_walk"), 100.f } };
+		{ TEXT("crouch_walk"), 100.f }, { TEXT("tiptoe_walk"), 70.f } };
 	const float* V = Speeds.Find(N);
 	return V ? *V : 0.f;
 }
@@ -27,7 +27,7 @@ static bool IsFullBodyAction(FName N)
 		N == TEXT("roll_to_kneel") || N == TEXT("mantle") || N == TEXT("saber_hit_1") || N == TEXT("saber_hit_2") ||
 		N == TEXT("getup_back") || N == TEXT("getup_front") || N == TEXT("go_prone") || N == TEXT("dive_left") || N == TEXT("dive_right") ||
 		N == TEXT("vault") || N == TEXT("turn_l90") || N == TEXT("turn_r90") || N == TEXT("run_stop") || N == TEXT("flinch_duck") ||
-		N == TEXT("hit_left") || N == TEXT("hit_right") || N == TEXT("cover_low_fire") || N == TEXT("cover_lean_fire_r") || N == TEXT("cover_lean_fire_l");
+		N == TEXT("hit_left") || N == TEXT("hit_right") || N == TEXT("tiptoe_peek") || N == TEXT("cover_low_fire") || N == TEXT("cover_lean_fire_r") || N == TEXT("cover_lean_fire_l");
 }
 
 float UDukeTrooperAnimInstance::ClipLength(FName Name) const
@@ -153,7 +153,8 @@ void FDukeTrooperAnimProxy::BuildBase(TArray<FDukeClipRef>& Out, FName& OutKey)
 	const float R2S = FMath::Clamp((Speed - 450.f) / 150.f, 0.f, 1.f);
 	const float Ramp = FMath::Clamp((Speed - 25.f) / 60.f, 0.f, 1.f);
 	Add(TEXT("idle"), 1.f - Ramp, IdleTime);
-	Add(TEXT("walk"), Ramp * (1.f - W2R), Cyc(TEXT("walk")));
+	const FName WalkClip = (S.bSneak && Clip(TEXT("tiptoe_walk"))) ? FName(TEXT("tiptoe_walk")) : FName(TEXT("walk"));
+	Add(WalkClip, Ramp * (1.f - W2R), Cyc(WalkClip));
 	Add(TEXT("run"), Ramp * W2R * (1.f - R2S), Cyc(TEXT("run")));
 	Add(TEXT("sprint"), Ramp * R2S, Cyc(TEXT("sprint")));
 }
@@ -173,6 +174,7 @@ void FDukeTrooperAnimProxy::Update(float DeltaSeconds)
 	if (S.bCrouched) Gait = TEXT("crouch_walk");
 	else if (S.bAiming) Gait = FMath::Abs(S.LocalVelocity.Y) > FMath::Abs(S.LocalVelocity.X) ? FName(S.LocalVelocity.Y > 0 ? TEXT("aim_strafe_r") : TEXT("aim_strafe_l")) : FName(S.LocalVelocity.X >= 0 ? TEXT("aim_walk_fwd") : TEXT("aim_walk_bwd"));
 	else if (S.bLimping) Gait = TEXT("walk_limp");
+	else if (S.bSneak) Gait = TEXT("tiptoe_walk");
 	if (S.bDragging || S.bDragged) Gait = TEXT("drag_rescuer");      // the pair shares one clock, so hands and collar stay together
 	else if (S.bWounded) Gait = TEXT("wounded_crawl");
 	else if (S.bProne) Gait = TEXT("prone_crawl");
@@ -316,5 +318,30 @@ bool FDukeTrooperAnimProxy::Evaluate(FPoseContext& Output)
 			}
 		}
 	}
+	ApplyLook(Output);
 	return true;
+}
+
+// Head look: neck_01, head and (for yaw) spine_03 get the local-space delta of the look_* pose against the neutral
+// look_around frame 0, scaled by the requested angle (look poses are authored at ~56 deg yaw, ~42 deg pitch).
+void FDukeTrooperAnimProxy::ApplyLook(FPoseContext& Out) const
+{
+	if (S.bDead || S.bAiming || (FMath::Abs(S.LookYaw) < 0.5f && FMath::Abs(S.LookPitch) < 0.5f)) return;
+	const UAnimSequence* Neutral = Clip(TEXT("look_around")); if (!Neutral) return;
+	FPoseContext N(Out); Sample(Neutral, 0.f, false, N);
+	const FBoneContainer& BC = Out.Pose.GetBoneContainer();
+	auto Add = [&](FName PoseName, float W)
+	{
+		const UAnimSequence* Q = Clip(PoseName); if (!Q || W <= 0.f) return;
+		FPoseContext L(Out); Sample(Q, 0.f, false, L);
+		for (const TCHAR* Bone : { TEXT("spine_03"), TEXT("neck_01"), TEXT("head") })
+		{
+			const int32 Mesh = BC.GetPoseBoneIndexForBoneName(Bone); if (Mesh == INDEX_NONE) continue;
+			const FCompactPoseBoneIndex B = BC.MakeCompactPoseIndex(FMeshPoseBoneIndex(Mesh)); if (B == INDEX_NONE) continue;
+			const FQuat Delta = N.Pose[B].GetRotation().Inverse() * L.Pose[B].GetRotation();
+			Out.Pose[B].SetRotation((Out.Pose[B].GetRotation() * FQuat::Slerp(FQuat::Identity, Delta, W)).GetNormalized());
+		}
+	};
+	Add(S.LookYaw > 0.f ? FName(TEXT("look_right")) : FName(TEXT("look_left")), FMath::Clamp(FMath::Abs(S.LookYaw) / 56.f, 0.f, 1.4f));
+	Add(S.LookPitch > 0.f ? FName(TEXT("look_up")) : FName(TEXT("look_down")), FMath::Clamp(FMath::Abs(S.LookPitch) / 42.f, 0.f, 1.2f));
 }

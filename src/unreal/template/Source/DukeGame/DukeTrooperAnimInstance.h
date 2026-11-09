@@ -17,6 +17,8 @@ struct FDukeTrooperAnimState
 	GENERATED_BODY()
 	FVector LocalVelocity = FVector::ZeroVector; // cm/s in actor space (X forward, Y right)
 	float AimPitch = 0.f;                         // degrees, + up
+	float LookYaw = 0.f, LookPitch = 0.f;         // head/neck look offset (degrees, + right / + up), from the look_* poses
+	bool bSneak = false;                          // walking on tiptoe (tiptoe_walk)
 	bool bAiming = false;                         // combat stance (rifle shouldered)
 	bool bCrouched = false;
 	bool bFalling = false;
@@ -80,6 +82,7 @@ private:
 	void SampleLayer(const TArray<FDukeClipRef>& Layer, FPoseContext& Out) const;
 	static void Sample(const UAnimSequence* Seq, float Time, bool bLoop, FPoseContext& Out);
 	void BlendUpper(FPoseContext& Out, const FPoseContext& Upper, float Weight) const;
+	void ApplyLook(FPoseContext& Out) const;
 };
 
 UCLASS(Transient, NotBlueprintable)

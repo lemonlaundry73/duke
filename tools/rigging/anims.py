@@ -67,6 +67,7 @@ def apply(d,feet=None,ball=None,frame=None):
     g=d['gpos']; G=K.gun_matrix((g[0]+d['gdx'],g[1]+d['gdy'],g[2]+d['gdz']),d['gyaw']+d['gdyaw'],d['gpitch']+d['gdp'],d['groll']+d['gdr'])
     K.set_rest_space(P['ctrl_gun'],G)
     K.curl(ao,'r',d['curlR'],index=d['idxR']); K.curl(ao,'l',d['curlL'])
+    if d.get('fingL') is not None: K.fingers(ao,'l',*d['fingL'])      # (index, middle, ring, pinky, thumb)
     for s in 'lr':
         fm=(feet or {}).get(s); K.set_rest_space(P[f'ctrl_foot_{s}'],fm if fm is not None else FOOT0[s])
         if ball and s in ball: K.rot(P[f'ball_{s}'],ball[s],0,0)
@@ -160,18 +161,30 @@ def gait(name,T,v,s,stride_dir,lift,bob,sway,yawamp,stanceKw,stanceName,lean=0,w
     print(name,'pelvis drop cm min/max',round(min(sm)*100,1),round(max(sm)*100,1))
     finish(name,N,True,v,notes)
 # ---------------- human walk (reference-based, overlapping action) ----------------
+def spring_loop(target,T,freq,zeta,sub=8,warm=6):
+    """periodic damped spring (2nd order) driven by target(p), p in [0,1) over a cycle of T seconds.
+    Integrated for several cycles until periodic; returns a lookup p -> response of the last cycle (seamless loop)."""
+    n=max(8,round(T*FPS*sub)); dt=T/n; w=2*math.pi*freq; x=target(0.0); v=0.0; out=[0.0]*n
+    for c in range(warm):
+        for i in range(n):
+            a=w*w*(target(i/n)-x)-2*zeta*w*v; v+=a*dt; x+=v*dt
+            if c==warm-1: out[i]=x
+    def f(p):
+        q=(p%1.0)*n; i=int(q)%n; k=q-int(q); return out[i]*(1-k)+out[(i+1)%n]*k
+    return f
 def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.018,roll='fwd',cycles=1,crouch=0.0,injured=None,
-              lean=3.0,scan=0.0,gun=1.0,width=0.0,cape=0.0,notes=''):
-    """Walk built from gait reference: heel strike -> foot flat -> heel rise -> toe-off; swing foot peaks early
-    and reaches before contact; pelvis bob/list/rotation/sway/surge; spine, head, gun and cape trail the pelvis
-    (phase lags) so the motion follows through instead of moving in lockstep. Pelvis height is a constant
-    soft-knee level (no reach pumping)."""
+              lean=3.0,scan=0.0,gun=1.0,width=0.0,cape=0.0,heelrise=34.0,reach=0.985,hipyaw=5.0,hiplist=3.5,body=1.0,notes=''):
+    """Walk built from gait reference: heel strike -> loading response (knee flexes, pelvis sinks) -> mid-stance
+    (pelvis highest) -> heel rise on the ball / foot arch -> toe-off; the swing knee folds the foot up behind, then
+    the hip flexor carries the thigh through and the foot reaches heel-first. Pelvis bob/list/rotation/surge drive
+    the upper body through damped springs (spine segments, neck, head, rifle), so the trunk counter-rotates and
+    settles with lag and overshoot instead of moving in lockstep. roll: 'fwd' heel-to-toe, 'bwd', 'side', 'toe' (on the balls of the feet)."""
     new(name,direction=travel)
     N=round(T*cycles*FPS); L=v*T*s
     d0=stance(stanceName,**(stanceKw or {}))
     LEG={sd:(P[f'thigh_{sd}'].bone.length+P[f'calf_{sd}'].bone.length) for sd in 'lr'}
     dx,dy=travel
-    fwd=1.0 if roll=='fwd' else -1.0 if roll=='bwd' else 0.0
+    fwd=1.0 if roll in('fwd','toe') else -1.0 if roll=='bwd' else 0.0
     yawk=abs(fwd)+(0.35 if roll=='side' else 0)
     C=lambda ph: math.cos(2*math.pi*ph); Sn=lambda ph: math.sin(2*math.pi*ph)
     def foot(side,q):
@@ -181,77 +194,95 @@ def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.01
             froll=0.0
             if roll=='fwd':
                 # heel rocker: land on the heel with the toes up, lower the forefoot under control (no slap)
-                if u<0.18: x=u/0.18; e=1-(1-x)**2.5; pitch=-16*(1-e); piv='heel'; ball=-10*(1-ss(x))
-                # forefoot rocker: heel rises, the foot rolls over the ball while the toes stay planted and bend
-                elif u>0.50:
-                    k=(u-0.50)/0.50; pitch=34*k**1.5; piv='ball'
-                    ball=-pitch*(1-0.35*ss((k-0.82)/0.18))     # toes leave the ground last
+                if u<0.20: x=u/0.20; e=1-(1-x)**2.2; pitch=-18*(1-e); piv='heel'; ball=-12*(1-ss(x))
+                # ankle rocker: shin rolls forward over the flat foot; forefoot rocker: heel rises, the arch
+                # and toes bend as the body rolls over the ball (windlass), toes leave the ground last
+                elif u>0.45:
+                    k=(u-0.45)/0.55; pitch=heelrise*k**1.6; piv='ball'
+                    ball=-pitch*(1-0.30*ss((k-0.85)/0.15))
                 # slight inversion at contact -> pronation in mid-stance -> supination for push-off
-                froll=3.0*(1-ss(u/0.25))-3.0*ss((u-0.15)/0.3)*(1-ss((u-0.55)/0.3))+2.5*ss((u-0.6)/0.4)
+                froll=3.0*(1-ss(u/0.25))-3.0*ss((u-0.15)/0.3)*(1-ss((u-0.55)/0.3))+3.0*ss((u-0.6)/0.4)
+            elif roll=='toe':
+                # tiptoe: forefoot contact, heel never touches; the arch and toes take the load
+                pitch=heelrise*(0.9+0.12*ss((u-0.55)/0.45))-4*math.sin(math.pi*u); piv='ball'; ball=-pitch
             elif roll=='bwd':
                 if u<0.14: e=1-(1-u/0.14)**2; pitch=12*(1-e); piv='ball'; ball=-pitch*0.9
                 elif u>0.6: k=(u-0.6)/0.4; pitch=-14*k**1.5; piv='heel'
         else:
             w=(q-s)/(1-s)
-            prog=ss(min(1.0,w/0.92))*1.015-0.015*ss((w-0.92)/0.08)
+            # swing: slow start (thigh still behind), hip flexor whips it through mid-swing, decelerates to reach
+            prog=ss(min(1.0,w/0.90))**1.15*1.02-0.02*ss((w-0.90)/0.10)
             off=-L/2+L*prog
-            lz=lift*asym*(math.sin(math.pi*w**0.7))**1.3
+            # foot folds up behind early (knee flexion), then drops toward the floor ahead
+            lz=lift*asym*(math.sin(math.pi*w**0.62))**1.4
             froll=0.0
             if roll=='fwd':
-                # toe-off plantarflexion, then the ankle dorsiflexes for toe clearance, heel-first before contact
-                pitch=34*(1-ss(w/0.38))-7*ss(w/0.45)-9*ss((w-0.62)/0.38)
-                ball=-34*0.65*(1-ss(w/0.35))-6*ss((w-0.7)/0.3)   # toes relax in swing, lift before contact
-                froll=2.5*(1-ss(w/0.4))+3.0*ss((w-0.6)/0.4)
+                pitch=heelrise*(1-ss(w/0.34))-8*ss(w/0.45)-10*ss((w-0.62)/0.38)
+                ball=-heelrise*0.65*(1-ss(w/0.32))-7*ss((w-0.7)/0.3)
+                froll=3.0*(1-ss(w/0.4))+3.0*ss((w-0.6)/0.4)
+            elif roll=='toe':
+                pitch=heelrise*0.95+10*math.sin(math.pi*w); ball=-heelrise*0.6*(1-math.sin(math.pi*w)*0.5)
             elif roll=='bwd': pitch=-14*(1-ss(w/0.45))+12*ss((w-0.6)/0.4); ball=-max(0.0,pitch)*0.4*(1-ss(w/0.5))
             else: pitch=6*math.sin(math.pi*w); ball=-max(0.0,pitch)*0.4*(1-ss(w/0.5))
             sg=1 if side=='l' else -1; toe=sg*(6 if roll!='side' else 3)
-            pa,pb={'fwd':('ball','heel'),'bwd':('heel','ball')}.get(roll,('ankle','ankle'))
-            pass_y=(-0.09*math.sin(math.pi*w) if roll=='side' else 0.0)   # strafing: swing foot passes in front of the planted one
-            spread=(sg*L*0.25 if roll=='side' else 0.0)                      # step-together strafe: the feet never cross
+            pa,pb={'fwd':('ball','heel'),'bwd':('heel','ball'),'toe':('ball','ball')}.get(roll,('ankle','ankle'))
+            pass_y=(-0.09*math.sin(math.pi*w) if roll=='side' else 0.0)
+            spread=(sg*L*0.25 if roll=='side' else 0.0)
             return foot_mat_blend(side,(dx*off+sg*width+spread,dy*off+pass_y,lz),pitch,toe,pa,pb,ss(w),froll),ball
         sg=1 if side=='l' else -1
         toe=sg*(6 if roll!='side' else 3)
         spread=(sg*L*0.25 if roll=='side' else 0.0)
         return foot_mat(side,(dx*off+sg*width+spread,dy*off,lz),pitch=pitch,yaw=toe,pivot=piv,roll=froll if roll=='fwd' else 0.0),ball
+    # ---- pelvis drive (per gait cycle phase p) and the spring-driven upper body ----
+    sgn=(1 if fwd>=0 else -1)
+    pel_yaw=lambda p: -hipyaw*C(p)*yawk*sgn                       # pelvic rotation: swing hip travels forward
+    pel_list=lambda p: -hiplist*Sn(p-0.08)                        # pelvic list: swing-side hip drops
+    pel_z=lambda p: -bob*C(2*(p-0.06))                            # lowest just after contact, highest at mid-stance
+    w2=(2*math.pi*2/T)**2
+    acc_z=lambda p: bob*w2*C(2*(p-0.06))                          # vertical acceleration of the pelvis (m/s^2)
+    B=body
+    # trunk counter-rotation (thorax opposite the pelvis): relative targets per segment, each a softer spring
+    sp_y=[spring_loop(lambda p,k=k: -k*1.7*B*pel_yaw(p)/max(hipyaw,1e-3)*hipyaw,T,f,z) for k,f,z in ((0.30,3.2,0.45),(0.38,2.6,0.40),(0.32,2.2,0.36))]
+    sp_r=[spring_loop(lambda p,k=k: -k*0.9*B*pel_list(p),T,f,z) for k,f,z in ((0.45,3.0,0.45),(0.35,2.5,0.40),(0.20,2.1,0.35))]
+    # inertia: when the pelvis brakes its fall after heel strike the trunk flexes forward a little, then rebounds
+    sp_p=[spring_loop(lambda p,k=k: k*0.55*B*acc_z(p),T,f,z) for k,f,z in ((0.35,3.0,0.40),(0.40,2.4,0.35),(0.25,2.0,0.32))]
+    chest_yaw=lambda p: pel_yaw(p)+sum(sp(p) for sp in sp_y)
+    chest_roll=lambda p: pel_list(p)+sum(sp(p) for sp in sp_r)
+    chest_pitch=lambda p: sum(sp(p) for sp in sp_p)
+    # neck/head stabilise the gaze against the chest motion, but through stiffer springs (slight lag and bobble)
+    hd_y=spring_loop(lambda p: -0.85*chest_yaw(p),T,3.4,0.5); hd_r=spring_loop(lambda p: -0.85*chest_roll(p),T,3.4,0.5)
+    hd_p=spring_loop(lambda p: -0.8*chest_pitch(p)-0.9*B*C(2*(p-0.2)),T,3.0,0.45)
+    # rifle (in both hands) lags the chest: vertical bounce and sway from inertia
+    gz=spring_loop(pel_z,T,2.6,0.30); gy=spring_loop(chest_yaw,T,2.4,0.35)
     def frame(f,drop):
         g=f/N*cycles; p=g%1.0; feet={}; balls={}
         for side,ph in (('l',0.0),('r',0.5)):
-            if injured:
-                # limp: spend less of the cycle on the hurt foot (it lands after a long step of the good leg)
-                ph=0.0 if side!=injured else 0.40
+            if injured: ph=0.0 if side!=injured else 0.40
             feet[side],balls[side]=foot(side,(p+ph)%1.0)
-            if injured==side:   # hurt foot: flat, no push-off, kept short of the floor roll
-                feet[side]=feet[side]@M.Identity(4)
         d=dict(d0)
         if injured:
             sgi=1 if injured=='l' else -1
             qh=(p+0.40)%1.0; on_hurt=qh<s
             dip=math.sin(math.pi*min(1.0,qh/s)) if on_hurt else 0.0
-            d['pz']=d0['pz']-0.035*dip           # sinks over the hurt leg
-            d['s2r']=d0['s2r']+sgi*8*dip; d['s3r']=d0['s3r']+sgi*4*dip   # leans the weight off it
+            d['pz']=d0['pz']-0.035*dip
+            d['s2r']=d0['s2r']+sgi*8*dip; d['s3r']=d0['s3r']+sgi*4*dip
             d['hp']=d0['hp']+4*dip
-        surge=-0.010*Sn(2*p)                              # decelerate after contact, push off
-        d['px']=d0['px']+0.022*Sn(p-0.08)+dx*surge
+        surge=-0.012*Sn(2*p)
+        d['px']=d0['px']+0.024*Sn(p-0.08)+dx*surge
         d['py']=d0['py']+dy*surge
-        d['pz']=d0['pz']-bob*C(2*(p-0.06))-drop-crouch
-        d['pr']=d0['pr']-3.5*Sn(p-0.08)                   # pelvic list: swing hip drops
-        d['pyw']=d0['pyw']-5.0*C(p)*yawk*(1 if fwd>=0 else -1)
-        d['pp']=d0['pp']+1.0*C(2*(p-0.1))
-        # spine counter-rotates and counter-lists, each level a little later than the one below
-        y1=2.0*C(p-0.04)*yawk; y2=2.4*C(p-0.06)*yawk; y3=1.2*C(p-0.08)*yawk
-        r1=2.0*Sn(p-0.12); r2=1.0*Sn(p-0.16); r3=0.6*Sn(p-0.2)
-        d['s1y']=d0['s1y']+y1; d['s2y']=d0['s2y']+y2; d['s3y']=d0['s3y']+y3
-        d['s1r']=d0['s1r']+r1; d['s2r']=d0['s2r']+r2; d['s3r']=d0['s3r']+r3
-        d['s1p']=d0['s1p']+lean*0.4; d['s2p']=d0['s2p']+lean*0.35+0.8*C(2*(p-0.16)); d['s3p']=d0['s3p']+lean*0.25
-        # head keeps the eyes level and forward (stabilisation), plus an optional slow scan over the loop
-        yawsum=d['pyw']-d0['pyw']+y1+y2+y3; rollsum=d['pr']-d0['pr']+r1+r2+r3
+        d['pz']=d['pz']+pel_z(p)-drop-crouch
+        d['pr']=d0['pr']+pel_list(p)
+        d['pyw']=d0['pyw']+pel_yaw(p)
+        d['pp']=d0['pp']+1.8*B*C(2*(p-0.1))                       # anterior tilt peaks at push-off (hip flexors stretched)
+        for i in (0,1,2):
+            d[f's{i+1}y']+=sp_y[i](p); d[f's{i+1}r']+=sp_r[i](p); d[f's{i+1}p']+=sp_p[i](p)
+        d['s1p']+=lean*0.4; d['s2p']+=lean*0.35; d['s3p']+=lean*0.25
         look=scan*Sn(f/N)
-        d['ny']=d0['ny']-0.45*yawsum+0.4*look; d['hy']=d0['hy']-0.4*yawsum+0.6*look
-        d['nr']=d0['nr']-0.4*rollsum; d['hr']=d0['hr']-0.45*rollsum
-        d['hp']=d0['hp']-lean*0.5-0.9*C(2*(p-0.2))
-        # weapon trails the chest: figure-eight bob and sway
-        d['gdz']=gun*0.010*C(2*(p-0.14)); d['gdx']=gun*0.012*Sn(p-0.16); d['gdy']=gun*0.006*C(2*(p-0.2))
-        d['gdyaw']=gun*2.2*Sn(p-0.14); d['gdr']=gun*1.8*Sn(p-0.18); d['gdp']=gun*1.2*C(2*(p-0.18))
+        d['ny']=d0['ny']+0.5*hd_y(p)+0.4*look; d['hy']=d0['hy']+0.5*hd_y(p)+0.6*look
+        d['nr']=d0['nr']+0.45*hd_r(p); d['hr']=d0['hr']+0.55*hd_r(p)
+        d['np_']=d0['np_']+0.4*hd_p(p); d['hp']=d['hp']+0.6*hd_p(p)-lean*0.5
+        d['gdz']=gun*1.2*(gz(p)-pel_z(p)); d['gdx']=gun*0.012*Sn(p-0.18); d['gdy']=gun*0.006*C(2*(p-0.22))
+        d['gdyaw']=gun*0.9*(gy(p)-chest_yaw(p))+gun*1.2*Sn(p-0.16); d['gdr']=gun*1.8*Sn(p-0.2); d['gdp']=gun*1.4*C(2*(p-0.2))
         d['capeP']=cape+4*C(2*(p-0.3)); d['capeS']=5*Sn(p-0.3)
         apply(d,feet,balls); return feet
     need=[]
@@ -259,12 +290,12 @@ def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.01
         feet=frame(f,0.0); bpy.context.view_layer.update(); dr=0
         for sd in 'lr':
             hip=P[f'thigh_{sd}'].head; A=feet[sd].translation; hz=(V((A.x-hip.x,A.y-hip.y,0))).length
-            maxv=math.sqrt(max(0.0,(0.985*LEG[sd])**2-hz*hz)); dr=max(dr,(hip.z-A.z)-maxv)
+            maxv=math.sqrt(max(0.0,(reach*LEG[sd])**2-hz*hz)); dr=max(dr,(hip.z-A.z)-maxv)
         need.append(max(0.0,dr))
-    drop=max(need)+0.004   # one constant soft-knee height: the designed bob is the only vertical motion
+    drop=max(need)+0.004   # one constant offset under the designed bob: the knees never lock straight
     for f in range(N+1):
         frame(f,drop); key(f)
-    print(name,'soft-knee pelvis drop cm',round(drop*100,1))
+    print(name,'pelvis drop cm',round(drop*100,1))
     finish(name,N,True,v,notes)
 # ---------------- human run (reference-based) ----------------
 def runcycle(name,T,v,s,stanceName,stanceKw=None,bias=0.1,heel=0.30,bob=0.035,lean=8.0,strike='mid',yawamp=8.0,listamp=4.0,gun=1.0,cape=8.0,notes=''):
@@ -380,6 +411,14 @@ hold('shoot_hip',0.3,recoil_keys(stance('ready',gpitch=-6,gpos=(-0.07,-0.28,1.16
 # reload (swap the power cell): left hand off the gun to the belt and back
 def lh_mat(pos,yaw=0,pitch=0,roll=0):
     r=REST['hand_l'].to_3x3(); m=(E((R(pitch),R(roll),R(yaw))).to_matrix()@r).to_4x4(); m.translation=V(pos); return m
+def hand_orient(side,finger_world,palm_world,pos):
+    """hand target from where the fingers point and where the palm faces (armature rest space, character faces -Y).
+    Palm/finger axes come from the rest skeleton: fingers curl about the finger bones' local Z."""
+    h=REST[f'hand_{side}'].to_3x3(); fb=REST[f'middle_01_{side}'].to_3x3(); sg=-1 if side=='l' else 1
+    hi=h.inverted(); fl=(hi@fb.col[1]).normalized(); pl=hi@(-sg*fb.col[0]); pl=(pl-fl*pl.dot(fl)).normalized()
+    F=V(finger_world).normalized(); Nw=V(palm_world); Nw=(Nw-F*Nw.dot(F)).normalized()
+    Bl=M((fl,pl,fl.cross(pl))).transposed(); Bw=M((F,Nw,F.cross(Nw))).transposed()
+    m=(Bw@Bl.inverted()).to_4x4(); m.translation=V(pos); return m
 gun_tilt=dict(aim,gdr=35,gdp=12,gdy=0.06,gdz=-0.06,gdyaw=-10,hp=14,np_=8,s3y=0)
 belt=lh_mat((0.15,-0.16,1.02),pitch=-60,yaw=20); mag=None
 def reload_keys():
@@ -692,11 +731,12 @@ hold('crouch_aim',3.0,breathe(cra,3.0,0.5),feetfn=lambda t:FE_CR,notes='Crouched
 hold('crouch_shoot',0.3,recoil_keys(cra,1,0.3),loop=True,feetfn=lambda t:FE_CR,notes='Crouched bolt.')
 walkcycle('crouch_walk',1.1,1.0,(0,-1),'aim',dict(pp=14,s1p=8,s2p=6,s3p=-2,hp=2,idxR=0.35),s=0.64,lift=0.08,bob=0.010,crouch=0.30,lean=0,gun=0.45,cape=6,notes='Crouched advance, rifle up. 1.0 m/s.')
 # walking
-walkcycle('walk',1.04,1.3,(0,-1),'patrol',s=0.60,lift=0.10,bob=0.014,cycles=2,lean=2.5,scan=8,gun=0.8,notes='Patrol walk: relaxed low ready, full heel-to-toe roll with toe bend and ankle push-off, slow scan. 1.3 m/s.')
-walkcycle('walk_limp',1.25,0.9,(0,-1),'patrol',s=0.62,lift=0.07,bob=0.012,cycles=1,lean=4,gun=0.6,injured='r',notes='Injured (shot in the right foot): limping walk, weight kept off the right leg. 0.9 m/s.')
-walkcycle('aim_walk_fwd',0.96,1.3,(0,-1),'aim',s=0.62,lift=0.09,bob=0.012,lean=2,gun=0.45,cape=3,notes='Tactical walk forward while aiming (soft knees, stable rifle). 1.3 m/s.')
+walkcycle('walk',1.08,1.3,(0,-1),'patrol',s=0.61,lift=0.16,bob=0.021,cycles=2,lean=3.0,scan=8,gun=0.8,heelrise=42,reach=0.982,hipyaw=7,hiplist=5,body=1.3,notes='Patrol walk: relaxed low ready, full heel-to-toe roll with toe bend and ankle push-off, slow scan. 1.3 m/s.')
+walkcycle('walk_limp',1.25,0.9,(0,-1),'patrol',s=0.62,lift=0.09,reach=0.975,bob=0.012,cycles=1,lean=4,gun=0.6,injured='r',notes='Injured (shot in the right foot): limping walk, weight kept off the right leg. 0.9 m/s.')
+walkcycle('aim_walk_fwd',0.98,1.3,(0,-1),'aim',s=0.62,lift=0.13,bob=0.015,heelrise=38,reach=0.968,hipyaw=6,hiplist=4,body=0.8,lean=2,gun=0.45,cape=3,notes='Tactical walk forward while aiming (soft knees, stable rifle). 1.3 m/s.')
 walkcycle('aim_walk_bwd',1.0,1.1,(0,1),'aim',s=0.62,lift=0.08,bob=0.011,roll='bwd',lean=2,gun=0.45,notes='Backpedal while aiming (toe-first contact). 1.1 m/s.')
 walkcycle('aim_strafe_l',0.86,1.2,(1,0),'aim',s=0.45,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.09,notes='Strafe left while aiming. 1.2 m/s.')
+walkcycle('tiptoe_walk',1.2,0.7,(0,-1),'ready',dict(pp=6,s1p=4,s2p=4,s3p=2),s=0.58,lift=0.10,bob=0.010,roll='toe',lean=4,gun=0.5,heelrise=30,reach=0.95,hipyaw=4,hiplist=3,body=0.8,notes='Sneaking on tiptoe: weight on the balls of the feet, heels never touch, soft knees. 0.7 m/s.')
 walkcycle('aim_strafe_r',0.86,1.2,(-1,0),'aim',s=0.45,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.09,notes='Strafe right while aiming. 1.2 m/s.')
 runcycle('run',0.70,4.2,0.30,'port',dict(curlR=0.9),bias=0.12,heel=0.30,bob=0.035,lean=10,strike='mid',yawamp=8,listamp=4,gun=1.0,cape=9,notes='Combat jog, rifle at port: midfoot landing, heel recovery, flight phase. 4.2 m/s.')
 runcycle('sprint',0.62,6.2,0.24,'sprint',{},bias=0.06,heel=0.44,bob=0.04,lean=18,strike='fore',yawamp=10,listamp=5,gun=1.2,cape=12,notes='Sprint, rifle across chest: forefoot landing, high heel recovery and knee drive. 6.2 m/s.')
@@ -705,10 +745,13 @@ hold('melee',0.9,[(0,ready),(0.2,dict(ready,s2y=-25,s3y=-20,pyw=-10,gpos=(-0.1,-
                   (0.36,dict(ready,s2y=22,s3y=18,pyw=12,s2p=8,gpos=(-0.02,-0.42,1.38),gyaw=-40,gpitch=40,groll=-90,curlL=1.0)),(0.55,dict(ready,s2y=10,s3y=8,gpos=(-0.04,-0.36,1.3),gyaw=-20,gpitch=20,groll=-60)),(0.9,ready)],
      loop=False,feetfn=lambda t:{'l':foot_mat('l',(0.02,-0.05-0.15*ss((t-0.15)/0.2)*(1-ss((t-0.6)/0.3)),0.04*math.sin(math.pi*max(0,min(1,(t-0.12)/0.22)))),yaw=4),'r':FE_RDY['r']},notes='Rifle-butt melee strike with a step.')
 # hand signals (patrol): left hand raised fist (halt) / forward chop (move up)
-def signal(name,poses,secs,notes):
+def signal(name,poses,secs,notes,fingfn=None,body=None):
     new(name,lhand_on=0); N=round(secs*FPS)
     for f in range(N+1):
-        t=f/FPS; apply(dict(ready,curlL=1.0 if 'halt' in name else 0.15),FE_RDY); bpy.context.view_layer.update()
+        t=f/FPS; d=dict(ready,curlL=1.0 if 'halt' in name else 0.15)
+        if fingfn: d['fingL']=fingfn(t)
+        if body: d.update({k:d.get(k,0)+v for k,v in body(t).items()})
+        apply(d,FE_RDY); bpy.context.view_layer.update()
         ongun=P['ctrl_hand_l'].matrix.copy(); tgt=None
         for (t0,t1,m) in poses:
             if t0<=t<=t1: tgt=(ss((t-t0)/0.25) if t<t0+0.25 else 1)*(1-ss((t-(t1-0.3))/0.3)), m
@@ -719,6 +762,52 @@ def signal(name,poses,secs,notes):
     finish(name,N,False,0,notes)
 signal('signal_halt',[(0.1,1.4,lh_mat((0.24,-0.12,1.55),pitch=180,yaw=-10))],1.6,'Patrol hand signal: halt (raised fist).')
 signal('signal_moveup',[(0.1,1.3,lh_mat((0.16,-0.42,1.36),pitch=-95,yaw=-15))],1.5,'Patrol hand signal: move up (forward point).')
+
+# ---- head / neck: look offsets (single poses for an additive look-at blend) and a full look-around with neck roll ----
+LOOK={'look_left':dict(s2y=6,s3y=8,ny=26,hy=30,nr=-3),'look_right':dict(s2y=-6,s3y=-8,ny=-26,hy=-30,nr=3),
+      'look_up':dict(s3p=-5,np_=-18,hp=-24),'look_down':dict(s3p=6,np_=20,hp=24),
+      'look_tilt_l':dict(nr=-14,hr=-16),'look_tilt_r':dict(nr=14,hr=16)}
+for nm,kw in LOOK.items():
+    d=dict(ready); [d.__setitem__(k,d.get(k,0)+v) for k,v in kw.items()]
+    hold(nm,1/FPS,[(0,d)],loop=False,feetfn=lambda t:FE_RDY,notes='Head/neck look offset pose (additive: neck and head turn, upper chest follows a little).')
+def addk(base,**kw): d=dict(base); [d.__setitem__(k,d.get(k,0)+v) for k,v in kw.items()]; return d
+lk=LOOK; seq=[(0.0,ready),(0.9,addk(ready,**lk['look_left'])),(1.6,addk(ready,**lk['look_left'])),(2.3,addk(ready,**lk['look_up'])),
+     (3.0,addk(ready,**lk['look_right'])),(3.8,addk(ready,**lk['look_right'])),(4.5,addk(ready,**lk['look_down'])),(5.2,addk(ready,**lk['look_down'])),(6.0,ready)]
+hold('look_around',6.0,seq,feetfn=lambda t:FE_RDY,notes='Looks left, up, right and down; the neck leads, the head follows, the chest turns a little. Loop.')
+def neckroll(t):
+    a=2*math.pi*ss(min(1.0,max(0.0,(t-0.4)/3.2)))*1.0; e=math.sin(math.pi*min(1.0,max(0.0,(t-0.2)/3.6)))
+    return addk(ready,np_=16*e*math.cos(a),hp=10*e*math.cos(a),nr=16*e*math.sin(a),hr=10*e*math.sin(a),s3p=2*e*math.cos(a))
+hold('neck_roll',4.0,[(i/30,neckroll(i/30)) for i in range(121)],loop=False,feetfn=lambda t:FE_RDY,notes='Neck roll: chin down, ear to the right shoulder, head back, ear to the left, back to centre.')
+# ---- hands: counting to five on the left hand, and "come here" with the index finger ----
+FIST=(1.0,1.0,1.0,1.0,1.0)
+def count_fingers(t):
+    st=[0.9,1.6,2.3,3.0,3.7]                         # index, middle, ring, pinky, thumb straighten in turn
+    v=[1-ss((t-x)/0.22) for x in st]
+    rel=ss((t-5.0)/0.4); v=[min(1.0,a+rel) for a in v]   # closes again as the hand drops
+    return (v[0],v[1],v[2],v[3],v[4]*1.4-0.4)   # thumb swings well out on 'five'
+signal('count_five',[(0.15,5.6,hand_orient('l',(0.08,-0.12,1),(-0.15,-1,0.05),(0.20,-0.32,1.40)))],6.0,
+       'Counts to five on the left hand, palm out: index, middle, ring, pinky, then the thumb, one finger at a time.',fingfn=count_fingers,
+       body=lambda t: dict(ny=6*ss((t-0.2)/0.4)*(1-ss((t-5.2)/0.5)),hp=4*ss((t-0.2)/0.4)*(1-ss((t-5.2)/0.5))))
+def beckon_fingers(t):
+    on=ss((t-0.35)/0.25)*(1-ss((t-2.7)/0.25))
+    ph=max(0.0,t-0.6); c=0.5-0.5*math.cos(2*math.pi*ph/0.5) if 0.6<t<2.6 else 0.0   # straighten -> curl -> straighten, 4 times
+    idx=0.05+0.85*c
+    return (idx*on+0.15*(1-on),0.95*on+0.15*(1-on),0.95*on+0.15*(1-on),0.95*on+0.15*(1-on),0.55)
+signal('beckon',[(0.15,2.85,hand_orient('l',(-0.10,-1,0.30),(0.1,0.15,1),(0.26,-0.36,1.30)))],3.0,
+       'Come here: left hand out palm up, the index finger straightens and curls back four times; other fingers folded.',fingfn=beckon_fingers,
+       body=lambda t: dict(np_=-4*ss((t-0.2)/0.4)*(1-ss((t-2.6)/0.4)),ny=5*ss((t-0.2)/0.4)*(1-ss((t-2.6)/0.4))))
+# ---- tiptoe: rise onto the toes to see over a wall, hold, come down ----
+def tip_feet(t):
+    k=ss((t-0.3)/0.5)*(1-ss((t-2.6)/0.5)); pt=48*k
+    return {s:foot_mat(s,FE_RDY_OFF[s],pitch=pt,yaw=FE_RDY_YAW[s],pivot='ball') for s in 'lr'},{s:-pt for s in 'lr'}
+FE_RDY_OFF={'l':(0.0,-0.05,0),'r':(-0.02,0.06,0)}; FE_RDY_YAW={'l':4,'r':-12}
+new('tiptoe_peek'); NT=round(3.4*FPS)
+for f in range(NT+1):
+    t=f/FPS; k=ss((t-0.3)/0.5)*(1-ss((t-2.6)/0.5)); fe,bl=tip_feet(t)
+    rise=min(fe[sd].translation.z-FOOT0[sd].translation.z for sd in 'lr')   # ankles rise with the heels
+    d=addk(ready,pz=0.97*rise,np_=-6*k,hp=-8*k,ny=10*math.sin(2*math.pi*max(0,t-0.9)/1.6)*k,hy=12*math.sin(2*math.pi*max(0,t-0.9)/1.6)*k,s3p=-2*k)
+    apply(d,fe,bl); key(f)
+finish('tiptoe_peek',NT,False,0,'Rises onto the balls of the feet to look over a wall, scans, settles back on the heels.')
 # ================= combat roll, kneeling fire, climbing, lightsaber, explosions =================
 CUTS=[]     # dismemberment endings for cuts.py: which clip, when, where, which piece, how it moves
 LEGS_L=('thigh_l','calf_l','ball_l'); LEGS_R=('thigh_r','calf_r','ball_r')

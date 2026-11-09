@@ -103,3 +103,18 @@ def limb_ik(ao,limb,side,influence):
 def hand_error(ao):
     pbs=ao.pose.bones; bpy.context.view_layer.update()
     return max((pbs[f'hand_{s}'].head-pbs[f'ctrl_hand_{s}'].head).length for s in 'lr'), max((pbs[f'foot_{s}'].head-pbs[f'ctrl_foot_{s}'].head).length for s in 'lr')
+def fingers(ao,side,idx=1.0,mid=1.0,ring=1.0,pinky=1.0,thumb=0.6):
+    """per-finger curl (0 = straight, 1 = fist); thumb 0 = open, 1 = folded across the palm"""
+    pbs=ao.pose.bones; sg=1 if side=='r' else -1
+    for f,a in (('index',idx),('middle',mid),('ring',ring),('pinky',pinky)):
+        for i,base in ((1,62),(2,85),(3,55)):
+            pbs[f'{f}_0{i}_{side}'].rotation_quaternion=Q(V((0,0,1)),R(sg*base*a))
+    # thumb tuck across the palm (axes solved on this skeleton: tip lands over the folded middle/ring fingers)
+    # negative thumb = abducted (spread out to the side, as on 'five')
+    if thumb<0:
+        pbs[f'thumb_01_{side}'].rotation_quaternion=Q(V((0,0,-sg)),R(75*-thumb))
+        for i in (2,3): pbs[f'thumb_0{i}_{side}'].rotation_quaternion=Q()
+        return
+    pbs[f'thumb_01_{side}'].rotation_quaternion=Q(V((0,sg,0)),R(35*thumb))
+    for i,base in ((2,50),(3,40)):
+        pbs[f'thumb_0{i}_{side}'].rotation_quaternion=Q(V((-1,0,0)),R(base*thumb))
