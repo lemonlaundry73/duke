@@ -222,6 +222,36 @@ if 'head' in idx and 'neck_01' in idx and 'spine_03' in idx and CFG.get('rigid_h
     hd=ssv((z[seal]-zr[seal]+0.01)/0.04); sp=1-ssv((z[seal]-(nj[2]-0.06))/0.06)
     Wt[seal]=0; Wt[seal,idx['spine_03']]=sp; Wt[seal,idx['neck_01']]=(1-sp)*(1-hd); Wt[seal,idx['head']]=(1-sp)*hd
     print('rigid helmet verts',int(helm.sum()),'neck seal verts',int(seal.sum()))
+# soft sides (cloth characters): tunic vertices beside the upper arm share its motion, so the side panel gives way
+# when the arm comes in instead of the sleeve sinking into it (the armpit blend of a hand-made skin)
+SS=CFG.get('soft_sides')
+if SS:
+    reach=SS.get('reach',0.07); share=SS.get('share',0.55)
+    torso_ids=[idx[k] for k in ('spine_01','spine_02','spine_03','clavicle_l','clavicle_r') if k in idx]
+    dom=np.argmax(Wt,1); tmask=np.isin(dom,torso_ids)&~cape
+    for sd in 'lr':
+        ui=idx[f'upperarm_{sd}']; d,tt=segdist(co,*segs[f'upperarm_{sd}'])
+        sg=1 if sd=='l' else -1
+        near=tmask&(sg*x>SS.get('x0',0.06))&(z<segs[f'upperarm_{sd}'][0][2]+SS.get('above',0.06))
+        k=np.clip(1-(d-rad('upperarm'))/reach,0,1); k=k*k*(3-2*k)*share*np.clip(tt*3,0,1)*near
+        Wt=Wt*(1-k[:,None]); Wt[:,ui]+=k
+    print('soft sides: torso verts sharing upper-arm motion',int((Wt[:,idx['upperarm_l']]+Wt[:,idx['upperarm_r']]>0.05).sum()))
+# slim sleeves (cloth characters with loose bell sleeves): take in the fabric beyond the forearm's core toward the
+# forearm axis so the sleeves do not plough through the tunic when the arms come in (hands and skin untouched)
+SL=CFG.get('slim_sleeves')
+if SL:
+    core=SL.get('core',0.045); keep=SL.get('keep',0.5); moved=0
+    for sd in 'lr':
+        A_=np.array(J[f'lowerarm_{sd}'][0]); B_=np.array(J[f'hand_{sd}'][0]); ab=B_-A_
+        fi=[idx[f'lowerarm_{sd}']]
+        m=(np.isin(np.argmax(Wt,1),fi))&~cape
+        q=co[m]; ta_=np.clip(((q-A_)@ab)/(ab@ab),0,1); axp=A_+ta_[:,None]*ab; dv=q-axp; d=np.linalg.norm(dv,axis=1)
+        k=np.clip((ta_-0.05)/0.15,0,1)*np.clip((0.97-ta_)/0.1,0,1)          # fade in past the elbow, out before the wrist
+        nd=np.where(d>core,core+(d-core)*(keep+(1-keep)*(1-k)),d)
+        q2=axp+dv*(nd/np.maximum(d,1e-9))[:,None]; moved+=int((np.abs(nd-d)>0.002).sum())
+        co[m]=q2
+    t.data.vertices.foreach_set('co',co.astype(np.float32).ravel()); t.data.update()
+    print('slim sleeves: vertices taken in',moved)
 # keep top 4
 o4=np.argsort(-Wt,1)[:,4:]; np.put_along_axis(Wt,o4,0,1); Wt[Wt<0.01]=0; Wt/=np.maximum(Wt.sum(1,keepdims=True),1e-12)
 print('unweighted verts',(Wt.sum(1)<0.5).sum())

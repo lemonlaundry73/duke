@@ -34,6 +34,8 @@ for act in bpy.data.actions:
             if low >= -0.002: break
             dz = 0.012 - low; worst = max(worst, dz)   # aim 1.2 cm up: the in-order FBX bake evaluates IK about 1 cm differently
             i = int(np.argmin(zt)); side = next((s for s in 'lr' if FOOT[s][i]), None) if zt.min() <= zg.min() else None
+            if side and min((c.influence for c in P[f'calf_{side}'].constraints if c.type == 'IK'), default=0.0) < 0.5:
+                side = None   # leg posed by FK here (dives, rolls, falls): the foot target does nothing, lift the body
             if side:
                 # lift that foot target only (and only as far as that foot needs)
                 need = 0.012 - zt[FOOT[side]].min()

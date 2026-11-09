@@ -151,8 +151,9 @@ void ADukeJedi::DoForce(float Now)
 			const FVector D = C->GetActorLocation() - Me; if (D.Size() > PushRange || FVector::DotProduct(GetActorForwardVector(), D.GetSafeNormal2D()) < 0.5f) continue;
 			const float K = 1.f - D.Size() / PushRange;
 			C->LaunchCharacter(D.GetSafeNormal2D() * PushStrength * (0.5f + K) + FVector(0, 0, 350.f * (0.5f + K)), true, true);
-			FRadialDamageEvent RE; RE.DamageTypeClass = UDukeExplosionDamageType::StaticClass(); RE.Origin = Me;
-			C->TakeDamage(25.f + 40.f * K, RE, GetController(), this);     // a hard landing; close ones are thrown limp
+			// a hard landing; close ones die thrown limp (explosion ending picked from the Jedi's position: DamageCauser)
+			FDamageEvent DE(UDukeExplosionDamageType::StaticClass());
+			C->TakeDamage(25.f + 40.f * K, DE, GetController(), this);
 		}
 	}
 	else if (ACharacter* C = Cast<ACharacter>(Target.Get()))

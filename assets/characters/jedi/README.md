@@ -31,13 +31,22 @@ He has a lightsaber and the Force instead of a blaster.
   2. fill in its grip, hold and emitter points
   3. rebuild
 
+## Lightsaber form
+
+He fights **one-handed**: saber in the right hand, the left hand free for balance and the Force.
+- **Guard:** held out to the sword side at chest height, blade up and forward.
+- **Swing paths:** arc out away from the body.
+- **Why one-handed:** with his arm length (about 20% shorter than the trooper's) and his bulky tunic, a two-handed waist-height grip drove his sleeves and hands through the tunic. Measured on the guard: 380 overlapping triangles with two hands, 0 with one.
+- **Reach limit:** out-of-reach targets come back toward the shoulder along the same line, so the arm extends instead of folding into the body.
+- **Switching back:** set `saber_hands` to 2 in `Source/character.json` for a two-handed grip.
+
 ## Clips (Jedi-specific)
 
 | Group | Clips |
 |---|---|
 | Holstered | `idle`, `patrol_look`, `walk` (natural arm swing), `walk_limp`, `run`, `sprint` (arms pumping) |
 | Saber | `draw_saber`, `holster_saber`, `aim` (= two-handed guard idle), `aim_walk_fwd/bwd`, `aim_strafe_l/r` (guard footwork), `saber_run` (blade lit, trailing) |
-| Attacks | `saber_attack_1` (forehand diagonal, strike 0.42 s), `saber_attack_2` (backhand rising, 0.40 s), `saber_attack_3` (overhead, 0.50 s), `saber_thrust` (0.38 s) |
+| Attacks | `saber_attack_1` (forehand diagonal, strike 0.42 s), `saber_attack_2` (rising slash from the sword side, 0.40 s), `saber_attack_3` (overhead, 0.50 s), `saber_thrust` (0.38 s) |
 | Defence | `saber_block_high`, `saber_block_l`, `saber_block_r`, `saber_deflect_l`, `saber_deflect_r`, `saber_deflect_high` |
 | The Force | `force_push` (palm thrust, peak 0.40 s), `force_pull` (reach, close the fist at 0.45 s, pull) |
 | Shared with the troopers | deaths (`die`, headshots, `die_back`, `die_run`, the four blasts, the five lightsaber endings), hit reactions, roll to kneel, climb, mantle, vault, dives, get-ups, prone, cover idles, head looks, neck roll, counting, beckon, tiptoe |
@@ -56,4 +65,4 @@ The trooper clips the Jedi does not have:
 - **The Force:** pushes two or more enemies in front of him, and pulls a lone distant shooter.
 - **Combat over:** holsters after 6 s without an enemy.
 
-**Uncompiled:** there is no Unreal Editor in this build environment.
+**Uncompiled:** there is no Unreal Editor in this build environment. On a Windows PC with Unreal Engine 5, run `python tools/unreal/build_characters.py --ue <UE folder> --project <project folder>`. It copies the packs and code, compiles, imports all three packs, runs the `DukeForge.Characters` automation test and writes a report.

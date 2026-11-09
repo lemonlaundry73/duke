@@ -12,7 +12,8 @@ ROLE=CFG.get('role','trooper'); SABER=BLC.get('kind')=='saber'
 JEDI_SKIP={'idle','patrol_look','walk','run','sprint','walk_limp','shoot','shoot_burst','shoot_hip','reload','crouch_shoot','kneel_shoot',
            'prone_shoot','suppress','cover_low_fire','cover_lean_fire_r','cover_lean_fire_l','mortar_load','radio_call','carry_crate',
            'crate_pickup','crate_putdown','check_credentials','inspect_freight','checkpoint_halt','attention','grenade_throw','stack_up',
-           'breach_clear','aim_up','aim_down','aim_left','aim_right','command_point','command_advance','stairs_up_aim'}
+           'breach_clear','aim_up','aim_down','aim_left','aim_right','command_point','command_advance','stairs_up_aim',
+           'melee','cover_low_idle','cover_high_idle'}   # rifle-butt strike and cover crouches are trooper moves
 SKIPPING=False; JEDI_PHASE=False
 FPS=30; bpy.context.scene.render.fps=FPS
 REST={pb.name:pb.bone.matrix_local.copy() for pb in P}
@@ -45,13 +46,19 @@ if SABER:
     # wrist targets in the weapon's own frame (where IK actually pulls each wrist)
     GWi=GW.inverted(); WRL=GWi@REST['ctrl_hand_r'].translation; WLL=GWi@REST['ctrl_hand_l'].translation
     print('saber grip: arm lengths',round(LR,3),round(LL,3),'wrists in hilt frame',[round(c,3) for c in WRL],[round(c,3) for c in WLL])
-def reach_clamp(G):
+TWO_HANDS=CFG.get('saber_hands',2)==2
+def reach_clamp(G,left_on=True):
     if not SABER: return G
     G=G.copy()
     for _ in range(8):
-        er=((G@WRL)-SHR).length-0.97*LR; el=((G@WLL)-SHL).length-0.97*LL; e=max(er,el); g=G.translation
-        if e<=0.002: break
-        tgt=(SHR+SHL)/2+V((0,-0.12,-0.30)); dv=(tgt-g); G.translation=g+dv.normalized()*min(e+0.004,dv.length)
+        wr_=G@WRL; wl_=G@WLL; er=(wr_-SHR).length-0.97*LR; el=(wl_-SHL).length-0.97*LL
+        if max(er,el)<=0.002: break
+        # out of reach: bring the wrist back toward its own shoulder along the same line (the arm extends, it does not
+        # fold into the body); a free left hand does not limit the hilt
+        if er>=el or not left_on: w_,sh_,L_=wr_,SHR,LR
+        else: w_,sh_,L_=wl_,SHL,LL
+        if not left_on and er<=0.002: break
+        tgt_=sh_+(w_-sh_).normalized()*(0.97*L_-0.003); G.translation=G.translation+(tgt_-w_)
     return G
 def ss(x): x=max(0,min(1,x)); return x*x*(3-2*x)
 def lerp(a,b,t): return a+(b-a)*t
@@ -80,9 +87,10 @@ GUN={
 }
 if SABER:
     # lightsaber: gun frame Z = blade. 'aim' = two-handed guard (blade up and forward), 'ready' = lowered saber
-    GUN['aim']=dict(gpos=(-0.03,-0.30,1.12),gyaw=-8,gpitch=-40,groll=0)
+    GUN['aim']=dict(CFG.get('saber_guard',dict(gpos=(-0.03,-0.30,1.12),gyaw=-8,gpitch=-40,groll=0)))
+    GUN['aim']['gpos']=tuple(GUN['aim']['gpos'])
     GUN['ready']=dict(gpos=(-0.16,-0.24,1.02),gyaw=10,gpitch=-120,groll=-10)
-    GUN['patrol']=GUN['ready']; GUN['port']=GUN['ready']; GUN['sprint']=dict(gpos=(-0.20,-0.10,1.02),gyaw=0,gpitch=-150,groll=-20)
+    GUN['patrol']=GUN['ready']; GUN['port']=GUN['ready']; GUN['sprint']=dict(gpos=(-0.27,-0.14,1.04),gyaw=0,gpitch=-150,groll=-20)
 BASE=dict(px=0,py=0,pz=0,pp=0,pyw=0,pr=0, s1p=0,s1y=0,s1r=0, s2p=0,s2y=0,s2r=0, s3p=0,s3y=0,s3r=0, np_=0,ny=0,nr=0, hp=0,hy=0,hr=0,
           gdx=0,gdy=0,gdz=0,gdp=0,gdyaw=0,gdr=0, curlR=0.9,idxR=0.1,curlL=0.85, capeP=0,capeS=0, lhand=1.0, lpos=None)
 def stance(name,**kw):
@@ -92,6 +100,10 @@ def stance(name,**kw):
     if SABER:
         d.update(curlR=1.0,idxR=1.0,curlL=1.0,blade=1.0 if name=='aim' else 0.0)
         if name=='aim': d.update(pz=-0.06,pyw=14,s1y=-4,s2y=-5,s3y=-4,np_=2,nr=0,hp=3,hr=0,s1p=4,s2p=3,s3p=1)
+        if name=='aim' and CFG.get('saber_hands',2)==1:
+            # one-handed form: saber in the right hand, the left hand free and forward-out for balance (and the Force)
+            hl_=REST['hand_l'].copy(); hl_=M.Rotation(R(-35),4,'X')@hl_.to_3x3().to_4x4(); hl_.translation=REST['hand_l'].translation+V((0.06,-0.16,0.14))
+            d.update(handL_rel=hl_,handL_k=0.0,curlL=0.35)
     d.update(kw); return d
 FOOT0={s:REST[f'ctrl_foot_{s}'].copy() for s in 'lr'}
 ANK0={s:REST[f'foot_{s}'].translation.copy() for s in 'lr'}
@@ -121,7 +133,7 @@ def apply(d,feet=None,ball=None,frame=None):
     K.rot(P['neck_01'],d['np_'],d['ny'],d['nr']); K.rot(P['head'],d['hp'],d['hy'],d['hr'])
     g=d['gpos']; G=K.gun_matrix((g[0]+d['gdx'],g[1]+d['gdy'],g[2]+d['gdz']),d['gyaw']+d['gdyaw'],d['gpitch']+d['gdp'],d['groll']+d['gdr'])
     if d.get('gmat') is not None: G=d['gmat']          # explicit weapon matrix (torso-at-rest frame): saber swings, draw/holster
-    if SABER and not d.get('no_clamp'): G=reach_clamp(G)
+    if SABER and not d.get('no_clamp'): G=reach_clamp(G,left_on=(d.get('handL_rel') is None or d.get('handL_k',0.0)>0.5) and not d.get('lpos'))
     K.set_rest_space(P['ctrl_gun'],G)
     K.curl(ao,'r',d['curlR'],index=d['idxR']); K.curl(ao,'l',d['curlL'])
     if d.get('fingL') is not None: K.fingers(ao,'l',*d['fingL'])      # (index, middle, ring, pinky, thumb)
@@ -163,7 +175,7 @@ BELT=BLC.get('belt',{})
 def gmat(pos,blade,hint=(0,-1,0)):
     Z=V(blade).normalized(); Y=V(hint); Y=(Y-Z*Y.dot(Z)).normalized(); X=Y.cross(Z)
     m=M((X,Y,Z)).transposed().to_4x4(); m.translation=V(pos); return m
-BELT_REST=gmat(BELT.get('grip',(-0.205,-0.035,1.085)),BELT.get('blade',(0,-0.17,0.98)),(0,-1,0))
+BELT_REST=gmat(BELT.get('grip',(-0.235,-0.035,1.085)),BELT.get('blade',(0,-0.17,0.98)),(0,-1,0))
 def belt_world():
     bpy.context.view_layer.update(); return P['pelvis'].matrix@REST['pelvis'].inverted()@BELT_REST
 STATS={}

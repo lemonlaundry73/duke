@@ -344,7 +344,7 @@ void FDukeTrooperAnimProxy::ApplyLook(FPoseContext& Out) const
 		for (const TCHAR* Bone : { TEXT("spine_03"), TEXT("neck_01"), TEXT("head") })
 		{
 			const int32 Mesh = BC.GetPoseBoneIndexForBoneName(Bone); if (Mesh == INDEX_NONE) continue;
-			const FCompactPoseBoneIndex B = BC.MakeCompactPoseIndex(FMeshPoseBoneIndex(Mesh)); if (B == INDEX_NONE) continue;
+			const FCompactPoseBoneIndex B = BC.MakeCompactPoseIndex(FMeshPoseBoneIndex(Mesh)); if (!B.IsValid()) continue;
 			const FQuat Delta = N.Pose[B].GetRotation().Inverse() * L.Pose[B].GetRotation();
 			Out.Pose[B].SetRotation((Out.Pose[B].GetRotation() * FQuat::Slerp(FQuat::Identity, Delta, W)).GetNormalized());
 		}
