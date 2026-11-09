@@ -202,6 +202,22 @@ for it in range(16):
     s_=np.zeros_like(Wt); np.add.at(s_,ev[:,0],Wt[ev[:,1]]); np.add.at(s_,ev[:,1],Wt[ev[:,0]])
     nw=0.5*Wt+0.5*s_/np.maximum(deg,1); nw*=allowed; nw/=np.maximum(nw.sum(1,keepdims=True),1e-12)
     Wt=np.where(soft[:,None]|(it<4),nw,Wt)
+# helmet: a rigid shell. On fused meshes the faceplate/cheeks/chin sit in the body island below the head-bone
+# cut-off and would follow the chest, tearing the helmet along the visor when the head turns. Everything outside the
+# neck above the helmet rim (tilted: low at the chin, high at the nape) goes 100% to head; the neck seal between the
+# collar and the rim blends spine_03 -> neck_01 -> head by height so the neck bends instead of the helmet.
+if 'head' in idx and 'neck_01' in idx and 'spine_03' in idx and CFG.get('rigid_helmet',True):
+    hj=np.array(J['head'][0]); nj=np.array(J['neck_01'][0])
+    r=np.hypot(x-hj[0],y-hj[1]); dyn=y-hj[1]
+    zr=hj[2]+0.004+0.196*dyn                    # rim plane: ~2.5 cm below the head joint at the chin, ~3 cm above at the nape
+    NECKR=0.095
+    helm=(z>zr)&(r>NECKR)&(np.abs(x-hj[0])<0.14)&(dyn>-0.19)&(dyn<0.16)&~cape
+    seal=(r<=NECKR)&(z>nj[2]-0.06)&~cape&~helm
+    ssv=lambda v: np.clip(v,0,1)**2*(3-2*np.clip(v,0,1))
+    Wt[helm]=0; Wt[helm,idx['head']]=1.0
+    hd=ssv((z[seal]-zr[seal]+0.01)/0.04); sp=1-ssv((z[seal]-(nj[2]-0.06))/0.06)
+    Wt[seal]=0; Wt[seal,idx['spine_03']]=sp; Wt[seal,idx['neck_01']]=(1-sp)*(1-hd); Wt[seal,idx['head']]=(1-sp)*hd
+    print('rigid helmet verts',int(helm.sum()),'neck seal verts',int(seal.sum()))
 # keep top 4
 o4=np.argsort(-Wt,1)[:,4:]; np.put_along_axis(Wt,o4,0,1); Wt[Wt<0.01]=0; Wt/=np.maximum(Wt.sum(1,keepdims=True),1e-12)
 print('unweighted verts',(Wt.sum(1)<0.5).sum())
