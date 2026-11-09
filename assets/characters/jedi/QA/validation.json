@@ -16,18 +16,17 @@
  ],
  "fbx_meshes": {
   "SK_Trooper": {
-   "tris": 84990,
-   "groups": 22,
+   "tris": 85002,
+   "groups": 52,
    "mats": [
     "MI_Trooper"
    ]
   },
   "SK_Trooper_Blaster": {
-   "tris": 1620,
+   "tris": 14072,
    "groups": 2,
    "mats": [
     "MI_Blaster",
-    "MI_Blaster.001",
     "M_SaberBlade_Core",
     "M_SaberBlade_Glow"
    ]
@@ -112,6 +111,16 @@
    ],
    "curves": 669
   },
+  "A_Trooper_boxing.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     517
+    ]
+   ],
+   "curves": 669
+  },
   "A_Trooper_climb_ladder.fbx": {
    "actions": 1,
    "frames": [
@@ -132,26 +141,6 @@
    ],
    "curves": 669
   },
-  "A_Trooper_cover_high_idle.fbx": {
-   "actions": 1,
-   "frames": [
-    [
-     1,
-     85
-    ]
-   ],
-   "curves": 669
-  },
-  "A_Trooper_cover_low_idle.fbx": {
-   "actions": 1,
-   "frames": [
-    [
-     1,
-     79
-    ]
-   ],
-   "curves": 669
-  },
   "A_Trooper_crouch_aim.fbx": {
    "actions": 1,
    "frames": [
@@ -162,12 +151,32 @@
    ],
    "curves": 669
   },
+  "A_Trooper_crouch_idle.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     89
+    ]
+   ],
+   "curves": 669
+  },
   "A_Trooper_crouch_walk.fbx": {
    "actions": 1,
    "frames": [
     [
      1,
-     34
+     61
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_dance.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     31
     ]
    ],
    "curves": 669
@@ -228,6 +237,16 @@
     [
      1,
      115
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_die_fall.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
     ]
    ],
    "curves": 669
@@ -312,12 +331,132 @@
    ],
    "curves": 669
   },
+  "A_Trooper_drive.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     51
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_execution_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     517
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_execution_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     589
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_execution_killed_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     333
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_execution_killed_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     116
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_fall_bounce.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     692
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_fight_idle_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     986
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_fight_idle_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     531
+    ]
+   ],
+   "curves": 669
+  },
   "A_Trooper_flinch_duck.fbx": {
    "actions": 1,
    "frames": [
     [
      1,
      39
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_force_cast_enter.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     17
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_force_cast_exit.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     14
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_force_cast_hold.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     63
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_force_cast_release.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     16
     ]
    ],
    "curves": 669
@@ -338,6 +477,46 @@
     [
      1,
      40
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_force_telekinesis_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     581
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_force_telekinesis_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     98
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_force_telekinesis_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     426
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_force_telekinesis_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     206
     ]
    ],
    "curves": 669
@@ -372,12 +551,32 @@
    ],
    "curves": 669
   },
+  "A_Trooper_gun_fu.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     399
+    ]
+   ],
+   "curves": 669
+  },
   "A_Trooper_hit_back.fbx": {
    "actions": 1,
    "frames": [
     [
      1,
      22
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_hit_chest.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     11
     ]
    ],
    "curves": 669
@@ -398,6 +597,16 @@
     [
      1,
      22
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_hit_head.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     14
     ]
    ],
    "curves": 669
@@ -437,7 +646,27 @@
    "frames": [
     [
      1,
-     121
+     76
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_idle_talking.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     89
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_interact.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     61
     ]
    ],
    "curves": 669
@@ -447,7 +676,27 @@
    "frames": [
     [
      1,
-     28
+     93
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_kick_front.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     304
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_kick_roundhouse.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     324
     ]
    ],
    "curves": 669
@@ -458,6 +707,46 @@
     [
      1,
      91
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_knife_fight.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     667
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_knockout_loser_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     378
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_knockout_loser_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     146
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_knockout_winner.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     582
     ]
    ],
    "curves": 669
@@ -552,16 +841,6 @@
    ],
    "curves": 669
   },
-  "A_Trooper_melee.fbx": {
-   "actions": 1,
-   "frames": [
-    [
-     1,
-     28
-    ]
-   ],
-   "curves": 669
-  },
   "A_Trooper_neck_roll.fbx": {
    "actions": 1,
    "frames": [
@@ -578,6 +857,216 @@
     [
      1,
      181
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pickup_table.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     26
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_fight.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     883
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_fight_b.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     839
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_heavy_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     38
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_heavy_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     1433
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_heavy_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     83
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_heavy_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     23
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_heavy_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     83
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_light_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_light_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     251
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_light_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     71
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     41
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     256
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     133
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     58
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     453
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_06.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     91
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_07.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     81
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_08.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     68
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_09.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     21
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_pistol_medium_10.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     191
     ]
    ],
    "curves": 669
@@ -602,6 +1091,316 @@
    ],
    "curves": 669
   },
+  "A_Trooper_punch_cross.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     31
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_punch_jab.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     27
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_push.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     81
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_repair_kneeling.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     157
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_fight.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     877
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_heavy_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     81
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_heavy_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     86
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_heavy_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     23
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_heavy_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     96
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_heavy_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     221
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_heavy_06.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     786
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_light_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     58
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_light_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     123
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_light_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     71
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_light_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     26
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_light_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     123
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_light_06.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     106
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_light_07.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     62
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_medium_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     53
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_medium_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     118
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_medium_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     116
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_medium_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     61
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_medium_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     23
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_medium_06.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     178
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_medium_07.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     168
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_medium_08.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     336
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rifle_medium_09.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     68
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rocket_launcher_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     386
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rocket_launcher_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     21
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_rocket_launcher_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     309
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_roll.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     45
+    ]
+   ],
+   "curves": 669
+  },
   "A_Trooper_roll_to_kneel.fbx": {
    "actions": 1,
    "frames": [
@@ -617,7 +1416,7 @@
    "frames": [
     [
      1,
-     22
+     29
     ]
    ],
    "curves": 669
@@ -812,6 +1611,16 @@
    ],
    "curves": 669
   },
+  "A_Trooper_shotgun_fight.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     754
+    ]
+   ],
+   "curves": 669
+  },
   "A_Trooper_signal_halt.fbx": {
    "actions": 1,
    "frames": [
@@ -832,12 +1641,892 @@
    ],
    "curves": 669
   },
+  "A_Trooper_sit_down.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     40
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sit_idle.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     51
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sit_talking.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     89
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sit_up.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     32
+    ]
+   ],
+   "curves": 669
+  },
   "A_Trooper_sprint.fbx": {
    "actions": 1,
    "frames": [
     [
      1,
-     20
+     21
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_blaster_fight.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     703
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_bounty_hunter_idle_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     280
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_bounty_hunter_idle_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     108
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_bounty_hunter_idle_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     30
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_bounty_hunter_idle_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     32
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_bounty_hunter_idle_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     221
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_bounty_hunter_idle_06.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     51
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_bounty_hunter_idle_07.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     91
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_choke_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     223
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_choke_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     249
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_choke_victim.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     525
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_lightning.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     822
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_raise_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     150
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_raise_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     74
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_raise_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     49
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_raise_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     66
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_slam_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     114
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_slam_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     82
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_slam_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     145
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_force_slam_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     70
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_hello_there_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     259
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_hello_there_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     61
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_i_am_your_father_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     122
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_i_am_your_father_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     26
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_i_am_your_father_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     19
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_i_am_your_father_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     131
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_i_am_your_father_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     45
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_i_am_your_father_06.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     45
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_jedi_attack.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     619
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_missile_hit_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     374
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_missile_hit_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     248
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_passing_checkpoint_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     370
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_passing_checkpoint_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     328
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_passing_checkpoint_wookiee_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     517
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_passing_checkpoint_wookiee_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     108
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_passing_checkpoint_wookiee_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     274
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_accident_a_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     257
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_accident_a_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     402
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_accident_a_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     153
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_accident_b_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     559
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_accident_b_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     156
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_and_force_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     526
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_and_force_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     107
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_fight_force_slam_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     696
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_fight_force_slam_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     239
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_ignite_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     103
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_ignite_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     148
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_ignite_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     99
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_ignite_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     74
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_ignite_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     82
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_saber_moves.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     690
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_check_comms_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     152
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_check_comms_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     49
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_check_comms_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     34
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_check_comms_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     24
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_check_comms_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     103
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_check_comms_06.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     74
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_checking_papers_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     400
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_checking_papers_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     255
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_checking_papers_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     70
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_checking_papers_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     156
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_checking_papers_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     68
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_guard_tower_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     135
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_guard_tower_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     68
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_guard_tower_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     154
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_guard_tower_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     112
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_guard_tower_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     66
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_idle_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     114
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_idle_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     160
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_idle_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     66
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_idle_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     17
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sw_trooper_patrol.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     1189
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_attack.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     47
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_fight.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     869
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     51
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle_light_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     73
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle_light_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     143
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle_light_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     116
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle_light_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     83
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle_medium_01.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     236
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle_medium_02.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     143
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle_medium_03.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     131
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle_medium_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     308
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_sword_idle_medium_05.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     256
     ]
    ],
    "curves": 669
@@ -862,12 +2551,42 @@
    ],
    "curves": 669
   },
+  "A_Trooper_turn_l180.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     203
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_turn_l180_04.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     141
+    ]
+   ],
+   "curves": 669
+  },
   "A_Trooper_turn_l90.fbx": {
    "actions": 1,
    "frames": [
     [
      1,
-     25
+     243
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_turn_r180.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     92
     ]
    ],
    "curves": 669
@@ -877,7 +2596,7 @@
    "frames": [
     [
      1,
-     25
+     21
     ]
    ],
    "curves": 669
@@ -897,7 +2616,17 @@
    "frames": [
     [
      1,
-     66
+     41
+    ]
+   ],
+   "curves": 669
+  },
+  "A_Trooper_walk_formal.fbx": {
+   "actions": 1,
+   "frames": [
+    [
+     1,
+     41
     ]
    ],
    "curves": 669
@@ -942,16 +2671,17 @@
   "beckon",
   "climb_ladder",
   "count_five",
-  "cover_high_idle",
-  "cover_low_idle",
   "crouch_aim",
+  "crouch_idle",
   "crouch_walk",
+  "dance",
   "death_explosion",
   "death_explosion_arm",
   "death_explosion_armleg",
   "death_explosion_leg",
   "die",
   "die_back",
+  "die_fall",
   "die_headshot",
   "die_headshot_back",
   "die_run",
@@ -960,19 +2690,28 @@
   "drag_rescuer",
   "drag_wounded",
   "draw_saber",
+  "drive",
   "flinch_duck",
+  "force_cast_enter",
+  "force_cast_exit",
+  "force_cast_hold",
+  "force_cast_release",
   "force_pull",
   "force_push",
   "getup_back",
   "getup_front",
   "go_prone",
   "hit_back",
+  "hit_chest",
   "hit_foot",
   "hit_front",
+  "hit_head",
   "hit_left",
   "hit_right",
   "holster_saber",
   "idle",
+  "idle_talking",
+  "interact",
   "jump",
   "kneel_aim",
   "look_around",
@@ -984,11 +2723,16 @@
   "look_up",
   "mantle",
   "medic_treat",
-  "melee",
   "neck_roll",
   "patrol_look",
+  "pickup_table",
   "prone_aim",
   "prone_crawl",
+  "punch_cross",
+  "punch_jab",
+  "push",
+  "repair_kneeling",
+  "roll",
   "roll_to_kneel",
   "run",
   "run_stop",
@@ -1012,13 +2756,23 @@
   "saber_thrust",
   "signal_halt",
   "signal_moveup",
+  "sit_down",
+  "sit_idle",
+  "sit_talking",
+  "sit_up",
   "sprint",
+  "sword_attack",
+  "sword_idle",
   "tiptoe_peek",
   "tiptoe_walk",
+  "turn_l180",
+  "turn_l180_04",
   "turn_l90",
+  "turn_r180",
   "turn_r90",
   "vault",
   "walk",
+  "walk_formal",
   "walk_limp",
   "wounded_crawl",
   "wounded_down"
