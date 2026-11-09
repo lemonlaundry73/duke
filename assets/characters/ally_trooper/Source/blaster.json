@@ -9,7 +9,7 @@
  ],
  "hold": [
   0,
-  0.07,
+  0.02,
   -0.015
  ],
  "fore": [
@@ -22,5 +22,5 @@
   0.495,
   0.057
  ],
- "note": "Source FBX coordinates after Blender import: Y = barrel (muzzle +Y), Z = up. grip = pistol-grip centre, hold = left hand on the handguard just behind the vertical foregrip (the foregrip itself is 26 cm ahead of the grip: beyond the reach of the trooper stances), muzzle = bore at the suppressor tip. Read off a gridded side render."
+ "note": "Source FBX coordinates after Blender import: Y = barrel (muzzle +Y), Z = up. grip = pistol-grip centre, hold = left hand on the handguard on the handguard 17 cm ahead of the pistol grip (the spacing the trooper stances are built on) (the foregrip itself is 26 cm ahead of the grip: beyond the reach of the trooper stances), muzzle = bore at the suppressor tip. Read off a gridded side render."
 }

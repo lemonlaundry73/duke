@@ -1,0 +1,14 @@
+{
+ "name": "Alliance Trooper (Phase II armor)",
+ "role": "trooper",
+ "faction": "alliance",
+ "unreal_root": "/Game/DukeForge/Characters/AllyTrooper",
+ "weapon_kind": "blaster",
+ "blade_color": null,
+ "bolt_color": [
+  0.15,
+  0.45,
+  1.0
+ ],
+ "placeholder_weapon": false
+}

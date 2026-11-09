@@ -1,0 +1,231 @@
+[
+ {
+  "clip": "saber_death_arm",
+  "t": 0.07,
+  "style": "saber",
+  "pieces": [
+   {
+    "bone": "upperarm_r",
+    "at": 0.5,
+    "region": "upperarm_r",
+    "side": "child",
+    "motion": {
+     "kind": "sim",
+     "vel": [
+      -0.6,
+      0.4,
+      0.3
+     ],
+     "spin": [
+      150,
+      60,
+      -260
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "clip": "saber_death_leg",
+  "t": 0.07,
+  "style": "saber",
+  "pieces": [
+   {
+    "bone": "thigh_l",
+    "at": 0.45,
+    "region": "thigh_l",
+    "side": "child",
+    "motion": {
+     "kind": "topple",
+     "delay": 0.0,
+     "dur": 0.65,
+     "axis": [
+      0,
+      1,
+      0
+     ],
+     "angle": -80,
+     "push": [
+      0.05,
+      0,
+      0
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "clip": "saber_death_head",
+  "t": 0.07,
+  "style": "saber",
+  "pieces": [
+   {
+    "bone": "neck_01",
+    "at": 0.45,
+    "region": null,
+    "side": "child",
+    "anchor": "head",
+    "motion": {
+     "kind": "sim",
+     "vel": [
+      0.3,
+      0.5,
+      1.4
+     ],
+     "spin": [
+      -300,
+      90,
+      120
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "clip": "saber_death_half",
+  "t": 0.07,
+  "style": "saber",
+  "pieces": [
+   {
+    "plane": "waist",
+    "side": "below",
+    "motion": {
+     "kind": "topple",
+     "delay": 0.45,
+     "dur": 0.75,
+     "axis": [
+      1,
+      0,
+      0
+     ],
+     "angle": -85,
+     "push": [
+      0,
+      0.05,
+      0
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "clip": "saber_death_diagonal",
+  "t": 0.07,
+  "style": "saber",
+  "pieces": [
+   {
+    "plane": "diagonal",
+    "side": "above",
+    "motion": {
+     "kind": "slide",
+     "delay": 0.0,
+     "slide": 0.55,
+     "dur": 0.55,
+     "then": "sim",
+     "spin": [
+      40,
+      -30,
+      160
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "clip": "death_explosion_arm",
+  "t": 0.04,
+  "style": "blast",
+  "pieces": [
+   {
+    "bone": "upperarm_l",
+    "at": 0.06,
+    "region": "upperarm_l",
+    "side": "child",
+    "motion": {
+     "kind": "sim",
+     "vel": [
+      -2.5,
+      0.8,
+      2.2
+     ],
+     "spin": [
+      700,
+      300,
+      -500
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "clip": "death_explosion_leg",
+  "t": 0.04,
+  "style": "blast",
+  "pieces": [
+   {
+    "bone": "thigh_r",
+    "at": 0.06,
+    "region": "thigh_r",
+    "side": "child",
+    "motion": {
+     "kind": "sim",
+     "vel": [
+      -1.2,
+      -0.4,
+      1.2
+     ],
+     "spin": [
+      -600,
+      200,
+      400
+     ]
+    }
+   }
+  ]
+ },
+ {
+  "clip": "death_explosion_armleg",
+  "t": 0.04,
+  "style": "blast",
+  "pieces": [
+   {
+    "bone": "upperarm_r",
+    "at": 0.06,
+    "region": "upperarm_r",
+    "side": "child",
+    "motion": {
+     "kind": "sim",
+     "vel": [
+      -1.6,
+      -1.2,
+      1.6
+     ],
+     "spin": [
+      500,
+      -400,
+      300
+     ]
+    }
+   },
+   {
+    "bone": "thigh_l",
+    "at": 0.06,
+    "region": "thigh_l",
+    "side": "child",
+    "motion": {
+     "kind": "sim",
+     "vel": [
+      1.6,
+      -0.8,
+      1.2
+     ],
+     "spin": [
+      -400,
+      300,
+      -500
+     ]
+    }
+   }
+  ]
+ }
+]
