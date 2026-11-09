@@ -3,6 +3,7 @@
 #include "DukeTrooper.h"
 #include "DukeBlasterBolt.h"
 #include "DukeDamageTypes.h"
+#include "DukeCosmicSimulation.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -192,11 +193,13 @@ void ADukeSmartNPC::BeginPlay()
 	LootableEarrings = { TEXT("Kyber-Flake Stud"), TEXT("Krayt-Bone Hoop") };
 	if (!AssignedZone) AssignedZone = ADukeTerritoryZone::ZoneAt(GetWorld(), GetActorLocation());
 	if (UDukeGalaxyDirector* D = GetWorld()->GetSubsystem<UDukeGalaxyDirector>()) D->Register(this);
+	if (UDukeCosmicDirector* C = GetWorld()->GetSubsystem<UDukeCosmicDirector>()) C->Register(this);
 	Hour = FMath::RandRange(0, 23);
 }
 void ADukeSmartNPC::EndPlay(const EEndPlayReason::Type Reason)
 {
 	if (UWorld* W = GetWorld()) if (UDukeGalaxyDirector* D = W->GetSubsystem<UDukeGalaxyDirector>()) D->Unregister(this);
+	if (UWorld* W = GetWorld()) if (UDukeCosmicDirector* C = W->GetSubsystem<UDukeCosmicDirector>()) C->Unregister(this);
 	Super::EndPlay(Reason);
 }
 // Daily schedule: one step per in-game hour (sleep 0-6, eat, work 8-16, errands, chores, eat, sleep).
@@ -233,6 +236,7 @@ void ADukeSmartNPC::Die(AActor* Killer)
 	for (ADukeSmartNPC* C : Family.Children) if (C) Kin.Add(C);
 	for (ADukeSmartNPC* C : Family.Cousins) if (C) Kin.Add(C);
 	for (ADukeSmartNPC* K : Kin) K->NotifyFamilyMurdered(this, Killer);
+	if (ADukeJediPlayer* P = Cast<ADukeJediPlayer>(Killer)) P->Notoriety += bIsEnemyFaction ? 1.f : 10.f;   // killing citizens is remembered
 	GetMesh()->SetSimulatePhysics(true);   // limp
 	SetLifeSpan(120.f);
 }
@@ -242,6 +246,62 @@ void ADukeSmartNPC::NotifyFamilyMurdered(ADukeSmartNPC* SlainRelative, AActor* K
 	CurrentState = EDukeNpcState::SeekingRevenge; TargetPlayerRef = Killer;
 	Family.ActiveClanName = FString::Printf(TEXT("The Blood Vengeance of %s"), *Family.FamilyLastName);
 	for (ADukeSmartNPC* Cousin : Family.Cousins) if (Cousin) Cousin->NotifyFamilyMurdered(SlainRelative, Killer);
+}
+// one cosmic year: aging, sickness, death of old age with the estate passing to the children
+void ADukeSmartNPC::ProcessSicknessAndGenerationalPassing()
+{
+	if (CurrentState == EDukeNpcState::Dead) return;
+	++AgeInTicks;
+	const float SickChance = AgeInTicks > 60 ? 0.25f : 0.03f;
+	if (FMath::FRand() < SickChance) Vitality -= FMath::FRandRange(10.f, 35.f);
+	else Vitality = FMath::Min(100.f, Vitality + 5.f);
+	if (Vitality > 0.f && AgeInTicks < 95) return;
+	TArray<ADukeSmartNPC*> Heirs;
+	for (ADukeSmartNPC* C : ChildrenReferences) if (C && C->CurrentState != EDukeNpcState::Dead) Heirs.Add(C);
+	if (Heirs.Num()) { const float Share = AccumulatedCredits / Heirs.Num(); for (ADukeSmartNPC* H : Heirs) H->AccumulatedCredits += Share; }
+	else if (Family.Spouse) Family.Spouse->AccumulatedCredits += AccumulatedCredits;
+	if (CurrentResidencePlanet && Heirs.Num())   // property passes to the eldest heir
+		for (FDukeRealEstateDeed& D : CurrentResidencePlanet->PropertyLedger) if (D.Owner.Get() == this) D.Owner = Heirs[0];
+	AccumulatedCredits = 0.f;
+	UE_LOG(LogTemp, Log, TEXT("[Cosmic] %s %s passed away at %d; estate to %d heir(s)"), *GetName(), *Family.FamilyLastName, AgeInTicks, Heirs.Num());
+	CurrentState = EDukeNpcState::Dead;   // natural death: no revenge, no notoriety
+	if (Family.Spouse && Family.Spouse->Family.Spouse == this) Family.Spouse->Family.Spouse = nullptr;
+	GetMesh()->SetSimulatePhysics(true);
+	SetLifeSpan(60.f);
+}
+// a child inherits a blend of the parents' style, faith and wealth; 2% are born Force-sensitive
+ADukeSmartNPC* ADukeSmartNPC::ProcreateAndPassAestheticStyle(ADukeSmartNPC* Partner)
+{
+	if (!Partner || CurrentState == EDukeNpcState::Dead || Partner->CurrentState == EDukeNpcState::Dead) return nullptr;
+	FActorSpawnParameters SP; SP.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	ADukeSmartNPC* Child = GetWorld()->SpawnActor<ADukeSmartNPC>(GetClass(), GetActorLocation() + GetActorRightVector() * 80.f, GetActorRotation(), SP);
+	if (!Child) return nullptr;
+	Child->AgeInTicks = 0;
+	Child->Aesthetics = FDukeAestheticProfile::Inherit(Aesthetics, Partner->Aesthetics);
+	Child->Religion = FMath::RandBool() ? Religion : Partner->Religion;
+	Child->Morality = FMath::RandBool() ? Morality : Partner->Morality;
+	Child->Family.FamilyLastName = Family.FamilyLastName;
+	Child->HomeLocation = HomeLocation; Child->CurrentResidencePlanet = CurrentResidencePlanet; Child->bIsEnemyFaction = bIsEnemyFaction;
+	const float Gift = AccumulatedCredits * 0.1f; AccumulatedCredits -= Gift; Child->AccumulatedCredits = Gift;
+	if (FMath::FRand() < ForceSensitiveBirthChance || (IsForceSensitive() && Partner->IsForceSensitive() && FMath::FRand() < 0.5f))
+	{
+		Child->ForceAlignment = EDukeForceAlignment::UntrainedWildTalent;
+		UE_LOG(LogTemp, Log, TEXT("[Cosmic] a Force-sensitive child is born to the %s family"), *Family.FamilyLastName);
+	}
+	ChildrenReferences.Add(Child); Partner->ChildrenReferences.Add(Child);
+	Family.Children.Add(Child); Partner->Family.Children.Add(Child);
+	return Child;
+}
+bool ADukeSmartNPC::ReactToTyranny(AActor* Tyrant)
+{
+	if (!Tyrant || CurrentState == EDukeNpcState::Dead) return false;
+	if (Morality == EDukeMorality::CriminalThug || Morality == EDukeMorality::SyndicateKingpin || Morality == EDukeMorality::TyrantOverlord) return false;
+	if (Morality == EDukeMorality::SaintedCitizen && FMath::FRand() < 0.3f) { CurrentState = EDukeNpcState::CombatDuty; TargetPlayerRef = Tyrant; return false; }
+	CurrentState = EDukeNpcState::RunningErrands; TargetPlayerRef = nullptr;   // flee: head away from the tyrant
+	const FVector Away = (GetActorLocation() - Tyrant->GetActorLocation()).GetSafeNormal2D();
+	if (HomeLocation && FVector::DotProduct(HomeLocation->GetActorLocation() - GetActorLocation(), Away) > 0.f) return true;   // home lies away: go there
+	AddMovementInput(Away, 1.f);
+	return true;
 }
 TArray<FString> ADukeSmartNPC::LootAndStripEarrings() { TArray<FString> Out = LootableEarrings; LootableEarrings.Empty(); return Out; }
 
@@ -413,11 +473,43 @@ void ADukeJediPlayer::OnInteract()
 	TArray<AActor*> Near; GetOverlappingActors(Near, ADukeWeaponBase::StaticClass());
 	ADukeWeaponBase* Found = nullptr;
 	for (AActor* A : Near) if (ADukeWeaponBase* W = Cast<ADukeWeaponBase>(A)) if (W->GetOwner() != this) { Found = W; break; }
-	if (!Found) return;
+	if (!Found) { SenseAndRecruitForceSensitive(); return; }   // nothing to pick up: reach out with the Force
 	if (CurrentEquippedWeapon && CurrentEquippedWeapon != HolsteredSaber) CurrentEquippedWeapon->DropWeapon();
 	else if (CurrentEquippedWeapon == HolsteredSaber && HolsteredSaber) { HolsteredSaber->bIsBladeActive = false; HolsteredSaber->HolsterToBelt(this); }
 	CurrentEquippedWeapon = Found; Found->SetOwner(this); Found->EquipToHand(this);
 	if (ADukeLightsaberWeapon* S = Cast<ADukeLightsaberWeapon>(Found)) S->bIsBladeActive = true;
+}
+ADukeSmartNPC* ADukeJediPlayer::SenseAndRecruitForceSensitive()
+{
+	ADukeSmartNPC* Best = nullptr; float BestD = TNumericLimits<float>::Max(); int32 Sensed = 0;
+	for (TActorIterator<ADukeSmartNPC> It(GetWorld()); It; ++It)
+	{
+		ADukeSmartNPC* N = *It;
+		if (N->CurrentState == EDukeNpcState::Dead || !N->IsForceSensitive() || N->bIsRecruited) continue;
+		const float D = FVector::DistSquared(N->GetActorLocation(), GetActorLocation());
+		if (D > ForceSenseRadius * ForceSenseRadius) continue;
+		++Sensed;
+		if (D < BestD) { Best = N; BestD = D; }
+	}
+	if (!Best) { DukeScreenMessage(TEXT("You reach out with the Force... nothing answers."), FColor::Cyan); return nullptr; }
+	// a feared Jedi is refused by the gentle, and Sith-leaning talents only follow a feared one
+	const bool bFeared = Notoriety >= 50.f;
+	const bool bDark = Best->ForceAlignment == EDukeForceAlignment::SithAcolyteCandidate || Best->ForceAlignment == EDukeForceAlignment::ImperialInquisitorAsset;
+	if (bFeared != bDark && Best->ForceAlignment != EDukeForceAlignment::UntrainedWildTalent)
+	{
+		DukeScreenMessage(TEXT("A Force-sensitive senses your intent and refuses you."), FColor::Yellow);
+		return nullptr;
+	}
+	Best->bIsRecruited = true; Best->bIsEnemyFaction = false; Best->TargetPlayerRef = this;
+	if (Best->ForceAlignment == EDukeForceAlignment::UntrainedWildTalent)
+		Best->ForceAlignment = bFeared ? EDukeForceAlignment::SithAcolyteCandidate : EDukeForceAlignment::JediOrderCandidate;
+	Recruits.Add(Best);
+	DukeScreenMessage(FString::Printf(TEXT("%s Force-sensitive%s nearby. One of the %s family joins you."), *FString::FromInt(Sensed), Sensed == 1 ? TEXT("") : TEXT("s"), *Best->Family.FamilyLastName), FColor::Cyan, 6.f);
+	return Best;
+}
+bool ADukeJediPlayer::BuyPropertyOn(ADukeSovereignPlanet* Planet, int32 DeedIndex)
+{
+	return Planet && Planet->BuyProperty(DeedIndex, this, WalletCredits);
 }
 void ADukeJediPlayer::OnHolster()
 {

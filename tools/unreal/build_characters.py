@@ -45,7 +45,7 @@ script = os.path.join(dst_py, 'duke_trooper_import.py')
 for p in PACKS:
     step('import_' + p, [editor, uproject, '-run=pythonscript', '-script=' + script + ' ' + os.path.join(proj, 'Import', 'characters', p), '-unattended', '-nosplash', '-nullrhi', '-stdout', '-FullStdOutLogOutput'])
 # 4. automation test
-rc, text = step('test', [editor, uproject, '-ExecCmds=Automation RunTests DukeForge.Characters;Quit', '-unattended', '-nosplash', '-nullrhi', '-stdout', '-FullStdOutLogOutput', '-testexit=Automation Test Queue Empty'])
+rc, text = step('test', [editor, uproject, '-ExecCmds=Automation RunTests DukeForge;Quit', '-unattended', '-nosplash', '-nullrhi', '-stdout', '-FullStdOutLogOutput', '-testexit=Automation Test Queue Empty'])
 report['test_passed'] = 'Result={Success}' in text and 'Result={Fail}' not in text
 json.dump(report, open(os.path.join(out, 'build_characters_report.json'), 'w'), indent=1)
 print('report:', os.path.join(out, 'build_characters_report.json'), '| test passed:', report['test_passed'])

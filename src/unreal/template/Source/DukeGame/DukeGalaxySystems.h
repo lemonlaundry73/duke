@@ -17,6 +17,7 @@
 #include "Components/SphereComponent.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "DukeCosmicSimulation.h"
 #include "DukeGalaxySystems.generated.h"
 
 class UInputMappingContext;
@@ -157,6 +158,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Loot") TArray<FString> LootAndStripEarrings();
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	UPROPERTY(EditAnywhere, Category = "Life AI") float Health = 60.f;
+	// ---- sovereign life (cosmic layer) ----
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sovereign") EDukeForceAlignment ForceAlignment = EDukeForceAlignment::None;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sovereign") EDukeMorality Morality = EDukeMorality::StandardHustler;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sovereign") FDukeAestheticProfile Aesthetics;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sovereign") float AccumulatedCredits = 150.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sovereign") float Vitality = 100.f;     // sickness wears it down
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sovereign") int32 AgeInTicks = 20;      // one cosmic heartbeat = one year
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sovereign") FString Religion = TEXT("Ancestral Krayt Belief");
+	UPROPERTY(BlueprintReadWrite, Category = "Sovereign") TArray<TObjectPtr<ADukeSmartNPC>> ChildrenReferences;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sovereign") TObjectPtr<ADukeSovereignPlanet> CurrentResidencePlanet;
+	UPROPERTY(EditAnywhere, Category = "Sovereign") float ForceSensitiveBirthChance = 0.02f;
+	UFUNCTION(BlueprintCallable, Category = "Sovereign") void ProcessSicknessAndGenerationalPassing();
+	UFUNCTION(BlueprintCallable, Category = "Sovereign") ADukeSmartNPC* ProcreateAndPassAestheticStyle(ADukeSmartNPC* Partner);
+	// a tyrant in the zone: ordinary citizens flee, the brave take up arms; returns true if this NPC fled
+	UFUNCTION(BlueprintCallable, Category = "Sovereign") bool ReactToTyranny(AActor* Tyrant);
+	bool IsForceSensitive() const { return ForceAlignment != EDukeForceAlignment::None; }
 private:
 	float ScheduleTimer = 0.f; int32 Hour = 6;
 	void Die(AActor* Killer);
@@ -238,6 +255,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat") TSubclassOf<ADukeLightsaberWeapon> SaberClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory") TObjectPtr<ADukeWeaponBase> CurrentEquippedWeapon;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory") TObjectPtr<ADukeLightsaberWeapon> HolsteredSaber;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Economy") float WalletCredits = 5000.f;
+	UPROPERTY(BlueprintReadWrite, Category = "Reputation") float Notoriety = 0.f;          // rises with killings, scares citizens
+	UPROPERTY(EditAnywhere, Category = "Force") float ForceSenseRadius = 1500.f;
+	UPROPERTY(BlueprintReadOnly, Category = "Force") TArray<TObjectPtr<ADukeSmartNPC>> Recruits;
+	// Force sense: find Force-sensitive NPCs nearby and invite the nearest to join; returns the recruit or null
+	UFUNCTION(BlueprintCallable, Category = "Force") ADukeSmartNPC* SenseAndRecruitForceSensitive();
+	UFUNCTION(BlueprintCallable, Category = "Economy") bool BuyPropertyOn(ADukeSovereignPlanet* Planet, int32 DeedIndex);
 	void OnStrike();
 	void OnInteract();
 	void OnHolster();
