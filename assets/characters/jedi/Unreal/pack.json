@@ -1,0 +1,14 @@
+{
+ "name": "Jamie (Jedi)",
+ "role": "jedi",
+ "faction": "alliance",
+ "unreal_root": "/Game/DukeForge/Characters/Jedi",
+ "weapon_kind": "saber",
+ "blade_color": [
+  0.1,
+  0.45,
+  1.0
+ ],
+ "bolt_color": null,
+ "placeholder_weapon": true
+}

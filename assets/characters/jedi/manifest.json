@@ -1,0 +1,2650 @@
+{
+ "asset": "jedi",
+ "title": "Jedi (Jamie), lightsaber",
+ "height_m": 1.83,
+ "bones": 66,
+ "clips": 88,
+ "records": [
+  {
+   "id": "jedi/Audio/S_AllyRifle_Fire_01.wav",
+   "name": "S_AllyRifle_Fire_01",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_AllyRifle_Fire_01.wav",
+   "bytes": 54970,
+   "sha256": "9784d1b48d398899ee6501ef0b4f8a6bb634b6996d64ee7f379916809ba51b84",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_AllyRifle_Fire_02.wav",
+   "name": "S_AllyRifle_Fire_02",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_AllyRifle_Fire_02.wav",
+   "bytes": 57644,
+   "sha256": "3605c945ef1f3f483dd790510690fc56e88546166e5dd7607658f41305990e0f",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_AllyRifle_Fire_03.wav",
+   "name": "S_AllyRifle_Fire_03",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_AllyRifle_Fire_03.wav",
+   "bytes": 57258,
+   "sha256": "eb14d943b10d36643fa6bd72bbe0f9297a92279214f7005ec4334ccedc0bc95e",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Blaster_Fire_01.wav",
+   "name": "S_Blaster_Fire_01",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Blaster_Fire_01.wav",
+   "bytes": 52844,
+   "sha256": "0a03c807728666b42884943d8c24868b02b7bbbe95c5956651d94c3726d75f35",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Blaster_Fire_02.wav",
+   "name": "S_Blaster_Fire_02",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Blaster_Fire_02.wav",
+   "bytes": 50570,
+   "sha256": "8bf76c1a2d969b52b05502328a6820e2d7904abb054dc3c7bf44ff3f727bfc01",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Blaster_Fire_03.wav",
+   "name": "S_Blaster_Fire_03",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Blaster_Fire_03.wav",
+   "bytes": 55330,
+   "sha256": "2670bcdacfa4c5f89dfda1bcfb9e1418eb1db6cc0b74918e139c455e01327d21",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Blaster_Impact.wav",
+   "name": "S_Blaster_Impact",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Blaster_Impact.wav",
+   "bytes": 33644,
+   "sha256": "a8bcef9aa2dc8815ee307dffc1f96aa3678edb1abc453e5b7bc99c4e2445105f",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Explosion.wav",
+   "name": "S_Explosion",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Explosion.wav",
+   "bytes": 211244,
+   "sha256": "81822525c45fdb3914a12f02355b132a477d17edd9a07fdf5ba5f0348e1f8293",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_Clash.wav",
+   "name": "S_Saber_Clash",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_Clash.wav",
+   "bytes": 96044,
+   "sha256": "b6bb541ba076aa735e9488b5dfd0ef76f63a4e7d3ed7c84b65e20748bab2e579",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_Clash_Short.wav",
+   "name": "S_Saber_Clash_Short",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_Clash_Short.wav",
+   "bytes": 43244,
+   "sha256": "7c4b6789cfe1f9590cf49ebce75cd018f92644b6db3ff47a36bf4681559eb70b",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_Hit.wav",
+   "name": "S_Saber_Hit",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_Hit.wav",
+   "bytes": 43244,
+   "sha256": "87c71dae2cc1b71162e1714feb25fe224888b70ecd422aa4471a19f91b2a061c",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_Hum.wav",
+   "name": "S_Saber_Hum",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_Hum.wav",
+   "bytes": 384044,
+   "sha256": "5eed76a2b3130a284b88173879fe9df78652eb3710e130f59b6b081b25306c17",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_Off.wav",
+   "name": "S_Saber_Off",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_Off.wav",
+   "bytes": 62652,
+   "sha256": "8dfea4abec80400d8da82020824071aa3e762b992120d91e3de00c29b0e30739",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_On.wav",
+   "name": "S_Saber_On",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_On.wav",
+   "bytes": 153644,
+   "sha256": "b3da32b811e4bce6a188ac69538b346b8ab0983f37df0c9903ad49e838db3c88",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_Swing.wav",
+   "name": "S_Saber_Swing",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_Swing.wav",
+   "bytes": 105644,
+   "sha256": "f34890305c3662c50b652185f2c8ab0e74e80b3fca087ddf15838a98e40b7ac7",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_Swing_01.wav",
+   "name": "S_Saber_Swing_01",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_Swing_01.wav",
+   "bytes": 105644,
+   "sha256": "f34890305c3662c50b652185f2c8ab0e74e80b3fca087ddf15838a98e40b7ac7",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_Swing_02.wav",
+   "name": "S_Saber_Swing_02",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_Swing_02.wav",
+   "bytes": 94328,
+   "sha256": "63d074793d6afa8ce74b9550b9ee9598bbc81259dd28fa4064965f3496fb1dc3",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Audio/S_Saber_Swing_03.wav",
+   "name": "S_Saber_Swing_03",
+   "type": "audio",
+   "path": "assets/characters/jedi/Audio/S_Saber_Swing_03.wav",
+   "bytes": 114826,
+   "sha256": "8f8c9ac8e7c2f518cd210e0f3300161878f4e787e072a6a1346d2e5f38188749",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/QA/anim_stats.json",
+   "name": "anim_stats",
+   "type": "data",
+   "path": "assets/characters/jedi/QA/anim_stats.json",
+   "bytes": 24334,
+   "sha256": "7dbd5b7eae888171b2216a9d534e459aa7c79d10403a6cafd533d46615b6b0a1",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/QA/body_qa.json",
+   "name": "body_qa",
+   "type": "data",
+   "path": "assets/characters/jedi/QA/body_qa.json",
+   "bytes": 20216,
+   "sha256": "0901b446ddffd07829546dfed3957cb5905c5fb66a0578951bafe60e00e7256d",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/QA/cut_variants.json",
+   "name": "cut_variants",
+   "type": "data",
+   "path": "assets/characters/jedi/QA/cut_variants.json",
+   "bytes": 1816,
+   "sha256": "ca5e029d3a9991e2e8f84f4e52cdb2e53bb7e75eb7ed45ba76f01d9a2fdb87fa",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/QA/cuts.json",
+   "name": "cuts",
+   "type": "data",
+   "path": "assets/characters/jedi/QA/cuts.json",
+   "bytes": 3018,
+   "sha256": "a74d26fbb3c4e42d1bc4046150c19f6968dad28baa69991cbb3287e750212e78",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/QA/drag_pair.json",
+   "name": "drag_pair",
+   "type": "data",
+   "path": "assets/characters/jedi/QA/drag_pair.json",
+   "bytes": 85,
+   "sha256": "0ae7c32b530596ec06262c325602da9419f20f88f5f1d144c999705d5d91ffc7",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/QA/ground_pass.json",
+   "name": "ground_pass",
+   "type": "data",
+   "path": "assets/characters/jedi/QA/ground_pass.json",
+   "bytes": 1563,
+   "sha256": "810898fdd9f4df189105d25dddff877668abc52be9f55a0d32f4f5e315d47b89",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/QA/ragdoll_report.json",
+   "name": "ragdoll_report",
+   "type": "data",
+   "path": "assets/characters/jedi/QA/ragdoll_report.json",
+   "bytes": 1355,
+   "sha256": "d6222ec425fe24bb766c8ca8718b80b74ea224048367ee0681cf73631e630507",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/QA/stretch.json",
+   "name": "stretch",
+   "type": "data",
+   "path": "assets/characters/jedi/QA/stretch.json",
+   "bytes": 6343,
+   "sha256": "42ee08dd97514cf33523efceed706a02842717c6fee720435f1ee50b6f2f2278",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/QA/validation.json",
+   "name": "validation",
+   "type": "data",
+   "path": "assets/characters/jedi/QA/validation.json",
+   "bytes": 14128,
+   "sha256": "cd56aa449162f526e6668de375251d28b381b4d470d72755d54b561663694656",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/README.md",
+   "name": "README",
+   "type": "doc",
+   "path": "assets/characters/jedi/README.md",
+   "bytes": 3954,
+   "sha256": "fef564f72f32b18cd2b32390e036b20ec07b1624411885757a24c0a9165dfa9c",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Source/blaster.json",
+   "name": "blaster",
+   "type": "source",
+   "path": "assets/characters/jedi/Source/blaster.json",
+   "bytes": 496,
+   "sha256": "68e537c55602b5de83b8b4c83838afdbd60da933e78eacda26492e5bef2efc0c",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "source (user upload)",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Source/character.json",
+   "name": "character",
+   "type": "source",
+   "path": "assets/characters/jedi/Source/character.json",
+   "bytes": 473,
+   "sha256": "280f16b34f2046405d11c95ba3bc46a057ff35209ff7e5fdc1dc9e18426b4331",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "source (user upload)",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Source/trooper_armor_source.glb",
+   "name": "trooper_armor_source",
+   "type": "source",
+   "path": "assets/characters/jedi/Source/trooper_armor_source.glb",
+   "bytes": 29005560,
+   "sha256": "4403bcf2ac659b243f050364df74a17169fdd599bfe02ef8fbf38a9d6b672d7e",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "user upload",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "source (user upload)",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_aim.fbx",
+   "name": "A_Trooper_aim",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_aim.fbx",
+   "bytes": 769308,
+   "sha256": "7598851a2604b3d17f241ba7339eaa860c6859d33e86570eb6f37577fea380b6",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_aim_strafe_l.fbx",
+   "name": "A_Trooper_aim_strafe_l",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_aim_strafe_l.fbx",
+   "bytes": 551708,
+   "sha256": "b886ae11d32557ab5aef11395a95ad6174039ffea962420d7c889737f4bb59dd",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_aim_strafe_r.fbx",
+   "name": "A_Trooper_aim_strafe_r",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_aim_strafe_r.fbx",
+   "bytes": 551708,
+   "sha256": "9e7cd628814f076be20ace156c183795a71f0c04203bb505091791ccc516d0cf",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_aim_walk_bwd.fbx",
+   "name": "A_Trooper_aim_walk_bwd",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_aim_walk_bwd.fbx",
+   "bytes": 575836,
+   "sha256": "dd872bd58bb3947f1e7d47c16334343fbd22a89120511fa7787b0ced036fca54",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_aim_walk_fwd.fbx",
+   "name": "A_Trooper_aim_walk_fwd",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_aim_walk_fwd.fbx",
+   "bytes": 569804,
+   "sha256": "4a6d33be04f7ceca07a2c054bd287e02b8d24a58a402e991f5dd0057fcc891f8",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_beckon.fbx",
+   "name": "A_Trooper_beckon",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_beckon.fbx",
+   "bytes": 726156,
+   "sha256": "22a55385e1af44e5cabb1584a3e97ee7db7ea4190ccca01e12d6f3cc85942f31",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_climb_ladder.fbx",
+   "name": "A_Trooper_climb_ladder",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_climb_ladder.fbx",
+   "bytes": 570428,
+   "sha256": "0f5c0ac4091d3585d1a0116c400e8b2c4298cace1145bdf099718071dbf54d25",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_count_five.fbx",
+   "name": "A_Trooper_count_five",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_count_five.fbx",
+   "bytes": 1008956,
+   "sha256": "2e6d3fd0e0c0bb21caf7b376dc0c67e60cbe5b4213f7479a393525e46557113c",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_cover_high_idle.fbx",
+   "name": "A_Trooper_cover_high_idle",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_cover_high_idle.fbx",
+   "bytes": 746060,
+   "sha256": "9b96cd087ea150e0f0419c8bdf3f96c002970d6d7b87c5e6ba73692fa9648002",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_cover_low_idle.fbx",
+   "name": "A_Trooper_cover_low_idle",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_cover_low_idle.fbx",
+   "bytes": 724636,
+   "sha256": "d7b26289caa12d553a7dd6e291922374f9974f1756620a8c4392b7c6d4cef4ac",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_crouch_aim.fbx",
+   "name": "A_Trooper_crouch_aim",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_crouch_aim.fbx",
+   "bytes": 768764,
+   "sha256": "59822eaa86fd650fc43f7aeb8d03b046fd3e36dc44a4f5dbbf00be00ee883b3b",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_crouch_walk.fbx",
+   "name": "A_Trooper_crouch_walk",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_crouch_walk.fbx",
+   "bytes": 558748,
+   "sha256": "b54ef00beb0f26e3ccbc8270f325480a08bfa394e3789a7099c531d9efd33139",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_death_explosion.fbx",
+   "name": "A_Trooper_death_explosion",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_death_explosion.fbx",
+   "bytes": 910044,
+   "sha256": "2e9ab3b53b28a8d27a06241dd10e0b1f0dae4f1d8d9efca89dc672371038caf2",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_death_explosion_arm.fbx",
+   "name": "A_Trooper_death_explosion_arm",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_death_explosion_arm.fbx",
+   "bytes": 908588,
+   "sha256": "c0188bd70255ca0d6f9700cde74f2b90df17e550b74594ca2bb91d1924070ffa",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_death_explosion_armleg.fbx",
+   "name": "A_Trooper_death_explosion_armleg",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_death_explosion_armleg.fbx",
+   "bytes": 904188,
+   "sha256": "46a4ff9404180ee42edadfce6937f23f4212dfee557d5797648a982fc12c96be",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_death_explosion_leg.fbx",
+   "name": "A_Trooper_death_explosion_leg",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_death_explosion_leg.fbx",
+   "bytes": 908876,
+   "sha256": "32a426750013868cdc294d0b805a76133b6d667abc03839c9e7bfde45909107f",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_die.fbx",
+   "name": "A_Trooper_die",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_die.fbx",
+   "bytes": 1126844,
+   "sha256": "e4c63c3cf0d67a7062b8c6d10460fb0bff48f7c5870483199367552aad51007d",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_die_back.fbx",
+   "name": "A_Trooper_die_back",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_die_back.fbx",
+   "bytes": 910588,
+   "sha256": "f5f38c36a61b17ca8b480f154d877725dcc57dd31c17618d1f2b27b45075615d",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_die_headshot.fbx",
+   "name": "A_Trooper_die_headshot",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_die_headshot.fbx",
+   "bytes": 903260,
+   "sha256": "07e2a1219b5934de4208cc131eb1d85f28b08917e88d905f792b4a0d73fa4045",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_die_headshot_back.fbx",
+   "name": "A_Trooper_die_headshot_back",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_die_headshot_back.fbx",
+   "bytes": 905692,
+   "sha256": "eb57965134b4301ca26b68375bc66461200aa9a844c2cc304274585b2b6702a0",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_die_run.fbx",
+   "name": "A_Trooper_die_run",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_die_run.fbx",
+   "bytes": 914668,
+   "sha256": "28321f259c35ef17ab76c4561dbe254e5a23565420a2e7e9fd45ad23a5b5a0d4",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_dive_left.fbx",
+   "name": "A_Trooper_dive_left",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_dive_left.fbx",
+   "bytes": 564908,
+   "sha256": "dde15225244da738f9f6cb3099eec3bcef3e4a576cd4a740647db5a75ff20b57",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_dive_right.fbx",
+   "name": "A_Trooper_dive_right",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_dive_right.fbx",
+   "bytes": 564716,
+   "sha256": "9af96d4e376eabef551fdcbfd3792e6e0a261c03bccb67930384591425e277ad",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_drag_rescuer.fbx",
+   "name": "A_Trooper_drag_rescuer",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_drag_rescuer.fbx",
+   "bytes": 556732,
+   "sha256": "eec155f5a3cc5c0c6cbcbf62daaa73f9be794d9c2c3e570558358509e47369db",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_drag_wounded.fbx",
+   "name": "A_Trooper_drag_wounded",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_drag_wounded.fbx",
+   "bytes": 564940,
+   "sha256": "0c7b2d92152f31fb2bf58982c1bf2cd39094cd0944e737f48bc713f210d1b0b7",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_draw_saber.fbx",
+   "name": "A_Trooper_draw_saber",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_draw_saber.fbx",
+   "bytes": 574940,
+   "sha256": "c9adc49edfcbf42e23d48f3934f7c04ad0a2692dbf5928d0ccdcd7a00ae76363",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_flinch_duck.fbx",
+   "name": "A_Trooper_flinch_duck",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_flinch_duck.fbx",
+   "bytes": 577660,
+   "sha256": "dfaad925358aea197beec1372961f40cb9497b3d0a02bd6454c58efcdf94489a",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_force_pull.fbx",
+   "name": "A_Trooper_force_pull",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_force_pull.fbx",
+   "bytes": 589260,
+   "sha256": "0028ef01543ff777d7879e2f6e5f5084cb11ca6c2ea201018ef39a8fea933009",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_force_push.fbx",
+   "name": "A_Trooper_force_push",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_force_push.fbx",
+   "bytes": 569852,
+   "sha256": "445c6c3cb86e962a09380f5bf68808a3fae1351ffd48991273e6679699c6d37a",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_getup_back.fbx",
+   "name": "A_Trooper_getup_back",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_getup_back.fbx",
+   "bytes": 731740,
+   "sha256": "036eb15270c3c13cfd53c53785af52c55e75e40def29a0af8f3782f47ec0d690",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_getup_front.fbx",
+   "name": "A_Trooper_getup_front",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_getup_front.fbx",
+   "bytes": 729884,
+   "sha256": "a48eec1a25f2535acf9fa56a016ae50cb1c2fd031471c96c47b617331fd977e1",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_go_prone.fbx",
+   "name": "A_Trooper_go_prone",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_go_prone.fbx",
+   "bytes": 622668,
+   "sha256": "6654cece374fee73b7abb43d2ac0281a73d51e37bfd53a355cb9aee5bdc28cf0",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_hit_back.fbx",
+   "name": "A_Trooper_hit_back",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_hit_back.fbx",
+   "bytes": 520348,
+   "sha256": "73d369ad7eb7ccef5478cb43d559647e825746db2de1daade8c921f825bbac47",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_hit_foot.fbx",
+   "name": "A_Trooper_hit_foot",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_hit_foot.fbx",
+   "bytes": 557740,
+   "sha256": "f3c5ee4689b30ff4ce54352bcfa53de2eef875bc3083ceb7880cfb99b7742531",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_hit_front.fbx",
+   "name": "A_Trooper_hit_front",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_hit_front.fbx",
+   "bytes": 520348,
+   "sha256": "95e193ff9324c2f6ca4f6814d1a00f10a6c7f3855cdf1369a0d880ecff02b079",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_hit_left.fbx",
+   "name": "A_Trooper_hit_left",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_hit_left.fbx",
+   "bytes": 514316,
+   "sha256": "f5836aa4aeafea49cfaabf615fdd72ddc365d2df5fe817d689eb0e39c1e3728e",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_hit_right.fbx",
+   "name": "A_Trooper_hit_right",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_hit_right.fbx",
+   "bytes": 514316,
+   "sha256": "5d42461ef5711ab6c5f7d41f3ad91d49e73555fc71043121fb4e57ddd4886ec4",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_holster_saber.fbx",
+   "name": "A_Trooper_holster_saber",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_holster_saber.fbx",
+   "bytes": 575228,
+   "sha256": "76ba3f268c509cae473a2ad266c9052a6c6860e697ce4a5b650bfe95a484be51",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_idle.fbx",
+   "name": "A_Trooper_idle",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_idle.fbx",
+   "bytes": 905756,
+   "sha256": "2c91a26a70e7dba92af429c92ccc613f6bdb14d8d643b61fc40238f2c6cfb8f5",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_jump.fbx",
+   "name": "A_Trooper_jump",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_jump.fbx",
+   "bytes": 557740,
+   "sha256": "b22049bf9feb448cace999eefc3300361933565c8fbdfda502fd93c8ece388cf",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_kneel_aim.fbx",
+   "name": "A_Trooper_kneel_aim",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_kneel_aim.fbx",
+   "bytes": 771436,
+   "sha256": "2bd44460c122c340804ce6d4637de0b443b5ecf088ba6ed38195c0f6e57faeb1",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_look_around.fbx",
+   "name": "A_Trooper_look_around",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_look_around.fbx",
+   "bytes": 1075276,
+   "sha256": "dc71c4b4c926822b6ce71d9ec7f6f5b5e26f5a1be11aebbfada05f291802ffcb",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_look_down.fbx",
+   "name": "A_Trooper_look_down",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_look_down.fbx",
+   "bytes": 396732,
+   "sha256": "5f67fd1b76a44e5586fe69bb212e24a053cfd2f3d766e0be8ca3d1f528f44c3b",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_look_left.fbx",
+   "name": "A_Trooper_look_left",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_look_left.fbx",
+   "bytes": 396732,
+   "sha256": "669138c442798862c6bcdca4b9b6670d3679a1ab937909d172ed8cdd020dd02c",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_look_right.fbx",
+   "name": "A_Trooper_look_right",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_look_right.fbx",
+   "bytes": 396732,
+   "sha256": "654173de95c717457fb2f84bdc1b40aaef31fceee0514ae978786718ab283e75",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_look_tilt_l.fbx",
+   "name": "A_Trooper_look_tilt_l",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_look_tilt_l.fbx",
+   "bytes": 396732,
+   "sha256": "256e0297d32910136428cd7365b388054836c8d4a624da2aec095d9c8178291b",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_look_tilt_r.fbx",
+   "name": "A_Trooper_look_tilt_r",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_look_tilt_r.fbx",
+   "bytes": 396732,
+   "sha256": "ec82caabac859d62d1ed9926d1dd91aa644d10750ffac54fd77e2e270bd81f08",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_look_up.fbx",
+   "name": "A_Trooper_look_up",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_look_up.fbx",
+   "bytes": 396732,
+   "sha256": "16bc91852fac5ec3027a6f3848da258e09f331d5f8b757bce335cd875de95cb2",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_mantle.fbx",
+   "name": "A_Trooper_mantle",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_mantle.fbx",
+   "bytes": 639516,
+   "sha256": "2a51108fc2a34cc997361dd120d28a1d144c129301e5023a0af4d09117a0c947",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_medic_treat.fbx",
+   "name": "A_Trooper_medic_treat",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_medic_treat.fbx",
+   "bytes": 712284,
+   "sha256": "ed34f2f751d31f1be03b2e16cfa424f45a2b69219610aed8bc1ce3743345fc83",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_melee.fbx",
+   "name": "A_Trooper_melee",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_melee.fbx",
+   "bytes": 557740,
+   "sha256": "ba82c20ad4c6548f39cf05b43e97ca195b0ba5a1b141ef3da4ba21addf90d7dc",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_neck_roll.fbx",
+   "name": "A_Trooper_neck_roll",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_neck_roll.fbx",
+   "bytes": 868828,
+   "sha256": "60f0ef5bf847624bfe50ffcad4b2caa18d9ffaf20783971fa33e8ed867583ec6",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_patrol_look.fbx",
+   "name": "A_Trooper_patrol_look",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_patrol_look.fbx",
+   "bytes": 1073900,
+   "sha256": "71d2f85aec77d0a05ba79eb64de091ccd3f2d1520452d4b4cb301d29f86227a8",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_prone_aim.fbx",
+   "name": "A_Trooper_prone_aim",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_prone_aim.fbx",
+   "bytes": 770460,
+   "sha256": "329089037603b4bf5312cf9a35d61e6b29d9136a37e03e18cbbf5ba63e48bb5e",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_prone_crawl.fbx",
+   "name": "A_Trooper_prone_crawl",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_prone_crawl.fbx",
+   "bytes": 593772,
+   "sha256": "1f80cca9960ef957815ff2bd91bcf1fe169ab107425de9833932452144530f24",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_roll_to_kneel.fbx",
+   "name": "A_Trooper_roll_to_kneel",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_roll_to_kneel.fbx",
+   "bytes": 736988,
+   "sha256": "cb3121ae48cc3e2aa2462bb9bd017e3740bf40db15cda398237a0097bb2d1f69",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_run.fbx",
+   "name": "A_Trooper_run",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_run.fbx",
+   "bytes": 520348,
+   "sha256": "4c55f8d86ca057ae1a4d64b7d9924beccc5c0ab3f2f64732c9b56dc7c33a9f03",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_run_stop.fbx",
+   "name": "A_Trooper_run_stop",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_run_stop.fbx",
+   "bytes": 539052,
+   "sha256": "9723a454e2e498e46e6ffac0b1aa27583b65eaa8a64b5e4b29ef1a643a67eda0",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_attack_1.fbx",
+   "name": "A_Trooper_saber_attack_1",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_attack_1.fbx",
+   "bytes": 563772,
+   "sha256": "7188c651a85fbd263a473f52f20d63a855fa450f0d538efe8d6f77a71f57176f",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_attack_2.fbx",
+   "name": "A_Trooper_saber_attack_2",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_attack_2.fbx",
+   "bytes": 557740,
+   "sha256": "69e3820f83d05efc1de19202e93c46168d5f6d7ebd5b2b55cb04f8542661928e",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_attack_3.fbx",
+   "name": "A_Trooper_saber_attack_3",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_attack_3.fbx",
+   "bytes": 553596,
+   "sha256": "084bd809634843cadac145ff45503e77fadf25fbce4cd2835c519e9026599bcb",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_block_high.fbx",
+   "name": "A_Trooper_saber_block_high",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_block_high.fbx",
+   "bytes": 520348,
+   "sha256": "f49d966a8d60c2edf72d0897d5cf63c98d367b529e686f64bfbf934462e4bb8e",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_block_l.fbx",
+   "name": "A_Trooper_saber_block_l",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_block_l.fbx",
+   "bytes": 520348,
+   "sha256": "9ed153778675d71e8e19d7460ee74317ab2b1bbc3d529f4f53f25f8fd146aec6",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_block_r.fbx",
+   "name": "A_Trooper_saber_block_r",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_block_r.fbx",
+   "bytes": 520348,
+   "sha256": "923131a66959181562d8c89b1c080c5e458c4bfe2a640a32d2898eb0244caf03",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_death_arm.fbx",
+   "name": "A_Trooper_saber_death_arm",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_death_arm.fbx",
+   "bytes": 982988,
+   "sha256": "700c63825454706e98b6a56c8803e08359aa792c75007c5bace77d26ff6f2a72",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_death_diagonal.fbx",
+   "name": "A_Trooper_saber_death_diagonal",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_death_diagonal.fbx",
+   "bytes": 917404,
+   "sha256": "a112015432ec1febf50393bfcb9843d5f079fa2dda453d6f2b2d4946da5c86c2",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_death_half.fbx",
+   "name": "A_Trooper_saber_death_half",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_death_half.fbx",
+   "bytes": 905004,
+   "sha256": "9e5a28f7f04cfebeca6b24fb626f0529f37a557341543f88d391941cea5f81e3",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_death_head.fbx",
+   "name": "A_Trooper_saber_death_head",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_death_head.fbx",
+   "bytes": 935836,
+   "sha256": "1fc5c8b24a3f4b5069c4789b714852c4eb651d3d40e730c7c674891920bbff03",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_death_leg.fbx",
+   "name": "A_Trooper_saber_death_leg",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_death_leg.fbx",
+   "bytes": 912972,
+   "sha256": "5efe95a5c8e597db57e4fd31815e52b8f0c66e650b9d3ec2fab06a953b3e7976",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_deflect_high.fbx",
+   "name": "A_Trooper_saber_deflect_high",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_deflect_high.fbx",
+   "bytes": 490812,
+   "sha256": "20ef6089f217e28ad5968a4633ea1ed25c2ca12ada6e8929e1f993556d4a0abf",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_deflect_l.fbx",
+   "name": "A_Trooper_saber_deflect_l",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_deflect_l.fbx",
+   "bytes": 490812,
+   "sha256": "b8be344de2373c47574e8a83d717ae11ffdc8b05631acc1618c9759892f74b1f",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_deflect_r.fbx",
+   "name": "A_Trooper_saber_deflect_r",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_deflect_r.fbx",
+   "bytes": 490812,
+   "sha256": "589fe7282525a23a6bf25bf92f54fc24a7cc81faadbd87666c4f1b6f5ea692d5",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_hit_1.fbx",
+   "name": "A_Trooper_saber_hit_1",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_hit_1.fbx",
+   "bytes": 539052,
+   "sha256": "02ca46bfa4def525dfceb6698dab7c9630625b62ba3518a3196964249426093e",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_hit_2.fbx",
+   "name": "A_Trooper_saber_hit_2",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_hit_2.fbx",
+   "bytes": 563772,
+   "sha256": "df255d85c5a3cca0d28b67059bacb124c692eef1cdd590a9fe9b6a90883c5515",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_run.fbx",
+   "name": "A_Trooper_saber_run",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_run.fbx",
+   "bytes": 520348,
+   "sha256": "4c0ffff0d1076690b362213e98af5f5a9d99cf8512c76ce19a8e8ce157fd37f3",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_saber_thrust.fbx",
+   "name": "A_Trooper_saber_thrust",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_saber_thrust.fbx",
+   "bytes": 539052,
+   "sha256": "07eef5c8bc67cd6152ebbd17a26f1c4566cdb8938340b570da85b8a7041747bf",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_signal_halt.fbx",
+   "name": "A_Trooper_signal_halt",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_signal_halt.fbx",
+   "bytes": 584764,
+   "sha256": "c66d1cc29b864e05666e93aadb7c656fcc3237f02942ae829fa9c99cf78a1e5e",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_signal_moveup.fbx",
+   "name": "A_Trooper_signal_moveup",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_signal_moveup.fbx",
+   "bytes": 573932,
+   "sha256": "21057b2be834af450980cd27bc61e98014f21a0f81f181cce2cba565e538899d",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_sprint.fbx",
+   "name": "A_Trooper_sprint",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_sprint.fbx",
+   "bytes": 508300,
+   "sha256": "76129fc5c0ef1e6fbe81553f40fdfb9f7ebdb1f5f0ede5199fdbd1516dcd3c77",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_tiptoe_peek.fbx",
+   "name": "A_Trooper_tiptoe_peek",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_tiptoe_peek.fbx",
+   "bytes": 781596,
+   "sha256": "edb8eefef8e79a88082311167e38fe1baaa421a2fa7507f6d28497da4710e444",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_tiptoe_walk.fbx",
+   "name": "A_Trooper_tiptoe_walk",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_tiptoe_walk.fbx",
+   "bytes": 572220,
+   "sha256": "6d22033a5365e20e28c6e5e079fbb91da1880e8df44e57b4d51976af349346eb",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_turn_l90.fbx",
+   "name": "A_Trooper_turn_l90",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_turn_l90.fbx",
+   "bytes": 539052,
+   "sha256": "4939fa9647a4a92faf3d93b8cc0a3295984462e04486734308113c64dedac7aa",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_turn_r90.fbx",
+   "name": "A_Trooper_turn_r90",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_turn_r90.fbx",
+   "bytes": 539052,
+   "sha256": "5b7915282aeb242974901fa37c2c276f01797cb880d86b093b21931b561b434f",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_vault.fbx",
+   "name": "A_Trooper_vault",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_vault.fbx",
+   "bytes": 585628,
+   "sha256": "41412129c29fb52d172512615256b5bab5d8819ea6c3e4ccf4030fc9e2fce090",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_walk.fbx",
+   "name": "A_Trooper_walk",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_walk.fbx",
+   "bytes": 699340,
+   "sha256": "a2dfdac05ab7eb1ddb9eb64d8c3697291f772713daa5af2aad12c1b8b700b171",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_walk_limp.fbx",
+   "name": "A_Trooper_walk_limp",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_walk_limp.fbx",
+   "bytes": 584092,
+   "sha256": "ef15096f7882a42fdfb8a789d1b2da6c8ad942d1499fc052b438ceb36cfb7d2f",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_wounded_crawl.fbx",
+   "name": "A_Trooper_wounded_crawl",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_wounded_crawl.fbx",
+   "bytes": 584540,
+   "sha256": "6bc0e97e7ab495fd48a399d104ef239728682a5d991cf57e51ab83cc76ce5622",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Animations/A_Trooper_wounded_down.fbx",
+   "name": "A_Trooper_wounded_down",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/Animations/A_Trooper_wounded_down.fbx",
+   "bytes": 925292,
+   "sha256": "2dc01c0060367bd6286b393d5b3f61c9be0e1780fff16af613d5906fd7f4b45a",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Cuts/SK_Trooper_Cut_death_explosion_arm.fbx",
+   "name": "SK_Trooper_Cut_death_explosion_arm",
+   "type": "skeletal_mesh",
+   "path": "assets/characters/jedi/Unreal/Cuts/SK_Trooper_Cut_death_explosion_arm.fbx",
+   "bytes": 6163276,
+   "sha256": "02cb929550242defa495039cae547baba7f62e7a66d3bddb9c7d62a8d2b996e2",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Cuts/SK_Trooper_Cut_death_explosion_armleg.fbx",
+   "name": "SK_Trooper_Cut_death_explosion_armleg",
+   "type": "skeletal_mesh",
+   "path": "assets/characters/jedi/Unreal/Cuts/SK_Trooper_Cut_death_explosion_armleg.fbx",
+   "bytes": 4277740,
+   "sha256": "64bb6746aff176e65004a1bc06c658ef5f06bbac7feba7886e1d3596cd30cc53",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Cuts/SK_Trooper_Cut_death_explosion_leg.fbx",
+   "name": "SK_Trooper_Cut_death_explosion_leg",
+   "type": "skeletal_mesh",
+   "path": "assets/characters/jedi/Unreal/Cuts/SK_Trooper_Cut_death_explosion_leg.fbx",
+   "bytes": 4036556,
+   "sha256": "8ca6ba6ffefbe4dcbba0cc5c9af19f670bd8db265bb6cfd054a4ff675e0338c5",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_arm.fbx",
+   "name": "SK_Trooper_Cut_saber_death_arm",
+   "type": "skeletal_mesh",
+   "path": "assets/characters/jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_arm.fbx",
+   "bytes": 3748972,
+   "sha256": "8b009bb0c71182e91ce68bae99eace2d5497881d9da673cb1c3ac0c3d4858f87",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_diagonal.fbx",
+   "name": "SK_Trooper_Cut_saber_death_diagonal",
+   "type": "skeletal_mesh",
+   "path": "assets/characters/jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_diagonal.fbx",
+   "bytes": 6277900,
+   "sha256": "c2dc5f55a3c4cc407f20251edcb761469a6a2904b7d787d24f149931bbf35aca",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_half.fbx",
+   "name": "SK_Trooper_Cut_saber_death_half",
+   "type": "skeletal_mesh",
+   "path": "assets/characters/jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_half.fbx",
+   "bytes": 6105308,
+   "sha256": "d93735c02212c4456d839738345b641d5c57d2b7eb15d7542e26b612f6d15e92",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_head.fbx",
+   "name": "SK_Trooper_Cut_saber_death_head",
+   "type": "skeletal_mesh",
+   "path": "assets/characters/jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_head.fbx",
+   "bytes": 6221212,
+   "sha256": "b4aca9d6d0a341b9959045fb252cd2841bbfa1477689416290ad9a1c9eb05055",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_leg.fbx",
+   "name": "SK_Trooper_Cut_saber_death_leg",
+   "type": "skeletal_mesh",
+   "path": "assets/characters/jedi/Unreal/Cuts/SK_Trooper_Cut_saber_death_leg.fbx",
+   "bytes": 6138764,
+   "sha256": "4921e4e71cfb5f5776b0f1bba6ced71240b5b6fc17743356577f004ac36c6702",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Cuts/cut_variants.json",
+   "name": "cut_variants",
+   "type": "data",
+   "path": "assets/characters/jedi/Unreal/Cuts/cut_variants.json",
+   "bytes": 1816,
+   "sha256": "ca5e029d3a9991e2e8f84f4e52cdb2e53bb7e75eb7ed45ba76f01d9a2fdb87fa",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/SK_Trooper.fbx",
+   "name": "SK_Trooper",
+   "type": "skeletal_mesh",
+   "path": "assets/characters/jedi/Unreal/SK_Trooper.fbx",
+   "bytes": 6116028,
+   "sha256": "ecc9940eff2dbfbcda4db0193c59eeeea434b58db6b56d30a95b49c7d0338292",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/SM_Blaster.fbx",
+   "name": "SM_Blaster",
+   "type": "animation",
+   "path": "assets/characters/jedi/Unreal/SM_Blaster.fbx",
+   "bytes": 53772,
+   "sha256": "ab3278b0bbecbfbad16b4c73471432c1a2152ac34cb81e5ec1b396e4ff3e94be",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Textures/T_Blaster_ORM.png",
+   "name": "T_Blaster_ORM",
+   "type": "texture",
+   "path": "assets/characters/jedi/Unreal/Textures/T_Blaster_ORM.png",
+   "bytes": 340,
+   "sha256": "4d380499ad80d01537b8f6c5da65a0e3fcbf42d45d2824cbfc2dcf0fc9fd9b35",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Textures/T_Trooper_BaseColor.jpg",
+   "name": "T_Trooper_BaseColor",
+   "type": "texture",
+   "path": "assets/characters/jedi/Unreal/Textures/T_Trooper_BaseColor.jpg",
+   "bytes": 2490949,
+   "sha256": "bb862fb58eaaea454c9ac6b7b3025704dfe567c3de31fa7e613467728b0c438f",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Textures/T_Trooper_Normal_OpenGL.png",
+   "name": "T_Trooper_Normal_OpenGL",
+   "type": "texture",
+   "path": "assets/characters/jedi/Unreal/Textures/T_Trooper_Normal_OpenGL.png",
+   "bytes": 7198902,
+   "sha256": "a744a64f399f29ba01a3ab96addc32a0e0c525f60f2086e315f8b9923ac023a8",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Textures/T_Trooper_ORM.png",
+   "name": "T_Trooper_ORM",
+   "type": "texture",
+   "path": "assets/characters/jedi/Unreal/Textures/T_Trooper_ORM.png",
+   "bytes": 339,
+   "sha256": "337e3574d802e20ea327a86d6397fe1f66b619306c4d6e19be947b494ea36c50",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/Textures/textures.json",
+   "name": "textures",
+   "type": "data",
+   "path": "assets/characters/jedi/Unreal/Textures/textures.json",
+   "bytes": 190,
+   "sha256": "d344acdf2fddab727e1e628a28b4b14064c7747d4fd1620521dbf076c198410f",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/drag_pair.json",
+   "name": "drag_pair",
+   "type": "data",
+   "path": "assets/characters/jedi/Unreal/drag_pair.json",
+   "bytes": 85,
+   "sha256": "0ae7c32b530596ec06262c325602da9419f20f88f5f1d144c999705d5d91ffc7",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Unreal/pack.json",
+   "name": "pack",
+   "type": "data",
+   "path": "assets/characters/jedi/Unreal/pack.json",
+   "bytes": 237,
+   "sha256": "811ff7ee6b9c598a098192d5785a953c3d3c1d1c27d808dfe474148792f54404",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Web/trooper.glb",
+   "name": "trooper",
+   "type": "mesh",
+   "path": "assets/characters/jedi/Web/trooper.glb",
+   "bytes": 21843192,
+   "sha256": "1176b3cc67e4599f78032c04af53e1542f3b7649192bbbe9c4854db728894082",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  },
+  {
+   "id": "jedi/Web/trooper_web.glb",
+   "name": "trooper_web",
+   "type": "mesh",
+   "path": "assets/characters/jedi/Web/trooper_web.glb",
+   "bytes": 7038044,
+   "sha256": "e78459579e614530fc708f9a32db141cb8810e5911557cc8db81c278db3bc28e",
+   "created": "2026-11-09",
+   "revision": 1,
+   "creator": "Duke Forger tools/rigging",
+   "provenance": {
+    "tool": "Blender 4.5 (bpy) + tools/rigging",
+    "derived_from": [
+     "Source/"
+    ]
+   },
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); hilt is a placeholder; Unreal import pending",
+   "updated": "2026-11-09"
+  }
+ ]
+}

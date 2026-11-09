@@ -1,0 +1,354 @@
+{
+ "aim": {
+  "stretched_edges": 78,
+  "worst_extra_cm": 10.8
+ },
+ "aim_strafe_l": {
+  "stretched_edges": 82,
+  "worst_extra_cm": 11.2
+ },
+ "aim_strafe_r": {
+  "stretched_edges": 83,
+  "worst_extra_cm": 11.2
+ },
+ "aim_walk_bwd": {
+  "stretched_edges": 83,
+  "worst_extra_cm": 11.3
+ },
+ "aim_walk_fwd": {
+  "stretched_edges": 82,
+  "worst_extra_cm": 11.2
+ },
+ "beckon": {
+  "stretched_edges": 119,
+  "worst_extra_cm": 16.8
+ },
+ "climb_ladder": {
+  "stretched_edges": 555,
+  "worst_extra_cm": 36.9
+ },
+ "count_five": {
+  "stretched_edges": 87,
+  "worst_extra_cm": 14.3
+ },
+ "cover_high_idle": {
+  "stretched_edges": 63,
+  "worst_extra_cm": 11.2
+ },
+ "cover_low_idle": {
+  "stretched_edges": 95,
+  "worst_extra_cm": 11.0
+ },
+ "crouch_aim": {
+  "stretched_edges": 89,
+  "worst_extra_cm": 10.8
+ },
+ "crouch_walk": {
+  "stretched_edges": 91,
+  "worst_extra_cm": 11.2
+ },
+ "death_explosion": {
+  "stretched_edges": 1250,
+  "worst_extra_cm": 54.9
+ },
+ "death_explosion_arm": {
+  "stretched_edges": 366,
+  "worst_extra_cm": 37.2
+ },
+ "death_explosion_armleg": {
+  "stretched_edges": 328,
+  "worst_extra_cm": 38.9
+ },
+ "death_explosion_leg": {
+  "stretched_edges": 657,
+  "worst_extra_cm": 43.0
+ },
+ "die": {
+  "stretched_edges": 84,
+  "worst_extra_cm": 12.3
+ },
+ "die_back": {
+  "stretched_edges": 187,
+  "worst_extra_cm": 20.9
+ },
+ "die_headshot": {
+  "stretched_edges": 78,
+  "worst_extra_cm": 12.8
+ },
+ "die_headshot_back": {
+  "stretched_edges": 330,
+  "worst_extra_cm": 26.6
+ },
+ "die_run": {
+  "stretched_edges": 283,
+  "worst_extra_cm": 22.8
+ },
+ "dive_left": {
+  "stretched_edges": 99,
+  "worst_extra_cm": 11.0
+ },
+ "dive_right": {
+  "stretched_edges": 99,
+  "worst_extra_cm": 11.2
+ },
+ "drag_rescuer": {
+  "stretched_edges": 198,
+  "worst_extra_cm": 23.5
+ },
+ "drag_wounded": {
+  "stretched_edges": 330,
+  "worst_extra_cm": 19.1
+ },
+ "draw_saber": {
+  "stretched_edges": 78,
+  "worst_extra_cm": 10.8
+ },
+ "flinch_duck": {
+  "stretched_edges": 26,
+  "worst_extra_cm": 7.0
+ },
+ "force_pull": {
+  "stretched_edges": 181,
+  "worst_extra_cm": 22.2
+ },
+ "force_push": {
+  "stretched_edges": 182,
+  "worst_extra_cm": 22.5
+ },
+ "getup_back": {
+  "stretched_edges": 40,
+  "worst_extra_cm": 10.8
+ },
+ "getup_front": {
+  "stretched_edges": 91,
+  "worst_extra_cm": 11.1
+ },
+ "go_prone": {
+  "stretched_edges": 132,
+  "worst_extra_cm": 11.2
+ },
+ "hit_back": {
+  "stretched_edges": 78,
+  "worst_extra_cm": 10.8
+ },
+ "hit_foot": {
+  "stretched_edges": 78,
+  "worst_extra_cm": 10.8
+ },
+ "hit_front": {
+  "stretched_edges": 96,
+  "worst_extra_cm": 12.7
+ },
+ "hit_left": {
+  "stretched_edges": 83,
+  "worst_extra_cm": 11.5
+ },
+ "hit_right": {
+  "stretched_edges": 115,
+  "worst_extra_cm": 13.4
+ },
+ "holster_saber": {
+  "stretched_edges": 78,
+  "worst_extra_cm": 10.8
+ },
+ "idle": {
+  "stretched_edges": 0,
+  "worst_extra_cm": 1.0
+ },
+ "jump": {
+  "stretched_edges": 4,
+  "worst_extra_cm": 7.1
+ },
+ "kneel_aim": {
+  "stretched_edges": 83,
+  "worst_extra_cm": 10.8
+ },
+ "look_around": {
+  "stretched_edges": 25,
+  "worst_extra_cm": 8.3
+ },
+ "look_down": {
+  "stretched_edges": 22,
+  "worst_extra_cm": 7.0
+ },
+ "look_left": {
+  "stretched_edges": 23,
+  "worst_extra_cm": 8.3
+ },
+ "look_right": {
+  "stretched_edges": 24,
+  "worst_extra_cm": 8.2
+ },
+ "look_tilt_l": {
+  "stretched_edges": 22,
+  "worst_extra_cm": 7.0
+ },
+ "look_tilt_r": {
+  "stretched_edges": 22,
+  "worst_extra_cm": 7.0
+ },
+ "look_up": {
+  "stretched_edges": 23,
+  "worst_extra_cm": 7.1
+ },
+ "mantle": {
+  "stretched_edges": 97,
+  "worst_extra_cm": 14.5
+ },
+ "medic_treat": {
+  "stretched_edges": 408,
+  "worst_extra_cm": 23.0
+ },
+ "melee": {
+  "stretched_edges": 293,
+  "worst_extra_cm": 21.2
+ },
+ "neck_roll": {
+  "stretched_edges": 22,
+  "worst_extra_cm": 7.0
+ },
+ "patrol_look": {
+  "stretched_edges": 19,
+  "worst_extra_cm": 4.8
+ },
+ "prone_aim": {
+  "stretched_edges": 132,
+  "worst_extra_cm": 11.1
+ },
+ "prone_crawl": {
+  "stretched_edges": 131,
+  "worst_extra_cm": 11.5
+ },
+ "roll_to_kneel": {
+  "stretched_edges": 87,
+  "worst_extra_cm": 11.5
+ },
+ "run": {
+  "stretched_edges": 101,
+  "worst_extra_cm": 15.2
+ },
+ "run_stop": {
+  "stretched_edges": 3,
+  "worst_extra_cm": 7.1
+ },
+ "saber_attack_1": {
+  "stretched_edges": 193,
+  "worst_extra_cm": 21.3
+ },
+ "saber_attack_2": {
+  "stretched_edges": 178,
+  "worst_extra_cm": 21.0
+ },
+ "saber_attack_3": {
+  "stretched_edges": 287,
+  "worst_extra_cm": 24.3
+ },
+ "saber_block_high": {
+  "stretched_edges": 403,
+  "worst_extra_cm": 27.2
+ },
+ "saber_block_l": {
+  "stretched_edges": 172,
+  "worst_extra_cm": 18.8
+ },
+ "saber_block_r": {
+  "stretched_edges": 130,
+  "worst_extra_cm": 14.9
+ },
+ "saber_death_arm": {
+  "stretched_edges": 169,
+  "worst_extra_cm": 17.9
+ },
+ "saber_death_diagonal": {
+  "stretched_edges": 22,
+  "worst_extra_cm": 5.7
+ },
+ "saber_death_half": {
+  "stretched_edges": 137,
+  "worst_extra_cm": 17.0
+ },
+ "saber_death_head": {
+  "stretched_edges": 385,
+  "worst_extra_cm": 33.3
+ },
+ "saber_death_leg": {
+  "stretched_edges": 226,
+  "worst_extra_cm": 19.3
+ },
+ "saber_deflect_high": {
+  "stretched_edges": 263,
+  "worst_extra_cm": 19.0
+ },
+ "saber_deflect_l": {
+  "stretched_edges": 127,
+  "worst_extra_cm": 17.1
+ },
+ "saber_deflect_r": {
+  "stretched_edges": 128,
+  "worst_extra_cm": 15.1
+ },
+ "saber_hit_1": {
+  "stretched_edges": 122,
+  "worst_extra_cm": 12.8
+ },
+ "saber_hit_2": {
+  "stretched_edges": 211,
+  "worst_extra_cm": 22.7
+ },
+ "saber_run": {
+  "stretched_edges": 64,
+  "worst_extra_cm": 14.6
+ },
+ "saber_thrust": {
+  "stretched_edges": 94,
+  "worst_extra_cm": 11.9
+ },
+ "signal_halt": {
+  "stretched_edges": 145,
+  "worst_extra_cm": 16.9
+ },
+ "signal_moveup": {
+  "stretched_edges": 167,
+  "worst_extra_cm": 20.5
+ },
+ "sprint": {
+  "stretched_edges": 181,
+  "worst_extra_cm": 16.3
+ },
+ "tiptoe_peek": {
+  "stretched_edges": 22,
+  "worst_extra_cm": 7.0
+ },
+ "tiptoe_walk": {
+  "stretched_edges": 7,
+  "worst_extra_cm": 7.2
+ },
+ "turn_l90": {
+  "stretched_edges": 23,
+  "worst_extra_cm": 7.1
+ },
+ "turn_r90": {
+  "stretched_edges": 10,
+  "worst_extra_cm": 7.0
+ },
+ "vault": {
+  "stretched_edges": 189,
+  "worst_extra_cm": 18.9
+ },
+ "walk": {
+  "stretched_edges": 19,
+  "worst_extra_cm": 6.4
+ },
+ "walk_limp": {
+  "stretched_edges": 0,
+  "worst_extra_cm": 3.5
+ },
+ "wounded_crawl": {
+  "stretched_edges": 29,
+  "worst_extra_cm": 6.3
+ },
+ "wounded_down": {
+  "stretched_edges": 122,
+  "worst_extra_cm": 14.0
+ }
+}

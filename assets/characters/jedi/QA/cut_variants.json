@@ -1,0 +1,83 @@
+[
+ {
+  "clip": "saber_death_arm",
+  "frame": 2,
+  "time": 0.06666666666666667,
+  "style": "saber",
+  "remainder": "SK_Trooper_Cut_saber_death_arm",
+  "pieces": [
+   "SK_Trooper_Cut_saber_death_arm_Piece_a"
+  ]
+ },
+ {
+  "clip": "saber_death_leg",
+  "frame": 2,
+  "time": 0.06666666666666667,
+  "style": "saber",
+  "remainder": "SK_Trooper_Cut_saber_death_leg",
+  "pieces": [
+   "SK_Trooper_Cut_saber_death_leg_Piece_a"
+  ]
+ },
+ {
+  "clip": "saber_death_head",
+  "frame": 2,
+  "time": 0.06666666666666667,
+  "style": "saber",
+  "remainder": "SK_Trooper_Cut_saber_death_head",
+  "pieces": [
+   "SK_Trooper_Cut_saber_death_head_Piece_a"
+  ]
+ },
+ {
+  "clip": "saber_death_half",
+  "frame": 2,
+  "time": 0.06666666666666667,
+  "style": "saber",
+  "remainder": "SK_Trooper_Cut_saber_death_half",
+  "pieces": [
+   "SK_Trooper_Cut_saber_death_half_Piece_a"
+  ]
+ },
+ {
+  "clip": "saber_death_diagonal",
+  "frame": 2,
+  "time": 0.06666666666666667,
+  "style": "saber",
+  "remainder": "SK_Trooper_Cut_saber_death_diagonal",
+  "pieces": [
+   "SK_Trooper_Cut_saber_death_diagonal_Piece_a"
+  ]
+ },
+ {
+  "clip": "death_explosion_arm",
+  "frame": 1,
+  "time": 0.03333333333333333,
+  "style": "blast",
+  "remainder": "SK_Trooper_Cut_death_explosion_arm",
+  "pieces": [
+   "SK_Trooper_Cut_death_explosion_arm_Piece_a"
+  ]
+ },
+ {
+  "clip": "death_explosion_leg",
+  "frame": 1,
+  "time": 0.03333333333333333,
+  "style": "blast",
+  "remainder": "SK_Trooper_Cut_death_explosion_leg",
+  "pieces": [
+   "SK_Trooper_Cut_death_explosion_leg_Piece_a"
+  ]
+ },
+ {
+  "clip": "death_explosion_armleg",
+  "frame": 1,
+  "time": 0.03333333333333333,
+  "style": "blast",
+  "remainder": "SK_Trooper_Cut_death_explosion_armleg",
+  "pieces": [
+   "SK_Trooper_Cut_death_explosion_armleg_Piece_a",
+   "SK_Trooper_Cut_death_explosion_armleg_Piece_b"
+  ]
+ }
+]
