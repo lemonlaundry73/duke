@@ -4,7 +4,7 @@
   "worst_extra_cm": 7.0
  },
  "aim_down": {
-  "stretched_edges": 0,
+  "stretched_edges": 12,
   "worst_extra_cm": 4.9
  },
  "aim_left": {
@@ -81,10 +81,10 @@
  },
  "cover_lean_fire_l": {
   "stretched_edges": 36,
-  "worst_extra_cm": 7.6
+  "worst_extra_cm": 7.7
  },
  "cover_lean_fire_r": {
-  "stretched_edges": 19,
+  "stretched_edges": 20,
   "worst_extra_cm": 6.8
  },
  "cover_low_fire": {
@@ -96,7 +96,7 @@
   "worst_extra_cm": 5.7
  },
  "crate_pickup": {
-  "stretched_edges": 185,
+  "stretched_edges": 184,
   "worst_extra_cm": 11.1
  },
  "crate_putdown": {
@@ -116,40 +116,40 @@
   "worst_extra_cm": 7.9
  },
  "death_explosion": {
-  "stretched_edges": 463,
-  "worst_extra_cm": 49.3
+  "stretched_edges": 768,
+  "worst_extra_cm": 49.7
  },
  "death_explosion_arm": {
-  "stretched_edges": 400,
-  "worst_extra_cm": 28.0
+  "stretched_edges": 686,
+  "worst_extra_cm": 34.5
  },
  "death_explosion_armleg": {
-  "stretched_edges": 177,
-  "worst_extra_cm": 25.1
+  "stretched_edges": 776,
+  "worst_extra_cm": 24.6
  },
  "death_explosion_leg": {
-  "stretched_edges": 390,
-  "worst_extra_cm": 19.1
+  "stretched_edges": 303,
+  "worst_extra_cm": 18.8
  },
  "die": {
-  "stretched_edges": 238,
-  "worst_extra_cm": 11.9
+  "stretched_edges": 265,
+  "worst_extra_cm": 10.9
  },
  "die_back": {
-  "stretched_edges": 71,
-  "worst_extra_cm": 10.4
+  "stretched_edges": 101,
+  "worst_extra_cm": 9.8
  },
  "die_headshot": {
-  "stretched_edges": 360,
-  "worst_extra_cm": 11.9
+  "stretched_edges": 467,
+  "worst_extra_cm": 13.4
  },
  "die_headshot_back": {
-  "stretched_edges": 160,
-  "worst_extra_cm": 20.0
+  "stretched_edges": 132,
+  "worst_extra_cm": 27.5
  },
  "die_run": {
-  "stretched_edges": 200,
-  "worst_extra_cm": 12.2
+  "stretched_edges": 178,
+  "worst_extra_cm": 10.6
  },
  "dive_left": {
   "stretched_edges": 19,
@@ -160,7 +160,7 @@
   "worst_extra_cm": 7.1
  },
  "drag_rescuer": {
-  "stretched_edges": 38,
+  "stretched_edges": 39,
   "worst_extra_cm": 9.6
  },
  "drag_wounded": {
@@ -176,11 +176,11 @@
   "worst_extra_cm": 5.3
  },
  "getup_front": {
-  "stretched_edges": 119,
+  "stretched_edges": 146,
   "worst_extra_cm": 7.9
  },
  "go_prone": {
-  "stretched_edges": 58,
+  "stretched_edges": 86,
   "worst_extra_cm": 7.1
  },
  "grenade_throw": {
@@ -228,32 +228,32 @@
   "worst_extra_cm": 7.1
  },
  "look_around": {
-  "stretched_edges": 2,
-  "worst_extra_cm": 2.3
+  "stretched_edges": 166,
+  "worst_extra_cm": 4.8
  },
  "look_down": {
-  "stretched_edges": 0,
-  "worst_extra_cm": 0.6
+  "stretched_edges": 33,
+  "worst_extra_cm": 3.0
  },
  "look_left": {
-  "stretched_edges": 2,
-  "worst_extra_cm": 2.3
+  "stretched_edges": 166,
+  "worst_extra_cm": 4.8
  },
  "look_right": {
-  "stretched_edges": 0,
-  "worst_extra_cm": 1.7
+  "stretched_edges": 161,
+  "worst_extra_cm": 4.7
  },
  "look_tilt_l": {
-  "stretched_edges": 0,
-  "worst_extra_cm": 0.2
+  "stretched_edges": 24,
+  "worst_extra_cm": 2.5
  },
  "look_tilt_r": {
-  "stretched_edges": 0,
-  "worst_extra_cm": 0.2
+  "stretched_edges": 28,
+  "worst_extra_cm": 2.7
  },
  "look_up": {
-  "stretched_edges": 0,
-  "worst_extra_cm": 0.4
+  "stretched_edges": 10,
+  "worst_extra_cm": 2.7
  },
  "mantle": {
   "stretched_edges": 103,
@@ -268,32 +268,32 @@
   "worst_extra_cm": 17.1
  },
  "mortar_load": {
-  "stretched_edges": 151,
-  "worst_extra_cm": 24.8
+  "stretched_edges": 147,
+  "worst_extra_cm": 25.2
  },
  "neck_roll": {
-  "stretched_edges": 0,
-  "worst_extra_cm": 0.3
+  "stretched_edges": 39,
+  "worst_extra_cm": 2.9
  },
  "patrol_look": {
-  "stretched_edges": 16,
+  "stretched_edges": 59,
   "worst_extra_cm": 3.6
  },
  "prone_aim": {
-  "stretched_edges": 34,
+  "stretched_edges": 63,
   "worst_extra_cm": 6.0
  },
  "prone_crawl": {
-  "stretched_edges": 45,
+  "stretched_edges": 74,
   "worst_extra_cm": 7.3
  },
  "prone_shoot": {
-  "stretched_edges": 35,
+  "stretched_edges": 64,
   "worst_extra_cm": 6.0
  },
  "radio_call": {
-  "stretched_edges": 12,
-  "worst_extra_cm": 14.1
+  "stretched_edges": 10,
+  "worst_extra_cm": 12.1
  },
  "reload": {
   "stretched_edges": 19,
@@ -304,7 +304,7 @@
   "worst_extra_cm": 7.1
  },
  "run": {
-  "stretched_edges": 24,
+  "stretched_edges": 23,
   "worst_extra_cm": 3.7
  },
  "run_stop": {
@@ -312,24 +312,24 @@
   "worst_extra_cm": 2.1
  },
  "saber_death_arm": {
-  "stretched_edges": 84,
-  "worst_extra_cm": 10.1
+  "stretched_edges": 197,
+  "worst_extra_cm": 12.4
  },
  "saber_death_diagonal": {
-  "stretched_edges": 79,
+  "stretched_edges": 76,
   "worst_extra_cm": 7.8
  },
  "saber_death_half": {
-  "stretched_edges": 93,
+  "stretched_edges": 97,
   "worst_extra_cm": 15.4
  },
  "saber_death_head": {
-  "stretched_edges": 101,
-  "worst_extra_cm": 8.6
+  "stretched_edges": 128,
+  "worst_extra_cm": 16.1
  },
  "saber_death_leg": {
-  "stretched_edges": 131,
-  "worst_extra_cm": 18.2
+  "stretched_edges": 118,
+  "worst_extra_cm": 10.7
  },
  "saber_hit_1": {
   "stretched_edges": 55,
@@ -376,8 +376,8 @@
   "worst_extra_cm": 7.0
  },
  "tiptoe_peek": {
-  "stretched_edges": 0,
-  "worst_extra_cm": 1.0
+  "stretched_edges": 10,
+  "worst_extra_cm": 2.1
  },
  "tiptoe_walk": {
   "stretched_edges": 1,

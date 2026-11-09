@@ -4,8 +4,47 @@ sys.path.insert(0,sys.argv[-2]); import rigkit as K
 from mathutils import Vector as V, Matrix as M, Quaternion as Q, Euler as E
 w=sys.argv[-1]; R=math.radians
 ao=K.load(w); K.build_controls(ao,w); P=ao.pose.bones
+import os
+CFG=json.load(open(f'{w}/character.json')) if os.path.exists(f'{w}/character.json') else {}
+BLC=json.load(open(f'{w}/blaster.json')) if os.path.exists(f'{w}/blaster.json') else {}
+ROLE=CFG.get('role','trooper'); SABER=BLC.get('kind')=='saber'
+# clips a Jedi does not have (gun handling, trooper duties) or gets in his own form (holstered idle/walk/run: jedi_clips.py)
+JEDI_SKIP={'idle','patrol_look','walk','run','sprint','walk_limp','shoot','shoot_burst','shoot_hip','reload','crouch_shoot','kneel_shoot',
+           'prone_shoot','suppress','cover_low_fire','cover_lean_fire_r','cover_lean_fire_l','mortar_load','radio_call','carry_crate',
+           'crate_pickup','crate_putdown','check_credentials','inspect_freight','checkpoint_halt','attention','grenade_throw','stack_up',
+           'breach_clear','aim_up','aim_down','aim_left','aim_right','command_point','command_advance','stairs_up_aim'}
+SKIPPING=False; JEDI_PHASE=False
 FPS=30; bpy.context.scene.render.fps=FPS
 REST={pb.name:pb.bone.matrix_local.copy() for pb in P}
+if SABER:
+    # two-handed hilt grip: the left hand wraps the hilt below the right hand, from the opposite side (palm toward the hilt)
+    GJ=json.load(open(f'{w}/gun.json')); GW=M(GJ['gun_world']); LAT=V(GJ['lat']).normalized()
+    Bw=(GW.to_3x3()@V((0,1,0))).normalized(); HOLDW=GW@V(GJ['hold_src'])
+    h_=REST['hand_l'].to_3x3(); fb_=REST['middle_01_l'].to_3x3(); hi_=h_.inverted()
+    fl_=(hi_@fb_.col[1]).normalized(); pl_=hi_@(fb_.col[0]); pl_=(pl_-fl_*pl_.dot(fl_)).normalized()
+    Fw_=Bw; Nw_=(LAT-Fw_*LAT.dot(Fw_)).normalized()
+    Rl_=M((Fw_,Nw_,Fw_.cross(Nw_))).transposed()@M((fl_,pl_,fl_.cross(pl_))).transposed().inverted()
+    plen_=(REST['middle_01_l'].translation-REST['hand_l'].translation).length
+    wrist_=HOLDW-LAT*0.022-Fw_*plen_*0.9
+    Ml_=Rl_.to_4x4(); Ml_.translation=wrist_
+    bpy.ops.object.mode_set(mode='EDIT'); ao.data.edit_bones['ctrl_hand_l'].matrix=Ml_; bpy.ops.object.mode_set(mode='POSE')
+    for pb in P: pb.rotation_mode='QUATERNION'
+    REST={pb.name:pb.bone.matrix_local.copy() for pb in P}
+    # arm reach (rest frame) for keeping the hilt where both hands can hold it
+    SHR=REST['upperarm_r'].translation; SHL=REST['upperarm_l'].translation
+    LR=(REST['lowerarm_r'].translation-SHR).length+(REST['hand_r'].translation-REST['lowerarm_r'].translation).length
+    LL=(REST['lowerarm_l'].translation-SHL).length+(REST['hand_l'].translation-REST['lowerarm_l'].translation).length
+    # wrist targets in the weapon's own frame (where IK actually pulls each wrist)
+    GWi=GW.inverted(); WRL=GWi@REST['ctrl_hand_r'].translation; WLL=GWi@REST['ctrl_hand_l'].translation
+    print('saber grip: arm lengths',round(LR,3),round(LL,3),'wrists in hilt frame',[round(c,3) for c in WRL],[round(c,3) for c in WLL])
+def reach_clamp(G):
+    if not SABER: return G
+    G=G.copy()
+    for _ in range(8):
+        er=((G@WRL)-SHR).length-0.97*LR; el=((G@WLL)-SHL).length-0.97*LL; e=max(er,el); g=G.translation
+        if e<=0.002: break
+        tgt=(SHR+SHL)/2+V((0,-0.12,-0.30)); dv=(tgt-g); G.translation=g+dv.normalized()*min(e+0.004,dv.length)
+    return G
 def ss(x): x=max(0,min(1,x)); return x*x*(3-2*x)
 def lerp(a,b,t): return a+(b-a)*t
 def mix(a,b,t): return tuple(lerp(x,y,t) for x,y in zip(a,b))
@@ -31,12 +70,20 @@ GUN={
  'port':  dict(gpos=(-0.05,-0.24,1.22),gyaw=40,gpitch=22,groll=-25),     # run: across the chest, muzzle up-left
  'sprint':dict(gpos=(-0.03,-0.20,1.20),gyaw=62,gpitch=30,groll=-35),
 }
+if SABER:
+    # lightsaber: gun frame Z = blade. 'aim' = two-handed guard (blade up and forward), 'ready' = lowered saber
+    GUN['aim']=dict(gpos=(-0.03,-0.30,1.12),gyaw=-8,gpitch=-40,groll=0)
+    GUN['ready']=dict(gpos=(-0.16,-0.24,1.02),gyaw=10,gpitch=-120,groll=-10)
+    GUN['patrol']=GUN['ready']; GUN['port']=GUN['ready']; GUN['sprint']=dict(gpos=(-0.20,-0.10,1.02),gyaw=0,gpitch=-150,groll=-20)
 BASE=dict(px=0,py=0,pz=0,pp=0,pyw=0,pr=0, s1p=0,s1y=0,s1r=0, s2p=0,s2y=0,s2r=0, s3p=0,s3y=0,s3r=0, np_=0,ny=0,nr=0, hp=0,hy=0,hr=0,
           gdx=0,gdy=0,gdz=0,gdp=0,gdyaw=0,gdr=0, curlR=0.9,idxR=0.1,curlL=0.85, capeP=0,capeS=0, lhand=1.0, lpos=None)
 def stance(name,**kw):
     d=dict(BASE); d.update(GUN[name])
     if name=='aim': d.update(pz=-0.03,pyw=10,s1y=-3,s2y=-4,s3y=-5,s1p=3,s2p=3,s3p=2,np_=6,nr=-4,hp=6,hr=-7,idxR=0.35)
     if name in('ready','patrol'): d.update(pz=-0.01,s2p=2,s3p=1,hp=4)
+    if SABER:
+        d.update(curlR=1.0,idxR=1.0,curlL=1.0,blade=1.0 if name=='aim' else 0.0)
+        if name=='aim': d.update(pz=-0.06,pyw=14,s1y=-4,s2y=-5,s3y=-4,np_=2,nr=0,hp=3,hr=0,s1p=4,s2p=3,s3p=1)
     d.update(kw); return d
 FOOT0={s:REST[f'ctrl_foot_{s}'].copy() for s in 'lr'}
 ANK0={s:REST[f'foot_{s}'].translation.copy() for s in 'lr'}
@@ -65,6 +112,8 @@ def apply(d,feet=None,ball=None,frame=None):
     for i in (1,2,3): K.rot(P[f'spine_0{i}'],d[f's{i}p'],d[f's{i}y'],d[f's{i}r'])
     K.rot(P['neck_01'],d['np_'],d['ny'],d['nr']); K.rot(P['head'],d['hp'],d['hy'],d['hr'])
     g=d['gpos']; G=K.gun_matrix((g[0]+d['gdx'],g[1]+d['gdy'],g[2]+d['gdz']),d['gyaw']+d['gdyaw'],d['gpitch']+d['gdp'],d['groll']+d['gdr'])
+    if d.get('gmat') is not None: G=d['gmat']          # explicit weapon matrix (torso-at-rest frame): saber swings, draw/holster
+    if SABER and not d.get('no_clamp'): G=reach_clamp(G)
     K.set_rest_space(P['ctrl_gun'],G)
     K.curl(ao,'r',d['curlR'],index=d['idxR']); K.curl(ao,'l',d['curlL'])
     if d.get('fingL') is not None: K.fingers(ao,'l',*d['fingL'])      # (index, middle, ring, pinky, thumb)
@@ -80,10 +129,40 @@ def apply(d,feet=None,ball=None,frame=None):
     if d.get('lpos') is not None:
         bpy.context.view_layer.update()
         P['ctrl_hand_l'].matrix=d['lpos']
+    if d.get('fingL') is not None: pass
+    if SABER:
+        # free hands: chest-relative targets, blended with the grip on the hilt by hand{L,R}_k (1 = on the hilt)
+        if d.get('handL_rel') is not None or d.get('handR_rel') is not None:
+            bpy.context.view_layer.update(); CH_=P['spine_03'].matrix@REST['spine_03'].inverted()
+            for sd in 'LR':
+                rel=d.get(f'hand{sd}_rel')
+                if rel is None: continue
+                k=d.get(f'hand{sd}_k',0.0); cb=P[f'ctrl_hand_{sd.lower()}']; att=cb.matrix.copy(); fr=CH_@rel
+                cb.matrix=mat_lerp(fr,att,k); bpy.context.view_layer.update()
+        if 'blade' in P:
+            b_=max(0.001,min(1.0,d.get('blade',1.0))); xz=0.25+0.75*min(1.0,b_*5)
+            P['blade'].scale=V((xz,b_,xz))
+        if d.get('holster',0.0)>0.0:
+            bpy.context.view_layer.update(); P['weapon_r'].matrix=mat_lerp(P['weapon_r'].matrix.copy(),belt_world(),d['holster'])
 def key(frame):
+    if SKIPPING: return
     K.key_all(ao,frame)
+    if SABER and 'blade' in P: P['blade'].keyframe_insert('scale',frame=frame,group='blade')
+def mat_lerp(a,b,k):
+    k=max(0.0,min(1.0,k)); return M.Translation(a.translation.lerp(b.translation,k))@a.to_quaternion().slerp(b.to_quaternion(),k).to_matrix().to_4x4()
+# lightsaber resting place: hanging from the belt on the right hip, emitter up (pelvis frame)
+BELT=BLC.get('belt',{})
+def gmat(pos,blade,hint=(0,-1,0)):
+    Z=V(blade).normalized(); Y=V(hint); Y=(Y-Z*Y.dot(Z)).normalized(); X=Y.cross(Z)
+    m=M((X,Y,Z)).transposed().to_4x4(); m.translation=V(pos); return m
+BELT_REST=gmat(BELT.get('grip',(-0.205,-0.035,1.085)),BELT.get('blade',(0,-0.17,0.98)),(0,-1,0))
+def belt_world():
+    bpy.context.view_layer.update(); return P['pelvis'].matrix@REST['pelvis'].inverted()@BELT_REST
 STATS={}
 def finish(name,nframes,loop=True,speed=0.0,notes=''):
+    global SKIPPING
+    if SKIPPING:
+        a_=ao.animation_data.action; ao.animation_data.action=None; bpy.data.actions.remove(a_); SKIPPING=False; return
     act=ao.animation_data.action; act.name=name; act.use_fake_user=True
     act.frame_range=(0,nframes); act.use_frame_range=True; act['loop']=loop; act['speed_cm_s']=speed*100; act['notes']=notes
     # QA: sample every frame -> IK hand gap, foot gap, planted-foot slip
@@ -109,6 +188,8 @@ def finish(name,nframes,loop=True,speed=0.0,notes=''):
     print(name,STATS[name])
     ao.animation_data.action=None
 def new(name,direction=(0,-1),lhand_on=1):
+    global SKIPPING
+    SKIPPING=(ROLE=='jedi' and not JEDI_PHASE and name in JEDI_SKIP)
     ao.animation_data_create(); a=bpy.data.actions.new(name); ao.animation_data.action=a; a['dir']=direction; a['lhand_on']=lhand_on; return a
 # ---------------- locomotion ----------------
 def gait(name,T,v,s,stride_dir,lift,bob,sway,yawamp,stanceKw,stanceName,lean=0,width=0.0,crouch=0.0,pz=0.0,flight=False,cape=0.0,notes=''):
@@ -173,7 +254,7 @@ def spring_loop(target,T,freq,zeta,sub=8,warm=6):
         q=(p%1.0)*n; i=int(q)%n; k=q-int(q); return out[i]*(1-k)+out[(i+1)%n]*k
     return f
 def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.018,roll='fwd',cycles=1,crouch=0.0,injured=None,
-              lean=3.0,scan=0.0,gun=1.0,width=0.0,cape=0.0,heelrise=34.0,reach=0.985,hipyaw=5.0,hiplist=3.5,body=1.0,notes=''):
+              lean=3.0,scan=0.0,gun=1.0,width=0.0,cape=0.0,heelrise=34.0,reach=0.985,hipyaw=5.0,hiplist=3.5,body=1.0,extra=None,notes=''):
     """Walk built from gait reference: heel strike -> loading response (knee flexes, pelvis sinks) -> mid-stance
     (pelvis highest) -> heel rise on the ball / foot arch -> toe-off; the swing knee folds the foot up behind, then
     the hip flexor carries the thigh through and the foot reaches heel-first. Pelvis bob/list/rotation/surge drive
@@ -284,6 +365,7 @@ def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.01
         d['gdz']=gun*1.2*(gz(p)-pel_z(p)); d['gdx']=gun*0.012*Sn(p-0.18); d['gdy']=gun*0.006*C(2*(p-0.22))
         d['gdyaw']=gun*0.9*(gy(p)-chest_yaw(p))+gun*1.2*Sn(p-0.16); d['gdr']=gun*1.8*Sn(p-0.2); d['gdp']=gun*1.4*C(2*(p-0.2))
         d['capeP']=cape+4*C(2*(p-0.3)); d['capeS']=5*Sn(p-0.3)
+        if extra: extra(p,d)
         apply(d,feet,balls); return feet
     need=[]
     for f in range(N):
@@ -298,7 +380,7 @@ def walkcycle(name,T,v,travel,stanceName,stanceKw=None,s=0.60,lift=0.11,bob=0.01
     print(name,'pelvis drop cm',round(drop*100,1))
     finish(name,N,True,v,notes)
 # ---------------- human run (reference-based) ----------------
-def runcycle(name,T,v,s,stanceName,stanceKw=None,bias=0.1,heel=0.30,bob=0.035,lean=8.0,strike='mid',yawamp=8.0,listamp=4.0,gun=1.0,cape=8.0,notes=''):
+def runcycle(name,T,v,s,stanceName,stanceKw=None,bias=0.1,heel=0.30,bob=0.035,lean=8.0,strike='mid',yawamp=8.0,listamp=4.0,gun=1.0,cape=8.0,extra=None,notes=''):
     """Running from gait reference: flight phase; pelvis lowest at mid-stance (compression), highest mid-flight;
     landing under the body (midfoot for a jog, forefoot for a sprint); heel recovery (heel kicks up behind),
     knee drive, then the foot paws back before contact. Chest counter-rotates; head, rifle and cape trail."""
@@ -353,6 +435,7 @@ def runcycle(name,T,v,s,stanceName,stanceKw=None,bias=0.1,heel=0.30,bob=0.035,le
         d['gdz']=gun*0.020*C(2*(p-s/2-0.1)); d['gdx']=gun*0.018*Sn(p-0.14); d['gdy']=gun*0.010*C(2*(p-0.16))
         d['gdyaw']=gun*4.0*Sn(p-0.12); d['gdr']=gun*3.0*Sn(p-0.16); d['gdp']=gun*3.0*C(2*(p-s/2-0.14))
         d['capeP']=cape+6*C(2*(p-0.3)); d['capeS']=7*Sn(p-0.3)
+        if extra: extra(p,d)
         apply(d,feet,balls); return feet
     need=[]
     for f in range(N):
@@ -469,6 +552,8 @@ def body_min_z(pts=None):
         m=min(m,pt.z-r)
     return m
 GUN_PTS=[V((0,0,0)),V((0,0.45,0.08)),V((0,-0.16,0.05)),V((0,0.1,0.14)),V((0,0,-0.07))]   # weapon_r local (Y barrel, Z up)
+if SABER:   # hilt only (pommel .. emitter along local Z); the blade is off once it leaves the hand
+    _g=BLC.get('grip',[0,0,0.035])[2]; GUN_PTS=[V((0,0,-0.14-_g)),V((0,0,0.14-_g)),V((0.02,0,0)),V((-0.02,0,0))]
 def damp(t,t0,amp,freq=4.0,tau=0.12):
     if t<t0: return 0.0
     x=t-t0; return amp*math.exp(-x/tau)*math.sin(2*math.pi*freq*x)
@@ -477,6 +562,7 @@ def eout(x): x=max(0.0,min(1.0,x)); return 1-(1-x)**2
 BACK_GUN=None
 def back_gun_matrix():
     """blaster slung diagonally across the back, muzzle up over the left shoulder (follows spine_03)"""
+    if SABER: return belt_world()
     yb=V((0.45,0.0,0.89)).normalized(); zb=V((0,1,0)); xb=yb.cross(zb).normalized(); zb=xb.cross(yb).normalized()
     m=M((xb,yb,zb)).transposed().to_4x4(); m.translation=V((0.02,0.20,1.18))
     return P['spine_03'].matrix@REST['spine_03'].inverted()@m
@@ -562,6 +648,7 @@ def fk_clip(name,dur,tl,release,gun_vel,gun_spin,t_contact,notes,loop=False,gun_
                     m=M.Translation(g['pos'])@g['rot'].to_matrix().to_4x4()
                     low=min((m@p).z for p in GUN_PTS); g['pos'].z+=0.012-low
             P['weapon_r'].matrix=M.Translation(gun['pos'])@gun['rot'].to_matrix().to_4x4()
+            if SABER and 'blade' in P: P['blade'].scale=V((0.25,0.001,0.25))   # a dropped hilt switches off
         key(f)
     finish(name,N,loop,0,notes)
 
@@ -1433,6 +1520,9 @@ def reaction_clips():
     fk_clip('flinch_duck',1.25,tl,99,(0,0,0),(0,0,0),None,lhand_on=0,notes='Explosion nearby: ducks low, left arm over the helmet, back up.')
 
 getup_clips(); cover_clips(); prone_clips(); move_clips(); reaction_clips()
+if ROLE=='jedi':
+    JEDI_PHASE=True
+    exec(open(os.path.join(sys.argv[-2],'jedi_clips.py')).read())
 json.dump(CUTS,open(f'{w}/cuts.json','w'),indent=1)
 bpy.context.scene.frame_set(0)
 for o in bpy.context.scene.objects: o.select_set(False)

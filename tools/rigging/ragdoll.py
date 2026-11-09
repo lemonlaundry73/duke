@@ -186,7 +186,8 @@ for a_, b_ in REST_OVERLAP:
         setattr(c, f'use_limit_lin_{ax}', False); setattr(c, f'use_limit_ang_{ax}', False)
 
 # blaster body: a box around the gun in the weapon_r frame
-gco = np.array([v.co[:] for v in G.data.vertices]); WREST = BREST['weapon_r']
+_bg = G.vertex_groups.get('blade')    # lightsaber: the blade is not part of the dropped hilt's body
+gco = np.array([v.co[:] for v in G.data.vertices if not (_bg and any(g.group == _bg.index and g.weight > 0.5 for g in v.groups))]); WREST = BREST['weapon_r']
 gl = in_frame(gco, WREST); glo = np.percentile(gl, 1, axis=0); ghi = np.percentile(gl, 99, axis=0); gc = (glo + ghi) / 2
 GUN_OFF = M.Translation(V(gc))
 dirs_ = np.random.default_rng(1).normal(size=(300, 3)); dirs_ /= np.linalg.norm(dirs_, axis=1)[:, None]
@@ -195,7 +196,7 @@ gm_ = bpy.data.meshes.new('rd_gun'); gm_.from_pydata([tuple(p) for p in gext], [
 gun = new_obj('RD_gun', gm_); gun.matrix_world = WREST @ GUN_OFF
 for x in sc.objects: x.select_set(False)
 bpy.context.view_layer.objects.active = gun; gun.select_set(True); bpy.ops.rigidbody.object_add(type='ACTIVE')
-gun.rigid_body.collision_shape = 'CONVEX_HULL'; gun.rigid_body.use_margin = True; gun.rigid_body.collision_margin = 0.004; gun.rigid_body.mass = 3.5; gun.rigid_body.friction = 0.7; gun.rigid_body.restitution = 0.15
+gun.rigid_body.collision_shape = 'CONVEX_HULL'; gun.rigid_body.use_margin = True; gun.rigid_body.collision_margin = 0.004; gun.rigid_body.mass = 0.5 if _bg else 3.5; gun.rigid_body.friction = 0.7; gun.rigid_body.restitution = 0.15
 gun.rigid_body.linear_damping = 0.1; gun.rigid_body.angular_damping = 0.3
 gun.rigid_body.collision_collections = [i == 1 for i in range(20)]
 

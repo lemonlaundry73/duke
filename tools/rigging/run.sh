@@ -11,9 +11,17 @@ SRC="${SRC:-$REPO/assets/characters/clone_trooper/Source}"
 mkdir -p "$W" "$O"
 # glTF from Tripo/gltfpack is meshopt-compressed and quantized; Blender needs it plain
 npx --yes @gltf-transform/cli@4.1.1 dequantize "$SRC/trooper_armor_source.glb" "$W/trooper_dq.glb"
-npx --yes @gltf-transform/cli@4.1.1 dequantize "$SRC/blaster_source.glb" "$W/blaster_dq.glb"
+if [ ! -f "$SRC/blaster_source.glb" ] && [ ! -f "$SRC/blaster_source.fbx" ] && grep -q '"kind": *"saber"' "$SRC/blaster.json" 2>/dev/null; then
+  "$PY" -I "$HERE/saber_hilt.py" "$W/blaster_dq.glb"   # no hilt model supplied yet: procedural PLACEHOLDER hilt
+elif [ -f "$SRC/blaster_source.fbx" ]; then   # FBX weapon: convert to GLB (embedded textures kept) with Blender
+  "$PY" -I "$HERE/fbx2glb.py" "$SRC/blaster_source.fbx" "$W/blaster_dq.glb"
+else
+  npx --yes @gltf-transform/cli@4.1.1 dequantize "$SRC/blaster_source.glb" "$W/blaster_dq.glb"
+fi
 for cfg in character.json blaster.json; do if [ -f "$SRC/$cfg" ]; then cp "$SRC/$cfg" "$W/"; fi; done
-if grep -q '"joints": *"source"' "$W/character.json" 2>/dev/null; then
+if grep -q '"source_pose": *"T"' "$W/character.json" 2>/dev/null; then
+  "$PY" -I "$HERE/tpose_prep.py" "$W"       # unrigged T-pose source: detect joints, re-pose arms to the Duke A-pose
+elif grep -q '"joints": *"source"' "$W/character.json" 2>/dev/null; then
   "$PY" -I "$HERE/strip_rig.py" "$W"        # pre-rigged source: keep its mesh + joint positions, drop its skin
 else
   "$PY" -I "$HERE/inspect.py" "$W"          # import both -> raw.blend

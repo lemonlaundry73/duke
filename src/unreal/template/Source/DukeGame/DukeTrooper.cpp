@@ -38,6 +38,10 @@ const TArray<FName>& ADukeTrooper::ClipNames()
 		TEXT("turn_l90"), TEXT("turn_r90"), TEXT("run_stop"), TEXT("dive_left"), TEXT("dive_right"), TEXT("vault"), TEXT("hit_left"), TEXT("hit_right"), TEXT("flinch_duck"), TEXT("melee"), TEXT("signal_halt"), TEXT("signal_moveup"),
 		TEXT("tiptoe_walk"), TEXT("tiptoe_peek"), TEXT("look_left"), TEXT("look_right"), TEXT("look_up"), TEXT("look_down"), TEXT("look_tilt_l"), TEXT("look_tilt_r"),
 		TEXT("look_around"), TEXT("neck_roll"), TEXT("count_five"), TEXT("beckon"),
+		// Jedi pack only (missing clips are skipped for the troopers)
+		TEXT("draw_saber"), TEXT("holster_saber"), TEXT("saber_attack_1"), TEXT("saber_attack_2"), TEXT("saber_attack_3"), TEXT("saber_thrust"),
+		TEXT("saber_block_high"), TEXT("saber_block_l"), TEXT("saber_block_r"), TEXT("saber_deflect_l"), TEXT("saber_deflect_r"), TEXT("saber_deflect_high"),
+		TEXT("force_push"), TEXT("force_pull"), TEXT("saber_run"),
 		TEXT("roll_to_kneel"), TEXT("kneel_aim"), TEXT("kneel_shoot"), TEXT("climb_ladder"), TEXT("mantle"),
 		TEXT("saber_hit_1"), TEXT("saber_hit_2"), TEXT("saber_death_arm"), TEXT("saber_death_leg"), TEXT("saber_death_head"), TEXT("saber_death_half"), TEXT("saber_death_diagonal"),
 		TEXT("death_explosion"), TEXT("death_explosion_arm"), TEXT("death_explosion_leg"), TEXT("death_explosion_armleg") };
@@ -100,7 +104,7 @@ ADukeTrooper::ADukeTrooper()
 void ADukeTrooper::LoadAssets()
 {
 	if (!GetMesh()->GetSkeletalMeshAsset())
-		if (USkeletalMesh* SK = LoadObject<USkeletalMesh>(nullptr, *FString::Printf(TEXT("%s/SK_Trooper.SK_Trooper"), AssetRoot)))
+		if (USkeletalMesh* SK = LoadObject<USkeletalMesh>(nullptr, *FString::Printf(TEXT("%s/SK_Trooper.SK_Trooper"), *AssetPath)))
 		{
 			GetMesh()->SetSkeletalMesh(SK);
 			// the trooper is authored at 1.83 m; correct any unit mismatch from the FBX import
@@ -111,13 +115,13 @@ void ADukeTrooper::LoadAssets()
 	if (UDukeTrooperAnimInstance* A = Anim())
 		for (const FName& N : ClipNames())
 		{
-			const FString Path = FString::Printf(TEXT("%s/Anims/A_Trooper_%s.A_Trooper_%s"), AssetRoot, *N.ToString(), *N.ToString());
+			const FString Path = FString::Printf(TEXT("%s/Anims/A_Trooper_%s.A_Trooper_%s"), *AssetPath, *N.ToString(), *N.ToString());
 			if (UAnimSequence* Seq = LoadObject<UAnimSequence>(nullptr, *Path)) A->Clips.Add(N, Seq);
 			else UE_LOG(LogTemp, Warning, TEXT("DukeTrooper: missing clip %s"), *Path);
 		}
 	for (const FName& N : ClipNames())
 		if (CutTime(N) > 0.f)
-			if (USkeletalMesh* CM = LoadObject<USkeletalMesh>(nullptr, *FString::Printf(TEXT("%s/Cuts/SK_Trooper_Cut_%s.SK_Trooper_Cut_%s"), AssetRoot, *N.ToString(), *N.ToString())))
+			if (USkeletalMesh* CM = LoadObject<USkeletalMesh>(nullptr, *FString::Printf(TEXT("%s/Cuts/SK_Trooper_Cut_%s.SK_Trooper_Cut_%s"), *AssetPath, *N.ToString(), *N.ToString())))
 				CutMeshes.Add(N, CM);
 	for (int32 i = 1; i <= 3; ++i)
 		if (USoundBase* S = LoadObject<USoundBase>(nullptr, *FString::Printf(TEXT("/Game/DukeForge/Audio/S_Blaster_Fire_0%d.S_Blaster_Fire_0%d"), i, i)))
@@ -130,7 +134,7 @@ void ADukeTrooper::RefreshAnimClips()
 		if (A->Clips.Num() == 0)
 			for (const FName& N : ClipNames())
 			{
-				const FString Path = FString::Printf(TEXT("%s/Anims/A_Trooper_%s.A_Trooper_%s"), AssetRoot, *N.ToString(), *N.ToString());
+				const FString Path = FString::Printf(TEXT("%s/Anims/A_Trooper_%s.A_Trooper_%s"), *AssetPath, *N.ToString(), *N.ToString());
 				if (UAnimSequence* Seq = LoadObject<UAnimSequence>(nullptr, *Path)) A->Clips.Add(N, Seq);
 			}
 }
@@ -143,6 +147,7 @@ UDukeTrooperAnimInstance* ADukeTrooper::Anim() const
 void ADukeTrooper::BeginPlay()
 {
 	Super::BeginPlay();
+	if (Faction == EDukeFaction::Alliance && BoltColor.Equals(FLinearColor(1.f, 0.06f, 0.04f))) BoltColor = FLinearColor(0.15f, 0.45f, 1.f);   // Alliance blasters fire blue
 	LoadAssets();
 	Health = MaxHealth;
 	Ammo = MagazineSize;
@@ -171,8 +176,7 @@ void ADukeTrooper::Tick(float Dt)
 	UDukeTrooperAnimInstance* A = Anim();
 	if (State != EDukeTrooperState::Dead)
 	{
-		APawn* Player = UGameplayStatics::GetPlayerPawn(this, 0);
-		if (State == EDukeTrooperState::Patrol && Player && CanSee(Player)) EnterCombat(Player, Now, true);
+		if (State == EDukeTrooperState::Patrol) if (AActor* E = FindEnemy()) EnterCombat(E, Now, true);
 		if (bWounded && Now - WoundedAt > BleedOutSeconds) Die(TEXT("wounded_down"));   // bled out
 		if (Squad.IsValid() && Order.Type != EDukeOrder::None) { if (State == EDukeTrooperState::Patrol || State == EDukeTrooperState::Combat) TickOrder(Dt, Now); }
 		else if (State == EDukeTrooperState::Patrol) TickPatrol(Dt, Now);
@@ -777,4 +781,29 @@ void ADukeTrooper::UpdateLook(float Dt)
 	}
 	A->State.LookYaw = FMath::FInterpTo(A->State.LookYaw, Yaw, Dt, 3.f);
 	A->State.LookPitch = FMath::FInterpTo(A->State.LookPitch, Pitch, Dt, 3.f);
+}
+
+EDukeFaction ADukeTrooper::FactionOf(const AActor* A)
+{
+	if (const ADukeTrooper* T = Cast<ADukeTrooper>(A)) return T->Faction;
+	return EDukeFaction::Alliance;   // the player and anything else on the player's side
+}
+bool ADukeTrooper::IsHostileTo(const AActor* Other) const
+{
+	if (!Other || Other == this) return false;
+	if (const ADukeTrooper* T = Cast<ADukeTrooper>(Other)) if (T->IsDead()) return false;
+	return FactionOf(Other) != Faction;
+}
+// Nearest hostile pawn this trooper can see (sight cone + line of sight).
+AActor* ADukeTrooper::FindEnemy() const
+{
+	AActor* Best = nullptr; float BestD = SightRange;
+	for (TActorIterator<APawn> It(GetWorld()); It; ++It)
+	{
+		APawn* P = *It;
+		if (!IsHostileTo(P)) continue;
+		const float D = FVector::Dist(P->GetActorLocation(), GetActorLocation());
+		if (D < BestD && CanSee(P)) { Best = P; BestD = D; }
+	}
+	return Best;
 }

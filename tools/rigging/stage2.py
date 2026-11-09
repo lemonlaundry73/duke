@@ -113,6 +113,10 @@ gun_world=M.Translation(palm)@Rg.to_4x4()@M.Translation(-grip_src)
 def gw(p): return gun_world@p
 wb=eb.new('weapon_r'); wb.head=gw(grip_src); wb.tail=gw(grip_src+V((0,0.12,0))); wb.align_roll(Rg@V((0,0,1))); wb.parent=hr
 mb=eb.new('muzzle'); mb.head=gw(muzzle_src); mb.tail=gw(muzzle_src+V((0,0.06,0))); mb.align_roll(Rg@V((0,0,1))); mb.parent=wb
+if BL.get('kind')=='saber':
+    # blade bone: from the emitter along the hilt axis (+Z of the weapon frame). Ignition = scale along the bone (0 -> 1).
+    BLADE_LEN=BL.get('blade_len',0.95)
+    bb=eb.new('blade'); bb.head=gw(muzzle_src); bb.tail=gw(muzzle_src+V((0,0,BLADE_LEN))); bb.align_roll(Rg@V((0,1,0))); bb.parent=wb
 # UE mannequin-style IK helper bones
 for k,h,tl,p in (('ik_foot_root',(0,0,0),(0,0,0.1),'root'),('ik_foot_l',J['foot_l'][0],None,'ik_foot_root'),('ik_foot_r',J['foot_r'][0],None,'ik_foot_root'),
                  ('ik_hand_root',(0,0,0),(0,0,0.1),'root'),('ik_hand_gun',J['hand_r'][0],None,'ik_hand_root'),('ik_hand_r',J['hand_r'][0],None,'ik_hand_gun'),('ik_hand_l',J['hand_l'][0],None,'ik_hand_gun')):
@@ -282,5 +286,29 @@ g.data.transform(M.Translation(palm)@Rg.to_4x4()@M.Translation(-grip_src)); g.da
 g.parent=ao; gm=g.modifiers.new('Armature','ARMATURE'); gm.object=ao
 vg=g.vertex_groups.new(name='weapon_r'); vg.add(list(range(len(g.data.vertices))),1.0,'REPLACE')
 g.name='SK_Trooper_Blaster'
+if BL.get('kind')=='saber':
+    # blade mesh: bright core + softer glow shell, bound 100% to the blade bone; emissive saber colour
+    import bmesh as _bm
+    BLADE_LEN=BL.get('blade_len',0.95); col=BL.get('blade_color',[0.1,0.45,1.0])
+    bm_=_bm.new()
+    for r_,seg in ((0.0105,16),(0.0185,16)):
+        _bm.ops.create_cone(bm_,cap_ends=True,cap_tris=False,segments=seg,radius1=r_,radius2=r_*0.92,depth=BLADE_LEN,matrix=M.Translation((0,0,BLADE_LEN/2)))
+    bd=bpy.data.meshes.new('blade'); bm_.to_mesh(bd); bm_.free()
+    bo=bpy.data.objects.new('blade',bd); bpy.context.scene.collection.objects.link(bo)
+    bd.transform(M.Translation(palm)@Rg.to_4x4()@M.Translation(-grip_src)@M.Translation(muzzle_src)); bd.update()
+    nb=len(bd.vertices); core=[i for i,v in enumerate(bd.vertices) if i<nb//2]
+    m1=bpy.data.materials.new('M_SaberBlade_Core'); m1.use_nodes=True; p1=m1.node_tree.nodes['Principled BSDF']
+    p1.inputs['Base Color'].default_value=(0.85,0.93,1.0,1); p1.inputs['Emission Color'].default_value=(0.75,0.88,1.0,1); p1.inputs['Emission Strength'].default_value=12.0
+    m2=bpy.data.materials.new('M_SaberBlade_Glow'); m2.use_nodes=True; p2=m2.node_tree.nodes['Principled BSDF']
+    p2.inputs['Base Color'].default_value=(*col,1); p2.inputs['Emission Color'].default_value=(*col,1); p2.inputs['Emission Strength'].default_value=8.0
+    p2.inputs['Alpha'].default_value=0.45; m2.blend_method='BLEND' if hasattr(m2,'blend_method') else None
+    bd.materials.append(m1); bd.materials.append(m2)
+    for pl in bd.polygons: pl.material_index=0 if all(v<nb//2 for v in pl.vertices) else 1
+    vgb=bo.vertex_groups.new(name='blade'); vgb.add(list(range(nb)),1.0,'REPLACE')
+    for o_ in bpy.context.scene.objects: o_.select_set(False)
+    bo.select_set(True); g.select_set(True); bpy.context.view_layer.objects.active=g
+    for mm in g.modifiers: pass
+    bpy.ops.object.join()
+    print('saber blade bound to blade bone, length',BLADE_LEN)
 bpy.ops.wm.save_as_mainfile(filepath=f'{w}/s2.blend')
 print('bones',len(arm.bones))

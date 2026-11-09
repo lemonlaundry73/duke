@@ -1,0 +1,12 @@
+{
+ "name": "Jamie (Jedi)",
+ "role": "jedi",
+ "cape": false,
+ "joints": "source",
+ "source_pose": "T",
+ "source_facing": "+X",
+ "faction": "alliance",
+ "unreal_root": "/Game/DukeForge/Characters/Jedi",
+ "skirt": {"top": 1.02, "hem": 0.64},
+ "note": "Unrigged Tripo T-pose source: tools/rigging/tpose_prep.py detects the joints and re-poses the arms into the Duke A-pose."
+}

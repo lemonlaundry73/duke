@@ -5,7 +5,16 @@ w=sys.argv[-2]; out=sys.argv[-1]; os.makedirs(out+'/Unreal/Animations',exist_ok=
 bpy.ops.wm.open_mainfile(filepath=f'{w}/anim.blend')
 sc=bpy.context.scene; ao=bpy.data.objects['Armature']; t=bpy.data.objects['SK_Trooper']; g=bpy.data.objects['SK_Trooper_Blaster']
 for m,nm in ((t,'MI_Trooper'),(g,'MI_Blaster')):
-    for s in m.material_slots: s.material.name=nm
+    for s in m.material_slots:
+        if not s.material.name.startswith('M_SaberBlade'): s.material.name=nm   # lightsaber blade keeps its emissive materials
+# pack description for the Unreal importer (asset folder, weapon kind, blade/bolt colour)
+_cfg=json.load(open(f'{w}/character.json')) if os.path.exists(f'{w}/character.json') else {}
+_bl=json.load(open(f'{w}/blaster.json')) if os.path.exists(f'{w}/blaster.json') else {}
+os.makedirs(out+'/Unreal',exist_ok=True)
+json.dump({'name':_cfg.get('name','Trooper'),'role':_cfg.get('role','trooper'),'faction':_cfg.get('faction','empire'),
+           'unreal_root':_cfg.get('unreal_root','/Game/DukeForge/Characters/CloneTrooper'),'weapon_kind':_bl.get('kind','blaster'),
+           'blade_color':_bl.get('blade_color'),'bolt_color':_cfg.get('bolt_color'),'placeholder_weapon':bool(_bl.get('placeholder'))},
+          open(out+'/Unreal/pack.json','w'),indent=1)
 def mat_images(o):
     out=[]
     for sl in o.material_slots:
@@ -46,7 +55,7 @@ def sel(objs):
     for o in objs: o.select_set(True)
     bpy.context.view_layer.objects.active=objs[0]
 ao.animation_data.action=None
-for pb in ao.pose.bones: pb.location=(0,0,0); pb.rotation_quaternion=(1,0,0,0)
+for pb in ao.pose.bones: pb.location=(0,0,0); pb.rotation_quaternion=(1,0,0,0); pb.scale=(1,1,1)
 # mute constraints for the bind pose export so the mesh exports in its true rest pose
 cons=[c for pb in ao.pose.bones for c in pb.constraints]
 for c in cons: c.mute=True

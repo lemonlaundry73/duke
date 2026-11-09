@@ -1,0 +1,10 @@
+{
+ "name": "Clone Trooper (Phase II armor)",
+ "role": "trooper",
+ "faction": "empire",
+ "unreal_root": "/Game/DukeForge/Characters/CloneTrooper",
+ "weapon_kind": "blaster",
+ "blade_color": null,
+ "bolt_color": null,
+ "placeholder_weapon": false
+}

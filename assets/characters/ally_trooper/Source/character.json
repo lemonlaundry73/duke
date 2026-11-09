@@ -1,0 +1,9 @@
+{
+ "name": "Alliance Trooper (Phase II armor)",
+ "cape": false,
+ "joints": "source",
+ "faction": "alliance",
+ "bolt_color": [0.15, 0.45, 1.0],
+ "unreal_root": "/Game/DukeForge/Characters/AllyTrooper",
+ "note": "Same Tripo armour source as the Empire trooper (identical file); different rifle and blue bolts. Pre-rigged source: the Duke skeleton is placed on its joints; its own skin is discarded."
+}

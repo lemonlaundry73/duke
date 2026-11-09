@@ -12,7 +12,7 @@ static float ClipSpeed(FName N)
 	static const TMap<FName, float> Speeds = {
 		{ TEXT("walk"), 130.f }, { TEXT("walk_limp"), 90.f }, { TEXT("drag_rescuer"), 90.f }, { TEXT("carry_crate"), 100.f }, { TEXT("wounded_crawl"), 30.f }, { TEXT("prone_crawl"), 40.f }, { TEXT("run"), 420.f }, { TEXT("sprint"), 620.f },
 		{ TEXT("aim_walk_fwd"), 130.f }, { TEXT("aim_walk_bwd"), 110.f }, { TEXT("aim_strafe_l"), 120.f }, { TEXT("aim_strafe_r"), 120.f },
-		{ TEXT("crouch_walk"), 100.f }, { TEXT("tiptoe_walk"), 70.f } };
+		{ TEXT("crouch_walk"), 100.f }, { TEXT("tiptoe_walk"), 70.f }, { TEXT("saber_run"), 420.f } };
 	const float* V = Speeds.Find(N);
 	return V ? *V : 0.f;
 }
@@ -27,7 +27,8 @@ static bool IsFullBodyAction(FName N)
 		N == TEXT("roll_to_kneel") || N == TEXT("mantle") || N == TEXT("saber_hit_1") || N == TEXT("saber_hit_2") ||
 		N == TEXT("getup_back") || N == TEXT("getup_front") || N == TEXT("go_prone") || N == TEXT("dive_left") || N == TEXT("dive_right") ||
 		N == TEXT("vault") || N == TEXT("turn_l90") || N == TEXT("turn_r90") || N == TEXT("run_stop") || N == TEXT("flinch_duck") ||
-		N == TEXT("hit_left") || N == TEXT("hit_right") || N == TEXT("tiptoe_peek") || N == TEXT("cover_low_fire") || N == TEXT("cover_lean_fire_r") || N == TEXT("cover_lean_fire_l");
+		N == TEXT("hit_left") || N == TEXT("hit_right") || N == TEXT("tiptoe_peek") ||
+		N == TEXT("saber_attack_1") || N == TEXT("saber_attack_2") || N == TEXT("saber_attack_3") || N == TEXT("saber_thrust") || N == TEXT("cover_low_fire") || N == TEXT("cover_lean_fire_r") || N == TEXT("cover_lean_fire_l");
 }
 
 float UDukeTrooperAnimInstance::ClipLength(FName Name) const
@@ -119,6 +120,11 @@ void FDukeTrooperAnimProxy::BuildBase(TArray<FDukeClipRef>& Out, FName& OutKey)
 	if (S.bAiming)
 	{
 		if (Speed < 25.f) { OutKey = TEXT("aim"); Add(TEXT("aim"), 1.f, IdleTime); return; }
+		// Jedi charging with the blade lit: forward run past walking speed (the aim walks would slide)
+		if (Speed > 240.f && S.LocalVelocity.X > FMath::Abs(S.LocalVelocity.Y) && Clip(TEXT("saber_run")))
+		{
+			OutKey = TEXT("saber_run"); Add(TEXT("saber_run"), 1.f, Cyc(TEXT("saber_run"))); return;
+		}
 		// direction blend: forward / right / back / left around the circle, two neighbours at a time
 		OutKey = TEXT("aim_move");
 		const float Ang = FMath::RadiansToDegrees(FMath::Atan2(S.LocalVelocity.Y, S.LocalVelocity.X)); // 0 fwd, +90 right
@@ -172,6 +178,7 @@ void FDukeTrooperAnimProxy::Update(float DeltaSeconds)
 	const float Speed = S.LocalVelocity.Size2D();
 	FName Gait = TEXT("walk");
 	if (S.bCrouched) Gait = TEXT("crouch_walk");
+	else if (S.bAiming && Speed > 240.f && S.LocalVelocity.X > FMath::Abs(S.LocalVelocity.Y) && Clip(TEXT("saber_run"))) Gait = TEXT("saber_run");
 	else if (S.bAiming) Gait = FMath::Abs(S.LocalVelocity.Y) > FMath::Abs(S.LocalVelocity.X) ? FName(S.LocalVelocity.Y > 0 ? TEXT("aim_strafe_r") : TEXT("aim_strafe_l")) : FName(S.LocalVelocity.X >= 0 ? TEXT("aim_walk_fwd") : TEXT("aim_walk_bwd"));
 	else if (S.bLimping) Gait = TEXT("walk_limp");
 	else if (S.bSneak) Gait = TEXT("tiptoe_walk");

@@ -22,6 +22,9 @@ struct FDamageEvent;
 
 UENUM()
 enum class EDukeTrooperState : uint8 { Patrol, Alert, Combat, Dead };
+// Who fights whom: Empire troopers vs the Alliance (allied troopers, the Jedi and the player).
+UENUM(BlueprintType)
+enum class EDukeFaction : uint8 { Empire, Alliance };
 
 UCLASS()
 class DUKEGAME_API ADukeTrooper : public ACharacter
@@ -54,6 +57,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Trooper|Combat") float SpreadDegrees = 2.2f;
 	UPROPERTY(EditAnywhere, Category = "Trooper|Combat") FLinearColor BoltColor = FLinearColor(1.f, 0.06f, 0.04f);
 	UPROPERTY(EditAnywhere, Category = "Trooper") float MaxHealth = 100.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Trooper") EDukeFaction Faction = EDukeFaction::Empire;
+	// Asset folder of this character's pack (SK_Trooper, Anims/A_Trooper_*, Cuts/): CloneTrooper, AllyTrooper, Jedi ...
+	UPROPERTY(EditAnywhere, Category = "Trooper") FString AssetPath = TEXT("/Game/DukeForge/Characters/CloneTrooper");
+	bool IsHostileTo(const AActor* Other) const;
+	static EDukeFaction FactionOf(const AActor* A);
 	UPROPERTY(EditAnywhere, Category = "Trooper|Squad") EDukeRank Rank = EDukeRank::Trooper;
 	UPROPERTY(EditAnywhere, Category = "Trooper|Squad") EDukeDuty Duty = EDukeDuty::Rifleman;
 	UPROPERTY(EditAnywhere, Category = "Trooper|Squad") float WoundChance = 0.6f;     // heavy non-lethal hits put him down instead
@@ -94,11 +102,12 @@ public:
 	EDukeTrooperState GetState() const { return State; }
 	bool IsDead() const { return State == EDukeTrooperState::Dead; }
 
-	// Loads SK_Trooper and the clip set from /Game/DukeForge/Characters/CloneTrooper (see duke_trooper_import.py).
-	static const TCHAR* AssetRoot;
+	// Loads SK_Trooper and the clip set from AssetPath (see duke_trooper_import.py).
+	static const TCHAR* AssetRoot;   // default pack (Empire clone trooper)
 	static const TArray<FName>& ClipNames();
 
-private:
+protected:
+	AActor* FindEnemy() const;     // nearest visible hostile pawn
 	EDukeTrooperState State = EDukeTrooperState::Patrol;
 	float Health = 100.f;
 	FVector Home = FVector::ZeroVector;
@@ -146,9 +155,9 @@ private:
 	void LoadAssets();
 	bool CanSee(AActor* A) const;
 	void TickPatrol(float Dt, float Now);
-	void TickCombat(float Dt, float Now);
-	void FireBolt(float Now);
-	void EnterCombat(AActor* Who, float Now, bool bSignal);
+	virtual void TickCombat(float Dt, float Now);
+	virtual void FireBolt(float Now);
+	virtual void EnterCombat(AActor* Who, float Now, bool bSignal);
 	void Die(FName DeathClip);
 	FName PickDeath(const FDamageEvent& DamageEvent, AActor* From, float Damage) const;
 };
