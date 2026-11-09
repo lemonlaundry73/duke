@@ -29,6 +29,14 @@ if SABER:
     Ml_=Rl_.to_4x4(); Ml_.translation=wrist_
     bpy.ops.object.mode_set(mode='EDIT'); ao.data.edit_bones['ctrl_hand_l'].matrix=Ml_; bpy.ops.object.mode_set(mode='POSE')
     for pb in P: pb.rotation_mode='QUATERNION'
+    # two-handed sword grip: elbows out to the sides (keeps the forearms and loose sleeves off the chest)
+    EP=CFG.get('saber_elbow_pole',[0.85,0.10,1.05])
+    bpy.ops.object.mode_set(mode='EDIT')
+    for sd_,sg_ in (('l',1),('r',-1)):
+        eb_=ao.data.edit_bones[f'ctrl_elbow_{sd_}']; d_=eb_.tail-eb_.head; eb_.head=V((sg_*EP[0],EP[1],EP[2])); eb_.tail=eb_.head+d_
+    bpy.ops.object.mode_set(mode='POSE')
+    for pb in P: pb.rotation_mode='QUATERNION'
+    K.tune_poles(ao)
     REST={pb.name:pb.bone.matrix_local.copy() for pb in P}
     # arm reach (rest frame) for keeping the hilt where both hands can hold it
     SHR=REST['upperarm_r'].translation; SHL=REST['upperarm_l'].translation

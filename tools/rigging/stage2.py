@@ -240,7 +240,8 @@ vg_=np.array([grp[i] for i in Wt.argmax(1)]); prim_=Wt.argmax(1)
 ok={frozenset(['arm_l','torso']),frozenset(['arm_r','torso']),frozenset(['leg_l','torso']),frozenset(['leg_r','torso']),frozenset(['cape','torso'])}
 bm=bmesh.new(); bm.from_mesh(t.data); bm.verts.ensure_lookup_table()
 kill=[]
-for f in bm.faces:
+BRIDGE=CFG.get('bridge_cuts',True)   # armour: cut faces that bridge separate plates; continuous cloth/skin (Jedi): keep the surface whole
+for f in (bm.faces if BRIDGE else []):
     gs=set(vg_[v.index] for v in f.verts)
     pb_=set(names[prim_[v.index]] for v in f.verts)
     if 'head' in pb_ and pb_-{'head','neck_01'}: kill.append(f); continue
@@ -254,7 +255,7 @@ for f in bm.faces:
     if 'head' in pb_ and pb_-{'head','neck_01'}: kill.append(f)
 print('bridge faces removed',len(kill))
 bmesh.ops.delete(bm,geom=kill,context='FACES_ONLY')
-bnd=[e for e in bm.edges if e.is_boundary]
+bnd=[e for e in bm.edges if e.is_boundary] if BRIDGE else []
 res=bmesh.ops.holes_fill(bm,edges=bnd,sides=200)
 tri=bmesh.ops.triangulate(bm,faces=res['faces'])['faces']
 def fill_ok(f):

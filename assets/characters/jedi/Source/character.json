@@ -7,6 +7,10 @@
  "source_facing": "+X",
  "faction": "alliance",
  "unreal_root": "/Game/DukeForge/Characters/Jedi",
- "skirt": {"top": 1.02, "hem": 0.64},
- "note": "Unrigged Tripo T-pose source: tools/rigging/tpose_prep.py detects the joints and re-poses the arms into the Duke A-pose."
+ "skirt": {
+  "top": 1.02,
+  "hem": 0.64
+ },
+ "note": "Unrigged Tripo T-pose source: tools/rigging/tpose_prep.py detects the joints and re-poses the arms into the Duke A-pose. rigid_helmet off (bare head: the helmet rule would catch the collar).",
+ "rigid_helmet": false
 }

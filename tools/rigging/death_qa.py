@@ -12,6 +12,8 @@ import os
 if os.environ.get('QA_ALL'):   # living clips too: from frame 0, floor = lowest vertex (incl. root motion), limb overlaps
     for act_ in bpy.data.actions:
         if act_.name not in RD: RD[act_.name] = dict(clip=act_.name, limp_frame=-1, frames=int(act_.frame_range[1]), settled_speed=None)
+if os.environ.get('QA_CLIPS'):   # quick check of a few clips
+    _keep = set(os.environ['QA_CLIPS'].split(',')); RD = {k: v for k, v in RD.items() if k in _keep}
 LIMBS = {'upperarm_l': .055, 'lowerarm_l': .045, 'upperarm_r': .055, 'lowerarm_r': .045, 'thigh_l': .075, 'calf_l': .055, 'thigh_r': .075, 'calf_r': .055,
          'spine_02': .12, 'head': .11}
 ADJ = {frozenset(p) for p in [('upperarm_l', 'lowerarm_l'), ('upperarm_r', 'lowerarm_r'), ('thigh_l', 'calf_l'), ('thigh_r', 'calf_r'), ('thigh_l', 'thigh_r'),
