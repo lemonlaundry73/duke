@@ -53,3 +53,15 @@ deployed Duke Forger service (a zero-dependency Node server with a JSON store on
 specification allows for an existing repository. The orchestrator keeps the same responsibilities (durable
 workflows with leases and retries, events over SSE, object storage on disk), so it can move to Temporal/Postgres/S3
 when scale requires it without changing the worker protocol.
+
+## Game simulation layers (DukeGame module)
+- `DukeGalaxySystems`: weapons (pickup, holster, saber edge sweep, bolt reflection), territory zones, smart NPCs
+  (schedules, families, revenge), occupation bases with garrisons, destructible and rebuilding structures,
+  `UDukeGalaxyDirector` (30 s sweeps, settlement generation), and `ADukeJediPlayer`.
+- `DukeCosmicSimulation`: `ADukeSovereignPlanet` (biome, liquidity, cities, property ledger with buy, rent and
+  appraisal) and `UDukeCosmicDirector` (45 s heartbeat: rent and appreciation, city founding over the liquidity
+  threshold, desert raider incursions, mourning, then armed vigilance, then stand-down; aging, sickness, inheritance,
+  births with blended style and a 2% Force-sensitive chance; citizens flee a notorious player).
+  Smart NPCs carry Force alignment, morality, style, credits, age and faith. The Jedi player has a wallet and
+  notoriety, and Interact with nothing to pick up does a Force-sense recruitment scan.
+- Tests: `DukeForge.Characters.Packs` and `DukeForge.Cosmic.Economy` (run by `tools/unreal/build_characters.py`).
