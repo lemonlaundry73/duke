@@ -4,7 +4,7 @@
   "seconds": 4.0,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 0.1,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Relaxed low-ready idle with breathing. Loop."
@@ -14,7 +14,7 @@
   "seconds": 6.0,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 0.82,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Patrol idle: scans left and right. Loop."
@@ -24,7 +24,7 @@
   "seconds": 3.0,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.2,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Shouldered aim idle (weight on back foot). Loop."
@@ -44,7 +44,7 @@
   "seconds": 0.033,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.24,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Aim offset pose."
@@ -64,7 +64,7 @@
   "seconds": 0.033,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 1.43,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Aim offset pose."
@@ -74,7 +74,7 @@
   "seconds": 0.3,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "One blaster bolt: trigger squeeze, kick, settle. Muzzle bone = bolt spawn. Loop for sustained fire."
@@ -84,7 +84,7 @@
   "seconds": 0.6,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Three-bolt burst."
@@ -94,7 +94,7 @@
   "seconds": 0.3,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 3.89,
+  "max_hand_gap_cm": 1.27,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Hip-fire bolt."
@@ -114,7 +114,7 @@
   "seconds": 0.7,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Blaster hit from the front."
@@ -124,7 +124,7 @@
   "seconds": 0.7,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 4.34,
+  "max_hand_gap_cm": 1.23,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Hit from behind."
@@ -164,7 +164,7 @@
   "seconds": 0.9,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 3.28,
+  "max_hand_gap_cm": 0.17,
   "max_foot_gap_cm": 0.11,
   "planted_foot_slip_cm_s": 0,
   "notes": "Shot in the right foot: the foot jerks up, he hops and staggers."
@@ -204,7 +204,7 @@
   "seconds": 3.0,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.2,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Crouched aim (cover). Loop."
@@ -214,7 +214,7 @@
   "seconds": 0.3,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Crouched bolt."
@@ -224,7 +224,7 @@
   "seconds": 1.1,
   "loop": true,
   "speed_m_s": 1.0,
-  "max_hand_gap_cm": 2.75,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 6.81,
   "notes": "Crouched advance, rifle up. 1.0 m/s."
@@ -234,7 +234,7 @@
   "seconds": 2.167,
   "loop": true,
   "speed_m_s": 1.3,
-  "max_hand_gap_cm": 2.33,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 8.12,
   "notes": "Patrol walk: relaxed low ready, full heel-to-toe roll with toe bend and ankle push-off, slow scan. 1.3 m/s."
@@ -244,7 +244,7 @@
   "seconds": 1.267,
   "loop": true,
   "speed_m_s": 0.9,
-  "max_hand_gap_cm": 1.78,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 11.03,
   "notes": "Injured (shot in the right foot): limping walk, weight kept off the right leg. 0.9 m/s."
@@ -254,7 +254,7 @@
   "seconds": 0.967,
   "loop": true,
   "speed_m_s": 1.3,
-  "max_hand_gap_cm": 2.7,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 5.98,
   "notes": "Tactical walk forward while aiming (soft knees, stable rifle). 1.3 m/s."
@@ -264,7 +264,7 @@
   "seconds": 1.0,
   "loop": true,
   "speed_m_s": 1.1,
-  "max_hand_gap_cm": 2.62,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 7.07,
   "notes": "Backpedal while aiming (toe-first contact). 1.1 m/s."
@@ -274,7 +274,7 @@
   "seconds": 0.867,
   "loop": true,
   "speed_m_s": 1.2,
-  "max_hand_gap_cm": 2.68,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 0.95,
   "notes": "Strafe left while aiming. 1.2 m/s."
@@ -284,7 +284,7 @@
   "seconds": 1.2,
   "loop": true,
   "speed_m_s": 0.7,
-  "max_hand_gap_cm": 0.38,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 0,
   "notes": "Sneaking on tiptoe: weight on the balls of the feet, heels never touch, soft knees. 0.7 m/s."
@@ -294,7 +294,7 @@
   "seconds": 0.867,
   "loop": true,
   "speed_m_s": 1.2,
-  "max_hand_gap_cm": 2.68,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 0.98,
   "notes": "Strafe right while aiming. 1.2 m/s."
@@ -324,7 +324,7 @@
   "seconds": 0.9,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 7.46,
+  "max_hand_gap_cm": 4.66,
   "max_foot_gap_cm": 0.88,
   "planted_foot_slip_cm_s": 0,
   "notes": "Rifle-butt melee strike with a step."
@@ -464,7 +464,7 @@
   "seconds": 2.6,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 0,
   "notes": "Combat roll: dives forward, rolls over the shoulder, comes up on one knee aiming down the sights and fires three bolts. Root motion ~2.3 m."
@@ -474,7 +474,7 @@
   "seconds": 3.0,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.21,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 0,
   "notes": "Kneeling aim down the sights (one knee down). Loop."
@@ -484,7 +484,7 @@
   "seconds": 0.3,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 0,
   "notes": "Kneeling bolt with recoil. Loop for sustained fire."
@@ -514,7 +514,7 @@
   "seconds": 0.8,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 4.25,
   "planted_foot_slip_cm_s": 0,
   "notes": "First lightsaber contact: burned across the chest, twists away and steps back, recovers."
@@ -674,7 +674,7 @@
   "seconds": 1.5,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.8,
   "planted_foot_slip_cm_s": 0,
   "notes": "Breach and clear: steps through the doorway rifle up, sweeping the room left to right. Root motion 1.6 m."
@@ -684,7 +684,7 @@
   "seconds": 1.0,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 0,
   "notes": "Climbing stairs while aiming: 2 steps per loop, 18 cm rise, 28 cm run (0.56 m forward, 0.36 m up per loop)."
@@ -754,7 +754,7 @@
   "seconds": 0.6,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.11,
   "planted_foot_slip_cm_s": 0,
   "notes": "Suppressing fire: sustained bolts every 0.12 s with recoil. Loop."
@@ -794,7 +794,7 @@
   "seconds": 4.0,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 0.01,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.0,
   "planted_foot_slip_cm_s": 0,
   "notes": "At attention, blaster at port arms, heels together: standing for an officer. Loop."
@@ -864,7 +864,7 @@
   "seconds": 2.0,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.01,
   "planted_foot_slip_cm_s": 0,
   "notes": "Low cover: pops up over the wall, fires 3 bolts (0.5, 0.75, 1.0 s), drops back down."
@@ -884,7 +884,7 @@
   "seconds": 1.9,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 1.34,
   "planted_foot_slip_cm_s": 0,
   "notes": "Tall cover: steps and leans out to the right, fires 3 bolts, back behind the wall."
@@ -894,7 +894,7 @@
   "seconds": 1.9,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0.76,
   "planted_foot_slip_cm_s": 0,
   "notes": "Tall cover: steps and leans out to the left, fires 3 bolts, back behind the wall."
@@ -904,7 +904,7 @@
   "seconds": 1.6,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0.11,
   "planted_foot_slip_cm_s": 0,
   "notes": "Drops from standing to prone: kneels, falls forward onto the elbows, rifle aimed."
@@ -914,7 +914,7 @@
   "seconds": 3.0,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Prone, up on the elbows, aiming. Loop."
@@ -924,7 +924,7 @@
   "seconds": 0.3,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Prone bolt with recoil. Loop for sustained fire."
@@ -934,7 +934,7 @@
   "seconds": 1.4,
   "loop": true,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 5.8,
+  "max_hand_gap_cm": 2.7,
   "max_foot_gap_cm": 0,
   "planted_foot_slip_cm_s": 0,
   "notes": "Prone crawl on elbows and knees, rifle cradled forward. 0.4 m/s. Loop."
@@ -974,7 +974,7 @@
   "seconds": 1.2,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 2.74,
   "planted_foot_slip_cm_s": 0,
   "notes": "Dives to the left away from a grenade or fire, lands on his side with the rifle up (root motion ~2.5 m)."
@@ -984,7 +984,7 @@
   "seconds": 1.2,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.0,
   "max_foot_gap_cm": 2.74,
   "planted_foot_slip_cm_s": 0,
   "notes": "Dives to the right away from a grenade or fire, lands on his side with the rifle up (root motion ~2.5 m)."
@@ -1004,7 +1004,7 @@
   "seconds": 0.667,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 3.48,
+  "max_hand_gap_cm": 0.19,
   "max_foot_gap_cm": 2.92,
   "planted_foot_slip_cm_s": 0,
   "notes": "Blaster hit from the left: twists away and side-steps, recovers."
@@ -1014,7 +1014,7 @@
   "seconds": 0.667,
   "loop": false,
   "speed_m_s": 0,
-  "max_hand_gap_cm": 2.16,
+  "max_hand_gap_cm": 0.01,
   "max_foot_gap_cm": 1.31,
   "planted_foot_slip_cm_s": 0,
   "notes": "Blaster hit from the right: twists away and side-steps, recovers."

@@ -21,7 +21,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -40,7 +40,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -59,7 +59,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -78,7 +78,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -97,7 +97,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -116,7 +116,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -135,7 +135,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -154,7 +154,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -173,7 +173,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -192,7 +192,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -211,7 +211,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -230,7 +230,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -249,7 +249,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -268,7 +268,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -287,7 +287,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -306,7 +306,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -325,7 +325,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -344,7 +344,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -352,10 +352,10 @@
    "name": "anim_stats",
    "type": "data",
    "path": "assets/characters/ally_trooper/QA/anim_stats.json",
-   "bytes": 27706,
-   "sha256": "1a565d10b338511fb6203caf9bba31529ebeb063dfccb624c645d0fa5d9625e3",
+   "bytes": 27693,
+   "sha256": "613b6d3879b2c11edd276a8173c9145311d22079359665f5dcfdf46dee604251",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -363,7 +363,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -371,10 +371,10 @@
    "name": "body_qa",
    "type": "data",
    "path": "assets/characters/ally_trooper/QA/body_qa.json",
-   "bytes": 22873,
-   "sha256": "fe2133084af130388f8a51c377e4dc26ecc0e6f846921957509c6372fa11f51f",
+   "bytes": 23150,
+   "sha256": "fb84f65e207acd2f4fd564e74df2c84db3d8e194d73c63377894622a7c53128c",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -382,7 +382,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -401,7 +401,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -420,7 +420,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -439,7 +439,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -448,9 +448,9 @@
    "type": "data",
    "path": "assets/characters/ally_trooper/QA/ground_pass.json",
    "bytes": 1831,
-   "sha256": "cf291451dead25a2c4403ec948196d26885621a0e1917eb2ff4ece35ab1ad2e6",
+   "sha256": "46a3ee52692f9f254fbfca870a9d38ff3675d3b3692f04c23c9db7eac0d94c6b",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -458,7 +458,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -466,10 +466,10 @@
    "name": "ragdoll_report",
    "type": "data",
    "path": "assets/characters/ally_trooper/QA/ragdoll_report.json",
-   "bytes": 1355,
-   "sha256": "e17b4aa59d8c66e6f36c971add95050be1f760f7c6e6cb2263057a6c68af8fca",
+   "bytes": 1356,
+   "sha256": "bb64d54690d40818397689c01d52f243f54dbd3f81ae60988ff73e492171021a",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -477,7 +477,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -485,10 +485,10 @@
    "name": "stretch",
    "type": "data",
    "path": "assets/characters/ally_trooper/QA/stretch.json",
-   "bytes": 7307,
-   "sha256": "0bc7eac3c179acdc7839fef2d4df5f9ce52ec16fc66acd39e70dff220b2212ad",
+   "bytes": 7314,
+   "sha256": "3c9261e7db01a8efe6ed0cdc366babe4b9ac0cd9d742010104202be66380876c",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -496,7 +496,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -515,7 +515,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -534,7 +534,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -618,10 +618,10 @@
    "name": "A_Trooper_aim",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_aim.fbx",
-   "bytes": 754700,
-   "sha256": "5108e8ed682f36ea6d9d8ee1fff88dca98b55ab7dca9519afe53af12f74cdf7f",
+   "bytes": 754780,
+   "sha256": "42791ee77029e68f26cac066d153bf599b3544796156761be7aa65490ddacb30",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -629,7 +629,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -638,9 +638,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_aim_down.fbx",
    "bytes": 390988,
-   "sha256": "aa409fd59d875e3c39da253e5ff679f9b4981cc62dc49a832fe2fe909ce51cdd",
+   "sha256": "952362261e092f2c707af9d4dc5446de1aa32582fe8be6aed057e09006abbec3",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -648,7 +648,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -657,9 +657,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_aim_left.fbx",
    "bytes": 390988,
-   "sha256": "85c2d68d3748e315b86b202c434a29d0ae0f56ff2f514b0e69dfc28a98984108",
+   "sha256": "7dca4077b9856a07b7c0e0ad3f4e05ab3fd05849826a87455db289a0a1e7e1ac",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -667,7 +667,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -676,9 +676,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_aim_right.fbx",
    "bytes": 390988,
-   "sha256": "85e5515d643427e6666c0f49aeee1da8f05dd5d43f568f5ad46ea634695372a5",
+   "sha256": "36db75f01eedb7b88c97ea708196b5a8ab579de73be0aa76a47441734767fbae",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -686,7 +686,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -695,9 +695,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_aim_strafe_l.fbx",
    "bytes": 543660,
-   "sha256": "0864769b20250b1853bbf1d4632cd57cfefbac223a100090f669a05274b46413",
+   "sha256": "643db3353ef3b863858603c7d6f1e068f1bdedd8297f6f2a97c7475e71e45f28",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -705,7 +705,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -714,9 +714,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_aim_strafe_r.fbx",
    "bytes": 543660,
-   "sha256": "d5d4b7659d06804c89bb2e36d479b48a80c09a42eb288b977d9a03f67c421942",
+   "sha256": "46666eb3386e537e2f3e82cd92fda00f8d27c1e2b135e948736bf515a076b0e3",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -724,7 +724,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -733,9 +733,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_aim_up.fbx",
    "bytes": 390988,
-   "sha256": "4c08d8abdf3c7b8c8fc1bc7e2d4ece441240467155e089df0ac6b641427784b3",
+   "sha256": "36ff3a0897510c10ec60d58209cbd65e56e217491e2f444775bfb99dce69e693",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -743,7 +743,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -752,9 +752,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_aim_walk_bwd.fbx",
    "bytes": 567420,
-   "sha256": "a43adafb71d3807b03aec4cf3d714c388ff5dda4f5b18c8211a02f22db7601f3",
+   "sha256": "d07042afef84f4c248ac0e9f53e7587ddfd12445097d7b315f19c6069df9221e",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -762,7 +762,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -771,9 +771,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_aim_walk_fwd.fbx",
    "bytes": 561468,
-   "sha256": "3fb579b0f219e89bebb4ddd990ee3f96afa710c4b4d075d92cf20d300dab1991",
+   "sha256": "6937b4f0b2108df05f66e3fa326482b96847f6cbe3f9ef843ad4c71b881dc1a9",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -781,7 +781,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -789,10 +789,10 @@
    "name": "A_Trooper_attention",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_attention.fbx",
-   "bytes": 855964,
-   "sha256": "cbeb8b871643a955462918a69126c19432b2c87ab33ac85528eade5bef32966f",
+   "bytes": 856028,
+   "sha256": "81a3b502d12a5abfd6e3fe02a2feb85556e2b64f8df2000d8c996788fd42f869",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -800,7 +800,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -808,10 +808,10 @@
    "name": "A_Trooper_beckon",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_beckon.fbx",
-   "bytes": 715356,
-   "sha256": "2f396ee8be5c15d1b699782c479fb63cb75fc3f9ed94a8b9ffcb7617f1ffe0d9",
+   "bytes": 715388,
+   "sha256": "8f2abf733c0f743a2eed6fe37f316723f2229531ad5eddfd99cfd30faacdf8e5",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -819,7 +819,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -827,10 +827,10 @@
    "name": "A_Trooper_breach_clear",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_breach_clear.fbx",
-   "bytes": 596396,
-   "sha256": "826eb63249d4801a34e487d46213a9834d836132a58ab69c0e7e774c550c92c8",
+   "bytes": 596476,
+   "sha256": "29152dc7860812186bad8bead1fad4cc0af56e5e3382b93808ec5d3c02a488ea",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -838,7 +838,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -846,10 +846,10 @@
    "name": "A_Trooper_carry_crate",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_carry_crate.fbx",
-   "bytes": 546908,
-   "sha256": "7530431f58c6af486fbe5f75a3775f9dca1397a50f2584fda02be9932949748f",
+   "bytes": 546924,
+   "sha256": "e9adae684432df2996b1409688b3d19ab61f95b02059cfe1d052f4a94c100fdc",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -857,7 +857,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -865,10 +865,10 @@
    "name": "A_Trooper_check_credentials",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_check_credentials.fbx",
-   "bytes": 809404,
-   "sha256": "fb16347201f0ee13c0cbd70379e538cc363fb6b8107bd60f17c3227c5d55cef5",
+   "bytes": 809340,
+   "sha256": "06647351973c4afb2108402f5c21e8c5d158ed488c3ec24bdb345ddc85f450a5",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -876,7 +876,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -884,10 +884,10 @@
    "name": "A_Trooper_checkpoint_halt",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_checkpoint_halt.fbx",
-   "bytes": 641484,
-   "sha256": "2d799d0ebee2073c4532d8cff9465cbcdfabcf67be352e258241b35d79e4f323",
+   "bytes": 641388,
+   "sha256": "f6be254ca29ddac52c7fab0be122a20d0387bcf8a6b4d5d5652f40df5accaa10",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -895,7 +895,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -903,10 +903,10 @@
    "name": "A_Trooper_climb_ladder",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_climb_ladder.fbx",
-   "bytes": 562060,
-   "sha256": "31fe7a1c4ed55ad9f1ff108d01408c863974c5dab75fbc7655b8e12936db3054",
+   "bytes": 562124,
+   "sha256": "e2cbddcc28a86389783d29cf2d58238c01f7ce887c023f05722767a920ead3fc",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -914,7 +914,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -922,10 +922,10 @@
    "name": "A_Trooper_command_advance",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_command_advance.fbx",
-   "bytes": 544956,
-   "sha256": "8f80f4936de5ed9090d6f7232042c257913ca340357ebf662b174baf20838dfe",
+   "bytes": 545116,
+   "sha256": "790bcdc2ee4ec827f2196d96b40a935598fec665ae3ac74a8ccb6c0d7aa13dd4",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -933,7 +933,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -941,10 +941,10 @@
    "name": "A_Trooper_command_point",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_command_point.fbx",
-   "bytes": 588940,
-   "sha256": "78b6ae56a59468e65349b72abe146f0d61b63459a982ed5ad0d0e1cdc10aa3a8",
+   "bytes": 588956,
+   "sha256": "32b144b9fd9df5dd1732213bd164d75d5aecc759b8c3fc278d5ceb441eb8949b",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -952,7 +952,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -960,10 +960,10 @@
    "name": "A_Trooper_count_five",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_count_five.fbx",
-   "bytes": 994060,
-   "sha256": "bfdda2a751639337be7a699c077f1d8a7f03ab689c1dfc8256e3c9425f80e676",
+   "bytes": 994044,
+   "sha256": "45a42dd70d036fe4f0826b34547376f13375e38d7c20207a03c23ae01487cf67",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -971,7 +971,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -979,10 +979,10 @@
    "name": "A_Trooper_cover_high_idle",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_cover_high_idle.fbx",
-   "bytes": 745580,
-   "sha256": "3b938028812c77ebdbd4da371f26dfad43beb7d8200a0b923e99c782e055bb5b",
+   "bytes": 745740,
+   "sha256": "8809de55e4b25f6d9a80fe7cdcc1301d272335d48f2cba1bf0f4bb0b51d7009c",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -990,7 +990,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -998,10 +998,10 @@
    "name": "A_Trooper_cover_lean_fire_l",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_cover_lean_fire_l.fbx",
-   "bytes": 640236,
-   "sha256": "f57faf4492fe0b7fd27c2370ea8092e25521b8b7f2ee3271a2489cd24e439610",
+   "bytes": 639820,
+   "sha256": "be51d666a69ca27c5a87c03206de966056ca6ea4df27d73f5abadb03cfc54075",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1009,7 +1009,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1017,10 +1017,10 @@
    "name": "A_Trooper_cover_lean_fire_r",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_cover_lean_fire_r.fbx",
-   "bytes": 646732,
-   "sha256": "d4b9380bbb9e32ef36c299b6c0c7475581ac8aa2894a8023b99f01ef53575314",
+   "bytes": 645612,
+   "sha256": "fa76d6363cf24c5d06612b486c58c963a68922676d369ad73cd133d44ed3c940",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1028,7 +1028,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1036,10 +1036,10 @@
    "name": "A_Trooper_cover_low_fire",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_cover_low_fire.fbx",
-   "bytes": 649804,
-   "sha256": "094f27483b4c3a19bacb37998759cc31b9cd08f0a87c3c359e5691490a62b6c0",
+   "bytes": 649708,
+   "sha256": "6803ae304bc4dc00126961993bedda959514c02e47046d2ad82c965f70fec762",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1047,7 +1047,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1055,10 +1055,10 @@
    "name": "A_Trooper_cover_low_idle",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_cover_low_idle.fbx",
-   "bytes": 712252,
-   "sha256": "53061e8b1dd3c98b2d1d74fcd778d52ade542ed6e87d420769374649c3ec759a",
+   "bytes": 712108,
+   "sha256": "3382b34a0a001c092e0c51b18126ddda4c6c9ddaa88872dfb6dba99779af3a25",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1066,7 +1066,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1074,10 +1074,10 @@
    "name": "A_Trooper_crate_pickup",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_crate_pickup.fbx",
-   "bytes": 638348,
-   "sha256": "3f9afc0701b751b1208b9a2bac06d88bb12569b0b02ce74e35fef9e6c07d7717",
+   "bytes": 637868,
+   "sha256": "0db1c296a8aa5b589d851121a03bef167f37dbb0ce00e21f33c9176eb18a8c93",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1085,7 +1085,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1093,10 +1093,10 @@
    "name": "A_Trooper_crate_putdown",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_crate_putdown.fbx",
-   "bytes": 637228,
-   "sha256": "e63d24e60155a9f1342d54a3aee7dad7ba00ede084db00910a7d6e77f8b97cee",
+   "bytes": 635964,
+   "sha256": "683316b6cf2408b5ea5de7bda4591ef8b1da729f878c871a8ade12e7a425704b",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1104,7 +1104,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1112,10 +1112,10 @@
    "name": "A_Trooper_crouch_aim",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_crouch_aim.fbx",
-   "bytes": 754764,
-   "sha256": "7ae47533591e11ae40cc274371eb2e1d3d4a06a57abbb9208590640c52b4d3d8",
+   "bytes": 754908,
+   "sha256": "7c4f7a82123b3b1465b70c6e1f60e24907059f45b04d3425e1d87d733fea3347",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1123,7 +1123,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1132,9 +1132,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_crouch_shoot.fbx",
    "bytes": 448012,
-   "sha256": "5410d21a2dcca86a7950a293d872f6c3e8924fc15e7b1f2812ffce471928bf5c",
+   "sha256": "0e1a706b28c32a5eb52c45b56193043e85e2157464d5750a986bb330b2dd0851",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1142,7 +1142,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1150,10 +1150,10 @@
    "name": "A_Trooper_crouch_walk",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_crouch_walk.fbx",
-   "bytes": 549836,
-   "sha256": "eec0a5e190444997e92a09ce771439eea9c58348c3b9ffac6ec609cc45a39db1",
+   "bytes": 549852,
+   "sha256": "188b5e09f07c8a594e0d2b0b8d8be4ee895dff75d40bf4951a95b474031e80ae",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1161,7 +1161,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1169,10 +1169,10 @@
    "name": "A_Trooper_death_explosion",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_death_explosion.fbx",
-   "bytes": 889580,
-   "sha256": "2641a71acc2b1543c4fd13478074667d774a0bc229f079a2e9c64f0a0b5b3a95",
+   "bytes": 889820,
+   "sha256": "df41f92ebf44eb44be5653dcd0390ae90a3d41791c33e3ee2b47d803ee4f4633",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1180,7 +1180,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1188,10 +1188,10 @@
    "name": "A_Trooper_death_explosion_arm",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_death_explosion_arm.fbx",
-   "bytes": 887164,
-   "sha256": "c057de6cbc45bca96a83b9cd6a333e17950e803860b9399de096bdd840fcdd08",
+   "bytes": 887484,
+   "sha256": "7527b9ed6ad54645f71a6b828cba1fa2c888755d4efc6a289b0b3c69c073be83",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1199,7 +1199,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1207,10 +1207,10 @@
    "name": "A_Trooper_death_explosion_armleg",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_death_explosion_armleg.fbx",
-   "bytes": 885196,
-   "sha256": "2e1099bcf4bcfe944a134cc0fe16b8c98ea8beea260784c7785622ab5759b37e",
+   "bytes": 885180,
+   "sha256": "7e2f7d51034facbda27de22e2f756b129275c20979c8179b398d271ec2fbeae0",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1218,7 +1218,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1226,10 +1226,10 @@
    "name": "A_Trooper_death_explosion_leg",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_death_explosion_leg.fbx",
-   "bytes": 889180,
-   "sha256": "940f24862e4ad8a9cab139c47b53598d46c820214ff0a19c1f8a2770f3578c90",
+   "bytes": 885692,
+   "sha256": "7ce9f15c3acba8fa1ab3dca6dab52f39cbfd213edea9a2fb56f0050047fc6d64",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1237,7 +1237,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1245,10 +1245,10 @@
    "name": "A_Trooper_die",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_die.fbx",
-   "bytes": 1106524,
-   "sha256": "af7683d3937851166ea0ff2f7823a3a5052515b7e855e3dd0160b5712cd29c07",
+   "bytes": 1106572,
+   "sha256": "48e9fb71a3e8112361ae724968f1dbcaa03d4247587d25cf84a8bfa5f1ea1219",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1256,7 +1256,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1264,10 +1264,10 @@
    "name": "A_Trooper_die_back",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_die_back.fbx",
-   "bytes": 892300,
-   "sha256": "55a6437ebee7f9d156550031b121092c2322ced21ea2694d5d6acea7cb3d5d8b",
+   "bytes": 891596,
+   "sha256": "7cede0370c5943e3d8cb350728c7a46cfa4a3ca7ae440f01d65b949d41f1e50f",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1275,7 +1275,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1283,10 +1283,10 @@
    "name": "A_Trooper_die_headshot",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_die_headshot.fbx",
-   "bytes": 881868,
-   "sha256": "cfc5aec77527aa0bc99f91716a8729580592df69e8b96d08d09e9c252b073203",
+   "bytes": 885836,
+   "sha256": "5b97912d88363500f657587f8ab8efff66289b407ae49df3cf7b0f7f35c6612d",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1294,7 +1294,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1302,10 +1302,10 @@
    "name": "A_Trooper_die_headshot_back",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_die_headshot_back.fbx",
-   "bytes": 884604,
-   "sha256": "39b489f74b0fa7848381e808bcf9bb3c178ec42bb3d1004192a45330b8f229eb",
+   "bytes": 885404,
+   "sha256": "b3d9fcecee2997541fb5ad9deec74c66e42c1683bb0592884f8374e441c00b22",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1313,7 +1313,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1321,10 +1321,10 @@
    "name": "A_Trooper_die_run",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_die_run.fbx",
-   "bytes": 895708,
-   "sha256": "4c21a1b2d9389771e772a878c64c8658aab9cbf77d9a28239da2904c10a26fa4",
+   "bytes": 896876,
+   "sha256": "176a9232182123a6ae533c0f178319dc578b6ddce1a70a0a31cb6190541abd12",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1332,7 +1332,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1340,10 +1340,10 @@
    "name": "A_Trooper_dive_left",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_dive_left.fbx",
-   "bytes": 554860,
-   "sha256": "d1f012a1d295ebeb32b3329436dbc0f54d048bba8c37babfb77ed4f09ba05b34",
+   "bytes": 554876,
+   "sha256": "245d15fd6682c528d987c2e01229ca53cec4366fe42eb5bc93eb4bad86539473",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1351,7 +1351,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1359,10 +1359,10 @@
    "name": "A_Trooper_dive_right",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_dive_right.fbx",
-   "bytes": 554524,
-   "sha256": "8e1db0601d9f16031eec9380349026e49c68a7a4974e3fb07129e100985d204f",
+   "bytes": 554860,
+   "sha256": "3cbb6272d520104ef85d3efc28ee0c741511aab9f3023416d56615fa7fec9f4c",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1370,7 +1370,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1378,10 +1378,10 @@
    "name": "A_Trooper_drag_rescuer",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_drag_rescuer.fbx",
-   "bytes": 553356,
-   "sha256": "1b00abde48c0f4aade8a5796476ae89493a857af6c5ecf10e4a8f62cc1e260d7",
+   "bytes": 553244,
+   "sha256": "90430837dcaa0e845aa671e0c0d35dda9d07bc83f86e1c13527be1453b084314",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1389,7 +1389,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1397,10 +1397,10 @@
    "name": "A_Trooper_drag_wounded",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_drag_wounded.fbx",
-   "bytes": 556508,
-   "sha256": "62f135b74ed7ce86e75bdc798d931a2a9e0dca315f1e6b9b82da82526a9ab4a8",
+   "bytes": 555708,
+   "sha256": "2b1ea0fa9306d1c47921a7ff4ed1bc71fae350ae26aa343e0e8abfcf0b78c067",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1408,7 +1408,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1416,10 +1416,10 @@
    "name": "A_Trooper_flinch_duck",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_flinch_duck.fbx",
-   "bytes": 568556,
-   "sha256": "687f09439e4390d355069691c53d4858e49b1a26ffec776e61096de9bf847d7e",
+   "bytes": 568460,
+   "sha256": "77d5f874f9ef90e96be04b22bbb632589a56e57b8115aa0d66541db3479fe409",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1427,7 +1427,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1435,10 +1435,10 @@
    "name": "A_Trooper_getup_back",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_getup_back.fbx",
-   "bytes": 719052,
-   "sha256": "34c993a96de3b79892ff0da0985782c70e5efe4ead9c18e4abab059db6e81018",
+   "bytes": 718956,
+   "sha256": "359a7ca27ad6e3e0c00c1e764065e0fc1d6f46bff157611baf5a797c56c87698",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1446,7 +1446,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1454,10 +1454,10 @@
    "name": "A_Trooper_getup_front",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_getup_front.fbx",
-   "bytes": 717580,
-   "sha256": "3e293f12213784dcf276470e42c5e03fd9a236935408b5d6482d5212dbbf2320",
+   "bytes": 717612,
+   "sha256": "d69e23723a4ffddb35ec815fb5cb4b36cf6031891be4af9488629e5a0adc2f61",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1465,7 +1465,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1473,10 +1473,10 @@
    "name": "A_Trooper_go_prone",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_go_prone.fbx",
-   "bytes": 608668,
-   "sha256": "b9360dc403fcf28c8596703657159ff813bd0c90a25e613ee43ba7449e6ac70c",
+   "bytes": 611676,
+   "sha256": "4c21b660512f01740c17bc26e30066deb7dd185eb98508701086c4eb614d5515",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1484,7 +1484,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1492,10 +1492,10 @@
    "name": "A_Trooper_grenade_throw",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_grenade_throw.fbx",
-   "bytes": 563020,
-   "sha256": "2496eb57a33ae5cc639ad1d2248282c11d04f49d5a997a43294288d0966bcce6",
+   "bytes": 563084,
+   "sha256": "e329ba0d6d6be9c02464f3c2cb69004a0da6b1b40f8757c2c4f794d8baa852ee",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1503,7 +1503,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1512,9 +1512,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_hit_back.fbx",
    "bytes": 512764,
-   "sha256": "041d57d6b65f814342ead0327b385f3c8113c448cd57c7e4bde86e81f015c487",
+   "sha256": "e06a824da772cb5bdceb8878795140eb0202baa7d80c6f107a65feb557644068",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1522,7 +1522,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1531,9 +1531,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_hit_foot.fbx",
    "bytes": 549596,
-   "sha256": "75ca069439d537dcd82b8634b0c53498c80c09f051ed1f2041a37068521b3fe0",
+   "sha256": "3f173d05db6b762ac49345177c4068d63a003b93927eaa59f44f4ba2b35a866f",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1541,7 +1541,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1550,9 +1550,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_hit_front.fbx",
    "bytes": 512764,
-   "sha256": "b172998d63801ad176240fa933d117aa75939b4f4c4b067b0876dc122877786b",
+   "sha256": "cd8ba56fb6c8c432c4ccb2c6f6cbca9ce1e990aa766a473df7d4b48f61cbef67",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1560,7 +1560,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1569,9 +1569,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_hit_left.fbx",
    "bytes": 506828,
-   "sha256": "5959cf3b82ff186447c591bff0835765a5892e19c914e0e0a9be7f0636068dcc",
+   "sha256": "56d9bfea0f08486994407252d83e74b347e3fa6765f44f5321aed4037735fab4",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1579,7 +1579,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1588,9 +1588,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_hit_right.fbx",
    "bytes": 506828,
-   "sha256": "b6184b64ad7feff597cc3f378cc63954712fec0d03705b86237092ca7eedb191",
+   "sha256": "c125e62efe179d53beeda5db56a7036585600c73b2607465601cfb6ede11eb0c",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1598,7 +1598,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1606,10 +1606,10 @@
    "name": "A_Trooper_idle",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_idle.fbx",
-   "bytes": 859068,
-   "sha256": "7ff230333c18b50f5c5dd7a7ed14e4bab7618c2599ee57ea6030e7ce69942a80",
+   "bytes": 859164,
+   "sha256": "f2c64164c9d22d1cf67df392ece6acdf1853e80994939d29b8aeaa2cfbd2eb73",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1617,7 +1617,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1625,10 +1625,10 @@
    "name": "A_Trooper_inspect_freight",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_inspect_freight.fbx",
-   "bytes": 836972,
-   "sha256": "e053c01aafda6e7d5362ca2ca95184977995e763d9bc981def9d7e5a09f1e566",
+   "bytes": 837132,
+   "sha256": "477353076d4ad099185488c53662de133f18b9b36e5adaba28abbc09c9f04fc6",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1636,7 +1636,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1645,9 +1645,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_jump.fbx",
    "bytes": 549596,
-   "sha256": "d05b59bb3d1a9e78b086fc0eb595074b3d450ee6c8ebedc64b59338a11ed29be",
+   "sha256": "dc8c7c43e1374446dbbc59f434b38563e33f857bf1c0270c22107ffe92ef566e",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1655,7 +1655,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1663,10 +1663,10 @@
    "name": "A_Trooper_kneel_aim",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_kneel_aim.fbx",
-   "bytes": 755324,
-   "sha256": "193df785452f113c2c7455ec6ed6c53817092ecd1fbe638d17febba5f9465e46",
+   "bytes": 755292,
+   "sha256": "566852b9b60d5d56475bd6b0938428d2e5de869d7be5641a0155ad1abef3beb4",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1674,7 +1674,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1683,9 +1683,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_kneel_shoot.fbx",
    "bytes": 448012,
-   "sha256": "55601bef1d55d1c49a4f8e5586cdcdf3bc2757763cbbed547a6f55b3482400bc",
+   "sha256": "4b7b64e94b53d1f2a733675e051fd254b50f7a9c9bed748d65e62add5478e30c",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1693,7 +1693,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1701,10 +1701,10 @@
    "name": "A_Trooper_look_around",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_look_around.fbx",
-   "bytes": 1058188,
-   "sha256": "58165435304172293993c02aca508b46fedde51ba52b34c27fcaded8fbb362c5",
+   "bytes": 1057548,
+   "sha256": "c0591e73569b765291769aacffdb0a093d893f42dc74bedef8ef8a3dd2c744b7",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1712,7 +1712,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1721,9 +1721,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_look_down.fbx",
    "bytes": 390988,
-   "sha256": "a75195e61b25c028fe96561b1ded3e9d67b002ca261f048751038628753270c0",
+   "sha256": "1a9228e0b8c0a724e1dd72b145e8c20ae94d2ebefac8c7cdfa9c77e74967b7ff",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1731,7 +1731,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1740,9 +1740,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_look_left.fbx",
    "bytes": 390988,
-   "sha256": "182d596f74259e68e76672c5e121d7a6225fb3dee75ee1884b86d24d96b303e6",
+   "sha256": "25f8a1d127b3ef528f1ef87705fe5cecbcf8920a7cebdfff1e3abec285a53e26",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1750,7 +1750,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1759,9 +1759,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_look_right.fbx",
    "bytes": 390988,
-   "sha256": "1db1fc0e15f56b1133d87647f35592f2e29c832b1a7235dfc8785e441429377e",
+   "sha256": "66f611f53ec2c122eec60b465ad70b691af65d4be172a891cbbf359cc2a8b28d",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1769,7 +1769,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1778,9 +1778,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_look_tilt_l.fbx",
    "bytes": 390988,
-   "sha256": "d48f9443659133efd4d27c798ae7299c35ffd4ac4681065171136746265498a9",
+   "sha256": "87e67acd5eb70a9707dce9a1808ea2ad71ebc1dd6400de48db7e541c9e28278f",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1788,7 +1788,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1797,9 +1797,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_look_tilt_r.fbx",
    "bytes": 390988,
-   "sha256": "096e7e1e6aa97a9f3825f508afdc69acb1a81457c2907a3ddfe64b22fe2ea4ac",
+   "sha256": "df8f41bb6319217f84f34c532637b411e4b2308da114bb7094e1ac8edf5c540a",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1807,7 +1807,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1816,9 +1816,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_look_up.fbx",
    "bytes": 390988,
-   "sha256": "d5a83530b7b2ed6f178d6da50e0d8c6d24756c3b0258881eea7d5c63f4c2665e",
+   "sha256": "365c1136fa77bf0fe8d2f278b1b1e9b8c625cd2244f631c678d4006d45a6e164",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1826,7 +1826,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1834,10 +1834,10 @@
    "name": "A_Trooper_mantle",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_mantle.fbx",
-   "bytes": 630556,
-   "sha256": "998d622a44e8f5d51b69ac67cd74c1eea1e90c63954f61f041da0a884a8a5e25",
+   "bytes": 630444,
+   "sha256": "90d8d7ccf8f7ae6d96476fa8fca5dad81053eaba5d86534be43bab46a28891f3",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1845,7 +1845,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1853,10 +1853,10 @@
    "name": "A_Trooper_medic_treat",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_medic_treat.fbx",
-   "bytes": 701276,
-   "sha256": "ac0bb9750a01d0d337b20138706562d09d90620c825495aa59b0455c2dffff82",
+   "bytes": 701708,
+   "sha256": "e2200d200729eea8a23e07c2849df436b2d16b3eec2b0a55d09ec1f4eadc6383",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1864,7 +1864,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1873,9 +1873,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_melee.fbx",
    "bytes": 549596,
-   "sha256": "52e483c806af30aee55045aa60da3cab5ec642dab4b395e79fe159408d48ffa6",
+   "sha256": "655117dd7f53356d7e483309dad7a4f8edb550ee4cd163069b5297e40edff258",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1883,7 +1883,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1891,10 +1891,10 @@
    "name": "A_Trooper_mortar_load",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_mortar_load.fbx",
-   "bytes": 699436,
-   "sha256": "23a93a29d74aefb7e82f9ff786cdb29dc845d40a31d5ab90dd8d747a2d54cdf0",
+   "bytes": 699452,
+   "sha256": "7b0cf6014a3ab46686ee5e283f1f3a5d3b5409a298f5669a85128f3245ddb09b",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1902,7 +1902,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1910,10 +1910,10 @@
    "name": "A_Trooper_neck_roll",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_neck_roll.fbx",
-   "bytes": 854972,
-   "sha256": "88375a6cd5349e0d4c588e22786e3bc6a7a7f11ed86c45a8eeb283a554525b94",
+   "bytes": 854892,
+   "sha256": "506d4702898efa67e7ccef1cd066730fd6c91cefb96c178c30cf24ca5081e01f",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1921,7 +1921,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1929,10 +1929,10 @@
    "name": "A_Trooper_patrol_look",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_patrol_look.fbx",
-   "bytes": 1057452,
-   "sha256": "6c43248d72b0900ca9ff486299a2e33048a5635c67f17ead79a032fe4a3dbdd4",
+   "bytes": 1057292,
+   "sha256": "443e713cce45324b48cc00d656cdb87e1f16b69bd4548c46737c251c19611e60",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1940,7 +1940,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1948,10 +1948,10 @@
    "name": "A_Trooper_prone_aim",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_prone_aim.fbx",
-   "bytes": 761420,
-   "sha256": "fda6a75482682b58510a4bfca28b114b3a00e426081a0ef353f763dce56dfda3",
+   "bytes": 761036,
+   "sha256": "bd4af9d6ac03e421dcab4c3e4ea146b9d6843c6ce88aa5ffe596d492b78d5424",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1959,7 +1959,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1967,10 +1967,10 @@
    "name": "A_Trooper_prone_crawl",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_prone_crawl.fbx",
-   "bytes": 585788,
-   "sha256": "60423fe21bf8fd379a67bacb79323187b4e9e361e6616a9233411fd92bbf743f",
+   "bytes": 586620,
+   "sha256": "128141140633a2ca930aefbc715d5562b7fb18edf8791f9e031e3e2ca31cf232",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1978,7 +1978,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -1987,9 +1987,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_prone_shoot.fbx",
    "bytes": 448012,
-   "sha256": "c3d186fc2f65d52d32ddf93124012b7d98158053962b3de5844a122d8138647d",
+   "sha256": "f55ec694ea3719a37c8874870deeabca4f148d92ab314b4a2e28ebae8d84e109",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -1997,7 +1997,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2006,9 +2006,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_radio_call.fbx",
    "bytes": 723932,
-   "sha256": "5d78eadd1a59273cc385821df29d6d7bfc65e86debf269cb764c1841d4cc7e7d",
+   "sha256": "45f3313ad9aeb6e25c2156eda310e542c97265cb57bb8053fa39c7fd1c7d4b0b",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2016,7 +2016,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2024,10 +2024,10 @@
    "name": "A_Trooper_reload",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_reload.fbx",
-   "bytes": 666396,
-   "sha256": "5a19eabce23eb21218ebb6d4b9d600f6f693fa4c9666f3b163b54accf13dfe90",
+   "bytes": 666412,
+   "sha256": "ff327a927fecdff9d34f9bb0705f8fc9542bee85ab2fd653ee122155e565d456",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2035,7 +2035,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2043,10 +2043,10 @@
    "name": "A_Trooper_roll_to_kneel",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_roll_to_kneel.fbx",
-   "bytes": 725244,
-   "sha256": "76ff0063258650e1eb739fa19241c88cbf50cbcf876af8a01cba7b2aa7733d4b",
+   "bytes": 725196,
+   "sha256": "78b1f588506ac2c5f6d8f5c8ce3443aac412b61e40cbe3a2450b6ce8bdad9d08",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2054,7 +2054,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2063,9 +2063,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_run.fbx",
    "bytes": 512764,
-   "sha256": "aedeca131c4470d93b6bcf23a3c5d6d6f3b00c62cabbd01c19efe4fc073c71df",
+   "sha256": "81e7f9c61a987bde53dece75b8d91117c395ab953eea41477c946d2303121e15",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2073,7 +2073,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2082,9 +2082,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_run_stop.fbx",
    "bytes": 531180,
-   "sha256": "fab201d7d9e3e4a517a25f8a5af454cac2debd4cf6ee61e38772a8cc3731715c",
+   "sha256": "d3deb7d4fda9cf6accda774e63351d67b4dedd4db8e6fcdfb6556ab94e330de0",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2092,7 +2092,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2100,10 +2100,10 @@
    "name": "A_Trooper_saber_death_arm",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_saber_death_arm.fbx",
-   "bytes": 962636,
-   "sha256": "75b6b34e29a4b042545e3277be86406fd64081d33811b82c8661ceb90d43d907",
+   "bytes": 964236,
+   "sha256": "c5dce5bd83d347628e07291c1052713f6548059dbd8bdc3b63dc5f8295f8ebd4",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2111,7 +2111,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2119,10 +2119,10 @@
    "name": "A_Trooper_saber_death_diagonal",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_saber_death_diagonal.fbx",
-   "bytes": 897068,
-   "sha256": "ff69b39c8576e5779cb1e39e2a5824da9e723125cdcd25fe77473d02b60cacc6",
+   "bytes": 896364,
+   "sha256": "c1d938a9e4bbfd9f298ebbd094aa483e1e47f96051f54af80935e845f217f150",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2130,7 +2130,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2138,10 +2138,10 @@
    "name": "A_Trooper_saber_death_half",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_saber_death_half.fbx",
-   "bytes": 885276,
-   "sha256": "d64d982c2dc4558e651210a87ac5e8d951b7897f0ce5cde8074a07177f45f317",
+   "bytes": 882076,
+   "sha256": "834e55a2d96362a12f309e9106a6efb97ddf37db42dd6e83f4cc5c0fa5ede9ca",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2149,7 +2149,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2157,10 +2157,10 @@
    "name": "A_Trooper_saber_death_head",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_saber_death_head.fbx",
-   "bytes": 915564,
-   "sha256": "eab5a8e9f957c5ba1daa1bc3e933446e1099f55f71a673015a2cfa83ffe049a5",
+   "bytes": 914924,
+   "sha256": "0ac3dcfac3f2c7bca6ef244d330b7fc4ba4b24dc1d2357185f2d1f82dec58983",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2168,7 +2168,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2176,10 +2176,10 @@
    "name": "A_Trooper_saber_death_leg",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_saber_death_leg.fbx",
-   "bytes": 888220,
-   "sha256": "7d778e9882cca75362652a63bbcb614fa8aef20a5cf78c3091782691c3529edf",
+   "bytes": 888956,
+   "sha256": "d18850a00b9600bc21a65a4c32d26179a8a652063dd9dbd75ec4e22cac5ba6dc",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2187,7 +2187,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2196,9 +2196,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_saber_hit_1.fbx",
    "bytes": 531180,
-   "sha256": "b8ea12ee5a68d60440d738379d24800df634f99c6890677be661914828ea477e",
+   "sha256": "bf64652e0bb6f98feb4952f2171078d17f0b45976cac624777089e60c1efc22c",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2206,7 +2206,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2215,9 +2215,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_saber_hit_2.fbx",
    "bytes": 555532,
-   "sha256": "41915e7441bfedbabbaeac7a4ff7f6b5668f2c3e22808a6ef010791bc3bdceea",
+   "sha256": "065240885f49c7b82c757a1d7b76fa3cfb44b6725dcbdc7cf701d19c274d1a5c",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2225,7 +2225,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2234,9 +2234,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_shoot.fbx",
    "bytes": 448012,
-   "sha256": "ad8839f3d32a65c40db7ca777ca75640958e56043281e27d47787f714b66fb66",
+   "sha256": "28d92f83909de51c05957851c0a683d217012c9a13de7a64bc0880b50f4c616f",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2244,7 +2244,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2253,9 +2253,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_shoot_burst.fbx",
    "bytes": 494940,
-   "sha256": "f69f2ab4d5ceafb05a087d0bb7e8a59d4ca0bc8d9e4fce820e322c09174a978b",
+   "sha256": "724d8a598841063dac74286ec0d8bdb90e625e4769e86877c9178bdeeae71e6c",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2263,7 +2263,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2272,9 +2272,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_shoot_hip.fbx",
    "bytes": 448012,
-   "sha256": "f1d54376718d63aa2209a5e0481cd5c5739bfe9ebd12f4202fe0cd6e0ece3d7d",
+   "sha256": "82f5cdefda35ff804d5493a5ec9a46af37bb0848358ba5aaab17d9c5d50da9b1",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2282,7 +2282,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2290,10 +2290,10 @@
    "name": "A_Trooper_signal_halt",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_signal_halt.fbx",
-   "bytes": 576172,
-   "sha256": "66902bd585774436bd9958757023f958896fce743d76c81514f13e946e193472",
+   "bytes": 576204,
+   "sha256": "a502931a6ac1f8073ad2d65e5b183bb42df0866b42b3186cffaf2c71b8c061a7",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2301,7 +2301,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2309,10 +2309,10 @@
    "name": "A_Trooper_signal_moveup",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_signal_moveup.fbx",
-   "bytes": 565436,
-   "sha256": "954f31e066cf21ae9204a247afd18afe6e5271d0348c302a9b6afc7006ae1611",
+   "bytes": 565532,
+   "sha256": "592947992cc96002644f6a9829a4745befc5a348c03c862da4b75f04d7573acd",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2320,7 +2320,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2329,9 +2329,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_sprint.fbx",
    "bytes": 500892,
-   "sha256": "06eccae9aea66ed8afdadfff7ffd6514613870898cc49a9c238101d04bb253f3",
+   "sha256": "31cde6e6a8a49779e1110e1687b5cbd9563fe468fa6e64897d86ed1c9f031a27",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2339,7 +2339,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2347,10 +2347,10 @@
    "name": "A_Trooper_stack_up",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_stack_up.fbx",
-   "bytes": 708908,
-   "sha256": "7a1be4aa641740a5fb6b6bdfe5e8836303096411e11316984571533f870cba37",
+   "bytes": 708892,
+   "sha256": "a6e78eb6623e7f3ba7cfd6989ed7619c69c45b07f6103860b5d94c62061877da",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2358,7 +2358,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2367,9 +2367,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_stairs_up_aim.fbx",
    "bytes": 567420,
-   "sha256": "3d175d5cae25a7c29b07c97ba58223baa7b09bbdfdc3c9dda40cc257cd396e8b",
+   "sha256": "33b9a1bfd93a1fb737afad9b1492b9ed03227642ee5c3895b8f53c7b15ecf688",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2377,7 +2377,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2386,9 +2386,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_suppress.fbx",
    "bytes": 494940,
-   "sha256": "3c5f48eb0fb3c3db5bdb2af2c6ec53772878ea7b14e1feadb8ce059eab0c2568",
+   "sha256": "a4e49615192f5549d687a05504696a53928cab7af41a62d8730875bacc89c1b8",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2396,7 +2396,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2404,10 +2404,10 @@
    "name": "A_Trooper_tiptoe_peek",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_tiptoe_peek.fbx",
-   "bytes": 770780,
-   "sha256": "4b6463d1aa7a1b549cd72dbd15326526f9963f3751d41dd5694b6ab9fbc172fd",
+   "bytes": 770956,
+   "sha256": "0257f12fce498b2f86c7dd3d5443d576e5e1cd4f9e04f311463928b2411fd9c8",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2415,7 +2415,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2423,10 +2423,10 @@
    "name": "A_Trooper_tiptoe_walk",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_tiptoe_walk.fbx",
-   "bytes": 564588,
-   "sha256": "fa1ea146fdebfc81792a2d5d36a00e14295bfdc1632256d338683201cacfcd62",
+   "bytes": 564620,
+   "sha256": "4a02ddc6d0bc92e4acf24e05a397cb456b9cab0a658e7c4a4e3320164d8550a2",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2434,7 +2434,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2443,9 +2443,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_turn_l90.fbx",
    "bytes": 531180,
-   "sha256": "a905dcccd8a6cdbc996fbb58e60ccf3730b05e2a032c4ca243573848af52da8d",
+   "sha256": "a26f7131525cf5a64ea930e124cd09a0d325697c4df579960507226380622417",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2453,7 +2453,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2462,9 +2462,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_turn_r90.fbx",
    "bytes": 531180,
-   "sha256": "930b1e970299f236e807167a466377f692ab158028ba2775b66e619fb9e0c86a",
+   "sha256": "329375f3dd4a9cb47220fef51391de858478ef4b7d2669020e6af55299ec6153",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2472,7 +2472,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2480,10 +2480,10 @@
    "name": "A_Trooper_vault",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_vault.fbx",
-   "bytes": 576556,
-   "sha256": "0746a2d8b20766819f299c09defac899b8fa276c48ba90f529ea85a662e87ae3",
+   "bytes": 576476,
+   "sha256": "a8ef24f20a948518fcd291a2045714507f4a40e8f00a1fc8a83a90fd34cd0ca9",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2491,7 +2491,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2500,9 +2500,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_walk.fbx",
    "bytes": 687772,
-   "sha256": "d3290b53d832c0b2057f0b8da94c19502bb74459bd7af40d80172fbb6901eb0a",
+   "sha256": "6c5c50cb7facd0707a7d7cd603a2a6510823646a4adbf6bcdabb431ab8887faf",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2510,7 +2510,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2518,10 +2518,10 @@
    "name": "A_Trooper_walk_limp",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_walk_limp.fbx",
-   "bytes": 574076,
-   "sha256": "b14bf362f7ce347d4ceae2e938d92ec11f5936cc04288419fa0da22c0a8823ed",
+   "bytes": 574140,
+   "sha256": "5946c25d97631d20baf238b01d44b4e7718baad9c9d10550b6598ad31da1bec6",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2529,7 +2529,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2537,10 +2537,10 @@
    "name": "A_Trooper_wounded_crawl",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_wounded_crawl.fbx",
-   "bytes": 574140,
-   "sha256": "16bb1ba7a06a882719fcd88826f25b252a5f96b547f42ee4fde7fcbaaa299166",
+   "bytes": 573180,
+   "sha256": "2d93f4c3ca446fe98bc7bbd36b8a3c970102d7c7e52f4fea571395150c10e6f4",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2548,7 +2548,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2556,10 +2556,10 @@
    "name": "A_Trooper_wounded_down",
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/Animations/A_Trooper_wounded_down.fbx",
-   "bytes": 899180,
-   "sha256": "a806a23ec3e8a56c388680f048c7f12b2e53268fd8ec37f7370ff652616eed84",
+   "bytes": 899372,
+   "sha256": "d19553766181a3d7ea048106e241e7aa34175c387f84f2fdd99d08d2e4eabf07",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2567,7 +2567,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2575,10 +2575,10 @@
    "name": "SK_Trooper_Cut_death_explosion_arm",
    "type": "skeletal_mesh",
    "path": "assets/characters/ally_trooper/Unreal/Cuts/SK_Trooper_Cut_death_explosion_arm.fbx",
-   "bytes": 6857548,
-   "sha256": "dd895ed01960e0316e01aa6fedab368aee00c4ebc363f99071d72500197a6085",
+   "bytes": 6857580,
+   "sha256": "046295834d038c3c7c5706c1f2caef0d90db78d9077d9d78691f1cbbaa8e285f",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2586,7 +2586,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2594,10 +2594,10 @@
    "name": "SK_Trooper_Cut_death_explosion_armleg",
    "type": "skeletal_mesh",
    "path": "assets/characters/ally_trooper/Unreal/Cuts/SK_Trooper_Cut_death_explosion_armleg.fbx",
-   "bytes": 5088780,
-   "sha256": "0bdc2af983df6079aee20a298fcedbb194f2ff424311b3bea9964c51dce535b2",
+   "bytes": 5088732,
+   "sha256": "c8f76eeff073d742aa46721aef067af82f30caf52f632b0ca4827b177b98e1eb",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2605,7 +2605,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2613,10 +2613,10 @@
    "name": "SK_Trooper_Cut_death_explosion_leg",
    "type": "skeletal_mesh",
    "path": "assets/characters/ally_trooper/Unreal/Cuts/SK_Trooper_Cut_death_explosion_leg.fbx",
-   "bytes": 6877820,
-   "sha256": "2b390356d18e33483ff84be4bef15ac2816b120dfb3c2305cae32e6db5affe8f",
+   "bytes": 6877740,
+   "sha256": "e88840dee68bdc14eec8e7a3d7f9c053b8aeff0ec0253ad22ad0760da6630caa",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2624,7 +2624,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2632,10 +2632,10 @@
    "name": "SK_Trooper_Cut_saber_death_arm",
    "type": "skeletal_mesh",
    "path": "assets/characters/ally_trooper/Unreal/Cuts/SK_Trooper_Cut_saber_death_arm.fbx",
-   "bytes": 6905276,
-   "sha256": "b30069b2bf57d689388df60910ca949e775c1f79d7a1fdf1c3324d4fb5bf6de7",
+   "bytes": 6905324,
+   "sha256": "a6f3e1e8b51871d15f8378d9e1fc041d117b88bcfaa66610516f9f6c42795b07",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2643,7 +2643,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2651,10 +2651,10 @@
    "name": "SK_Trooper_Cut_saber_death_diagonal",
    "type": "skeletal_mesh",
    "path": "assets/characters/ally_trooper/Unreal/Cuts/SK_Trooper_Cut_saber_death_diagonal.fbx",
-   "bytes": 6964172,
-   "sha256": "77abec595a7a946385e6aaf094b07f6667feefb66ae32decc59b32bfa58ee61b",
+   "bytes": 6964188,
+   "sha256": "4e1894e40d4a18e27046474ca6618dc061d8bc63d4fc1688b7a7d0d9797e2bcc",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2662,7 +2662,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2671,9 +2671,9 @@
    "type": "skeletal_mesh",
    "path": "assets/characters/ally_trooper/Unreal/Cuts/SK_Trooper_Cut_saber_death_half.fbx",
    "bytes": 6839612,
-   "sha256": "afa72e56cb97d5e8762566aadf5bfda31415135c6627236edb6885bf6c4fa625",
+   "sha256": "e7e5d08a7dcfabcf8753c27fc3262556a106b588b92215b6443fa606786e30f7",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2681,7 +2681,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2689,10 +2689,10 @@
    "name": "SK_Trooper_Cut_saber_death_head",
    "type": "skeletal_mesh",
    "path": "assets/characters/ally_trooper/Unreal/Cuts/SK_Trooper_Cut_saber_death_head.fbx",
-   "bytes": 6999580,
-   "sha256": "bbadc0b6068095b75066cdb65ac29f3e278eb83ab12c740816355d9a9d94bd26",
+   "bytes": 6999628,
+   "sha256": "386f647da94e8675d388958311688307bfe359f7cc54821e0af327778793b05a",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2700,7 +2700,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2708,10 +2708,10 @@
    "name": "SK_Trooper_Cut_saber_death_leg",
    "type": "skeletal_mesh",
    "path": "assets/characters/ally_trooper/Unreal/Cuts/SK_Trooper_Cut_saber_death_leg.fbx",
-   "bytes": 6889148,
-   "sha256": "8d17d1f416d207ef9dcdf4fb1d9fd160994ba2f973470f91aa5b3e5862df8876",
+   "bytes": 6889164,
+   "sha256": "11e937e987a1990a76ef54e39d9658c84f706af2d6ad53928664612940fb643d",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2719,7 +2719,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2738,7 +2738,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2747,9 +2747,9 @@
    "type": "skeletal_mesh",
    "path": "assets/characters/ally_trooper/Unreal/SK_Trooper.fbx",
    "bytes": 6848124,
-   "sha256": "9b8d0544845b199166d3cf5f3c4185d3e007d73c35acd7b0af7732eab9fce7ab",
+   "sha256": "6695ec454f6bc2f3bf6fc69d467731c5e57cd63d54f2f07e41763a9a70955b41",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2757,7 +2757,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2766,9 +2766,9 @@
    "type": "animation",
    "path": "assets/characters/ally_trooper/Unreal/SM_Blaster.fbx",
    "bytes": 393180,
-   "sha256": "4a6356f0fb244629eff108db32bd9edb19eb088762e8e1a021d0cdf3a2ed1bbe",
+   "sha256": "ab38813132603621d655bb90ed62bdfa8101ddcc67b29925924d1bcdf3490c5f",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2776,7 +2776,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2795,7 +2795,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2814,7 +2814,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2833,7 +2833,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2852,7 +2852,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2871,7 +2871,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2890,7 +2890,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2909,7 +2909,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2928,7 +2928,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2936,10 +2936,10 @@
    "name": "trooper",
    "type": "mesh",
    "path": "assets/characters/ally_trooper/Web/trooper.glb",
-   "bytes": 24174796,
-   "sha256": "c25724d4491f0a11143c72654afcb1af99e48fc5956a1f31c05a370c8fed9e7d",
+   "bytes": 24157964,
+   "sha256": "2e3ba3475ae2b8712314203e4da0800ea780d0ec3d91acd22cb9e80c3da0e47f",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2947,7 +2947,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   },
   {
@@ -2955,10 +2955,10 @@
    "name": "trooper_web",
    "type": "mesh",
    "path": "assets/characters/ally_trooper/Web/trooper_web.glb",
-   "bytes": 8192504,
-   "sha256": "b3970e8bcea8d33542176534ea9541c158ed19e4cd7d61a9378e09fd2e288549",
+   "bytes": 8180452,
+   "sha256": "5e009153d0fba22cbc039c509b2473f86f25e6cada4791447707bc00d66a6e26",
    "created": "2026-11-09",
-   "revision": 1,
+   "revision": 2,
    "creator": "Duke Forger tools/rigging",
    "provenance": {
     "tool": "Blender 4.5 (bpy) + tools/rigging",
@@ -2966,7 +2966,7 @@
      "Source/"
     ]
    },
-   "status": "RIGGED+ANIMATED (validated in Blender re-import); Unreal import pending",
+   "status": "RIGGED+ANIMATED (validated in Blender re-import and three.js); Unreal import pending",
    "updated": "2026-11-09"
   }
  ]
