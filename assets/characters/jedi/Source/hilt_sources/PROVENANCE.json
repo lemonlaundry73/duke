@@ -1,0 +1,13 @@
+{
+ "blaster_source.glb (game hilt)": {
+  "from": "hilt_sources/Meshy_AI_SciFi_Lightsaber_Hilt_image-to-3d.glb",
+  "provider": "user upload 2026-11-09, generated with Meshy AI (image-to-3D, textured)",
+  "license": "per the user's Meshy account terms (not verified here)",
+  "processing": "gltf-transform weld + simplify (ratio 0.018, error 0.001: 445,552 -> 13,956 tris) + resize textures 4K -> 2K; Blender: joined, centred, scaled to 0.28 m along +Z (emitter +Z). See tools/rigging/hilt_prep.sh"
+ },
+ "hilt_sources/Lightsaber.fbx": {
+  "provider": "user upload 2026-11-09 (the 'Lightsaber' hilt from the user's Google Drive zip)",
+  "license": "not stated by the user",
+  "status": "kept as an alternative hilt. 887k tris plus a 72 cm beam mesh; its textures were not embedded in the FBX (materials Steel / SteelBlack / Copper / BlackSteel / Latch reference external 4K files), so it would render untextured without them"
+ }
+}

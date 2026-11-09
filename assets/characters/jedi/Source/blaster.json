@@ -1,5 +1,5 @@
-{"name": "Lightsaber (PLACEHOLDER hilt)", "kind": "saber", "placeholder": true, "scale": 1.0, "grip_rake_deg": 0,
+{"name": "Lightsaber (Meshy hilt)", "kind": "saber", "placeholder": false, "scale": 1.0, "grip_rake_deg": 0,
  "grip": [0, 0, 0.035], "hold": [0, 0, -0.075], "fore": [0, 0, -0.075], "muzzle": [0, 0, 0.14],
  "blade_len": 0.95, "blade_color": [0.1, 0.45, 1.0],
  "belt": {"side": "l", "offset": [0.0, 0.0, 0.0]},
- "note": "Hilt along +Z (emitter +Z). grip = right hand, hold = left hand below it, muzzle = emitter. PLACEHOLDER until the Lightsaber.zip hilt is supplied (Drive download limit)."}
+ "note": "Hilt along +Z (emitter +Z, flared chrome shroud), 0.28 m, origin at the centre. grip = right hand on the black finned grip, hold = left hand on the clamp, muzzle = emitter tip."}
