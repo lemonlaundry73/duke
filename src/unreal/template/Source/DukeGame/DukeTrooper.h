@@ -38,7 +38,7 @@ public:
 
 	// Patrol route, relative to the spawn point (editable widgets in the level editor). Empty = guard the spawn point.
 	UPROPERTY(EditAnywhere, Category = "Trooper|Patrol", meta = (MakeEditWidget = true)) TArray<FVector> PatrolPoints;
-	UPROPERTY(EditAnywhere, Category = "Trooper|Patrol") float PatrolSpeed = 140.f;   // = authored walk clip speed
+	UPROPERTY(EditAnywhere, Category = "Trooper|Patrol") float PatrolSpeed = 100.f;   // ~ the captured walk (0.96 m/s)
 	UPROPERTY(EditAnywhere, Category = "Trooper|Patrol") FVector2D PauseSeconds = FVector2D(2.f, 5.f);
 	UPROPERTY(EditAnywhere, Category = "Trooper|Patrol") float LookRange = 1200.f;  // looks at pawns this close (cm)
 	// Sneak: walk on tiptoe (tiptoe_walk, 70 cm/s). Set from Blueprint or level design for infiltration scenes.
@@ -129,7 +129,7 @@ protected:
 	bool bWounded = false, bBeingDragged = false; float WoundedAt = 0.f;
 	float BusyUntil = 0.f;                      // full-body action playing (get-up, dive, vault, turn): no other moves
 	bool bProne = false, bTreating = false; FName CoverKind = NAME_None; float CoverFireUntil = 0.f, NextCoverFire = 0.f;
-	float TurnFrom = 0.f, TurnTo = 0.f, TurnStart = -1.f, LastSpeed = 0.f, VaultStart = -1.f; FVector VaultFrom = FVector::ZeroVector;
+	float TurnFrom = 0.f, TurnTo = 0.f, TurnStart = -1.f, TurnLen = 0.8f, LastSpeed = 0.f, VaultStart = -1.f; FVector VaultFrom = FVector::ZeroVector;
 	void FaceTarget(const FVector& P, float Dt, float Now);   // turn in place with stepping feet when the angle is large
 	FName CoverHeightAt(const FVector& Spot, const FVector& Threat) const;
 	TWeakObjectPtr<ADukeTrooper> DragPartner;

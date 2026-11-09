@@ -1,0 +1,622 @@
+{
+ "ual": {
+  "file": "ual/UAL1_Standard.glb",
+  "clips": [
+   {
+    "src": "Idle_Loop",
+    "name": "idle",
+    "loop": true,
+    "hybrid_trooper": true,
+    "notes": "Idle, weight shifting and breathing"
+   },
+   {
+    "src": "Walk_Loop",
+    "name": "walk",
+    "loop": true,
+    "hybrid_trooper": true,
+    "notes": "Walk"
+   },
+   {
+    "src": "Jog_Fwd_Loop",
+    "name": "run",
+    "loop": true,
+    "hybrid_trooper": true,
+    "notes": "Jog / run"
+   },
+   {
+    "src": "Sprint_Loop",
+    "name": "sprint",
+    "loop": true,
+    "hybrid_trooper": true,
+    "notes": "Sprint"
+   },
+   {
+    "src": "Crouch_Fwd_Loop",
+    "name": "crouch_walk",
+    "loop": true,
+    "hybrid_trooper": true,
+    "notes": "Crouched walk"
+   },
+   {
+    "src": "Crouch_Idle_Loop",
+    "name": "crouch_idle",
+    "loop": true,
+    "notes": "Crouched idle"
+   },
+   {
+    "src": "Walk_Formal_Loop",
+    "name": "walk_formal",
+    "loop": true,
+    "notes": "Formal walk (officers on inspection)"
+   },
+   {
+    "src": "Roll",
+    "name": "roll",
+    "notes": "Dodge roll"
+   },
+   {
+    "src": "Hit_Chest",
+    "name": "hit_chest",
+    "notes": "Hit in the chest"
+   },
+   {
+    "src": "Hit_Head",
+    "name": "hit_head",
+    "notes": "Hit in the head"
+   },
+   {
+    "src": "Death01",
+    "name": "die_fall",
+    "notes": "Death fall (alternative to the ragdoll deaths)"
+   },
+   {
+    "src": "Idle_Talking_Loop",
+    "name": "idle_talking",
+    "loop": true,
+    "notes": "Talking while standing"
+   },
+   {
+    "src": "Interact",
+    "name": "interact",
+    "notes": "Reach out and use a panel or object"
+   },
+   {
+    "src": "PickUp_Table",
+    "name": "pickup_table",
+    "notes": "Pick something up from a table"
+   },
+   {
+    "src": "Push_Loop",
+    "name": "push",
+    "loop": true,
+    "notes": "Pushing a heavy object"
+   },
+   {
+    "src": "Fixing_Kneeling",
+    "name": "repair_kneeling",
+    "loop": true,
+    "notes": "Kneeling repair work (mechanics, logistics)"
+   },
+   {
+    "src": "Sitting_Enter",
+    "name": "sit_down",
+    "notes": "Sit down"
+   },
+   {
+    "src": "Sitting_Idle_Loop",
+    "name": "sit_idle",
+    "loop": true,
+    "notes": "Sitting idle"
+   },
+   {
+    "src": "Sitting_Talking_Loop",
+    "name": "sit_talking",
+    "loop": true,
+    "notes": "Sitting and talking"
+   },
+   {
+    "src": "Sitting_Exit",
+    "name": "sit_up",
+    "notes": "Get up from sitting"
+   },
+   {
+    "src": "Punch_Jab",
+    "name": "punch_jab",
+    "notes": "Jab"
+   },
+   {
+    "src": "Punch_Cross",
+    "name": "punch_cross",
+    "notes": "Cross punch"
+   },
+   {
+    "src": "Driving_Loop",
+    "name": "drive",
+    "loop": true,
+    "notes": "Driving / piloting seat pose"
+   },
+   {
+    "src": "Dance_Loop",
+    "name": "dance",
+    "loop": true,
+    "notes": "Dance (cantina)"
+   },
+   {
+    "src": "Spell_Simple_Enter",
+    "name": "force_cast_enter",
+    "jedi_only": true,
+    "notes": "The Force: raise the hand"
+   },
+   {
+    "src": "Spell_Simple_Idle_Loop",
+    "name": "force_cast_hold",
+    "jedi_only": true,
+    "loop": true,
+    "notes": "The Force: hold"
+   },
+   {
+    "src": "Spell_Simple_Shoot",
+    "name": "force_cast_release",
+    "jedi_only": true,
+    "notes": "The Force: release"
+   },
+   {
+    "src": "Spell_Simple_Exit",
+    "name": "force_cast_exit",
+    "jedi_only": true,
+    "notes": "The Force: lower the hand"
+   },
+   {
+    "src": "Sword_Idle",
+    "name": "sword_idle",
+    "jedi_only": true,
+    "loop": true,
+    "weapon_jedi": "hand",
+    "notes": "Sword stance idle (lightsaber lit)"
+   },
+   {
+    "src": "Sword_Attack",
+    "name": "sword_attack",
+    "jedi_only": true,
+    "weapon_jedi": "hand",
+    "notes": "Sword attack (lightsaber lit)"
+   }
+  ],
+  "file_rm": "ual/UAL1_Standard_RM.glb"
+ },
+ "takes": [
+  {
+   "file": "mixamo/Turns_mixamo.fbx",
+   "name": "turn",
+   "notes": "Turn on the spot",
+   "jedi_only": false,
+   "split": true,
+   "kind": "turns"
+  },
+  {
+   "file": "mixamo/Telekenisis_mixamo.fbx",
+   "name": "force_telekinesis",
+   "notes": "The Force: telekinesis",
+   "jedi_only": true,
+   "split": true
+  },
+  {
+   "file": "mixamo/SwordIdleLight_mixamo.fbx",
+   "name": "sword_idle_light",
+   "notes": "Sword stance, light",
+   "jedi_only": true,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "mixamo/SwordIdleMedium_mixamo.fbx",
+   "name": "sword_idle_medium",
+   "notes": "Sword stance, medium",
+   "jedi_only": true,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "mixamo/SwordFight_mixamo.fbx",
+   "name": "sword_fight",
+   "notes": "Sword fight combination",
+   "jedi_only": true,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "mixamo/Boxing_mixamo.fbx",
+   "name": "boxing",
+   "notes": "Boxing combination",
+   "jedi_only": false,
+   "split": false
+  },
+  {
+   "file": "mixamo/BigFrontKick_mixamo.fbx",
+   "name": "kick_front",
+   "notes": "Big front kick",
+   "jedi_only": false,
+   "split": false
+  },
+  {
+   "file": "mixamo/RoundHouseKick_mixamo.fbx",
+   "name": "kick_roundhouse",
+   "notes": "Roundhouse kick",
+   "jedi_only": false,
+   "split": false
+  },
+  {
+   "file": "mixamo/KnifeFight_mixamo.fbx",
+   "name": "knife_fight",
+   "notes": "Knife fight",
+   "jedi_only": false,
+   "split": false
+  },
+  {
+   "file": "mixamo/FightingIdle_mixamo.fbx",
+   "name": "fight_idle",
+   "notes": "Unarmed fighting stance",
+   "jedi_only": false,
+   "split": true
+  },
+  {
+   "file": "mixamo/KnockOut_Winner_mixamo.fbx",
+   "name": "knockout_winner",
+   "notes": "Knock-out: the winner",
+   "jedi_only": false,
+   "split": false
+  },
+  {
+   "file": "mixamo/KnockOut_Loser_mixamo.fbx",
+   "name": "knockout_loser",
+   "notes": "Knock-out: the loser",
+   "jedi_only": false,
+   "split": true
+  },
+  {
+   "file": "mixamo/Execution_01_mixamo.fbx",
+   "name": "execution_01",
+   "notes": "Execution (attacker)",
+   "jedi_only": false,
+   "split": false
+  },
+  {
+   "file": "mixamo/Execution_02_mixamo.fbx",
+   "name": "execution_02",
+   "notes": "Execution (attacker)",
+   "jedi_only": false,
+   "split": false
+  },
+  {
+   "file": "mixamo/Execution_Killed_03_mixamo.fbx",
+   "name": "execution_killed",
+   "notes": "Execution (victim)",
+   "jedi_only": false,
+   "split": true
+  },
+  {
+   "file": "mixamo/PistolFight_mixamo.fbx",
+   "name": "pistol_fight",
+   "notes": "Pistol fight",
+   "jedi_only": false,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/PistolFight_01_mixamo.fbx",
+   "name": "pistol_fight_b",
+   "notes": "Pistol fight",
+   "jedi_only": false,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/Pistol_Light_mixamo.fbx",
+   "name": "pistol_light",
+   "notes": "Pistol handling, light",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/Pistol_Medium_mixamo.fbx",
+   "name": "pistol_medium",
+   "notes": "Pistol handling, medium",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/Pistol_Heavy_mixamo.fbx",
+   "name": "pistol_heavy",
+   "notes": "Pistol handling, heavy",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/Rifle_Light_mixamo.fbx",
+   "name": "rifle_light",
+   "notes": "Rifle handling, light",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/Rifle_Medium_mixamo.fbx",
+   "name": "rifle_medium",
+   "notes": "Rifle handling, medium",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/Rifle_Heavy_mixamo.fbx",
+   "name": "rifle_heavy",
+   "notes": "Rifle handling, heavy",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/RifleFight_mixamo.fbx",
+   "name": "rifle_fight",
+   "notes": "Rifle fight",
+   "jedi_only": false,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/ShotgunFight_mixamo.fbx",
+   "name": "shotgun_fight",
+   "notes": "Shotgun fight",
+   "jedi_only": false,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/RPGLauncher_mixamo.fbx",
+   "name": "rocket_launcher",
+   "notes": "Rocket launcher handling",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "mixamo/GunFu_JohnWick_mixamo.fbx",
+   "name": "gun_fu",
+   "notes": "Gun-fu close combat",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "humanik/StarWars_TrooperIdle_HUMANIK_769.fbx",
+   "name": "sw_trooper_idle",
+   "notes": "Trooper idle",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "humanik/StarWars_TrooperPatrol_HUMANIK_769.fbx",
+   "name": "sw_trooper_patrol",
+   "notes": "Trooper patrol",
+   "jedi_only": false,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "humanik/StarWars_TrooperGuardTower_HUMANIK_769.fbx",
+   "name": "sw_trooper_guard_tower",
+   "notes": "Trooper on guard-tower watch",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "humanik/StarWars_TrooperCheckComms_HUMANIK_769.fbx",
+   "name": "sw_trooper_check_comms",
+   "notes": "Trooper checking comms",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "humanik/StarWars_TrooperCheckingPapers_HUMANIK_769.fbx",
+   "name": "sw_trooper_checking_papers",
+   "notes": "Trooper checking papers",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "humanik/StarWars_PassingCheckPoint_HUMANIK_769.fbx",
+   "name": "sw_passing_checkpoint",
+   "notes": "Passing a checkpoint",
+   "jedi_only": false,
+   "split": true
+  },
+  {
+   "file": "humanik/StarWars_PassingCheckPointWookie_HUMANIK_769.fbx",
+   "name": "sw_passing_checkpoint_wookiee",
+   "notes": "Passing a checkpoint (Wookiee-style)",
+   "jedi_only": false,
+   "split": true
+  },
+  {
+   "file": "humanik/StarWars_BobaFettIdle_HUMANIK_769.fbx",
+   "name": "sw_bounty_hunter_idle",
+   "notes": "Bounty-hunter idle",
+   "jedi_only": false,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "humanik/StarWars_BlasterFight_HUMANIK_769.fbx",
+   "name": "sw_blaster_fight",
+   "notes": "Blaster fight",
+   "jedi_only": false,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand"
+  },
+  {
+   "file": "humanik/StarWars_MissileHit_HUMANIK_769.fbx",
+   "name": "sw_missile_hit",
+   "notes": "Hit by a missile",
+   "jedi_only": false,
+   "split": true
+  },
+  {
+   "file": "humanik/StarWars_ForceChokeVictim_HUMANIK_TF1.fbx",
+   "name": "sw_force_choke_victim",
+   "notes": "Force-choke victim",
+   "jedi_only": false,
+   "split": false
+  },
+  {
+   "file": "humanik/Falling_BouncingoffCouch_HUMANIK_TF1.fbx",
+   "name": "fall_bounce",
+   "notes": "Falling and bouncing off a ledge",
+   "jedi_only": false,
+   "split": true
+  },
+  {
+   "file": "humanik/StarWars_HelloThere_HUMANIK_769.fbx",
+   "name": "sw_hello_there",
+   "notes": "Jedi greeting",
+   "jedi_only": true,
+   "split": true
+  },
+  {
+   "file": "humanik/StarWars_VaderIamYourFather_HUMANIK_769.fbx",
+   "name": "sw_i_am_your_father",
+   "notes": "Dark-side speech gestures",
+   "jedi_only": true,
+   "split": true
+  },
+  {
+   "file": "humanik/StarWars_LightsaberMoves_HUMANIK_769.fbx",
+   "name": "sw_saber_moves",
+   "notes": "Lightsaber moves",
+   "jedi_only": true,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "humanik/StarWars_LightsaberIgnite_HUMANIK_769.fbx",
+   "name": "sw_saber_ignite",
+   "notes": "Lightsaber ignite",
+   "jedi_only": true,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "humanik/StarWars_LightsaberandForce_HUMANIK_769.fbx",
+   "name": "sw_saber_and_force",
+   "notes": "Lightsaber and the Force",
+   "jedi_only": true,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "humanik/StarWars_LightsaberAccident01_HUMANIK_769.fbx",
+   "name": "sw_saber_accident_a",
+   "notes": "Lightsaber mishap",
+   "jedi_only": true,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "humanik/StarWars_LightsaberAccident2_HUMANIK_769.fbx",
+   "name": "sw_saber_accident_b",
+   "notes": "Lightsaber mishap",
+   "jedi_only": true,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "humanik/StarWars_JediAttack_HUMANIK_769.fbx",
+   "name": "sw_jedi_attack",
+   "notes": "Jedi attack",
+   "jedi_only": true,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "humanik/StarWars_LightSaberFightForceSlam02_HUMANIK_769.fbx",
+   "name": "sw_saber_fight_force_slam",
+   "notes": "Lightsaber fight with a Force slam",
+   "jedi_only": true,
+   "split": true,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true
+  },
+  {
+   "file": "humanik/StarWars_ForceSlam_HUMANIK_769.fbx",
+   "name": "sw_force_slam",
+   "notes": "The Force: slam",
+   "jedi_only": true,
+   "split": true
+  },
+  {
+   "file": "humanik/StarWars_ForceRaise_HUMANIK_769.fbx",
+   "name": "sw_force_raise",
+   "notes": "The Force: raise",
+   "jedi_only": true,
+   "split": true
+  },
+  {
+   "file": "humanik/StarWars_ForceLightning_HUMANIK_769.fbx",
+   "name": "sw_force_lightning",
+   "notes": "The Force: lightning",
+   "jedi_only": true,
+   "split": false
+  },
+  {
+   "file": "humanik/StarWars_VaderForceChoke_HUMANIK_TF1.fbx",
+   "name": "sw_force_choke",
+   "notes": "The Force: choke",
+   "jedi_only": true,
+   "split": true
+  }
+ ]
+}

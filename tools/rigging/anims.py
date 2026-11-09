@@ -843,7 +843,7 @@ walkcycle('walk_limp',1.25,0.9,(0,-1),'patrol',s=0.62,lift=0.09,reach=0.975,bob=
 walkcycle('aim_walk_fwd',0.98,1.3,(0,-1),'aim',s=0.62,lift=0.13,bob=0.015,heelrise=38,reach=0.968,hipyaw=6,hiplist=4,body=0.8,lean=2,gun=0.45,cape=3,notes='Tactical walk forward while aiming (soft knees, stable rifle). 1.3 m/s.')
 walkcycle('aim_walk_bwd',1.0,1.1,(0,1),'aim',s=0.62,lift=0.08,bob=0.011,roll='bwd',lean=2,gun=0.45,notes='Backpedal while aiming (toe-first contact). 1.1 m/s.')
 walkcycle('aim_strafe_l',0.86,1.2,(1,0),'aim',s=0.45,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.09,notes='Strafe left while aiming. 1.2 m/s.')
-walkcycle('tiptoe_walk',1.2,0.7,(0,-1),'ready',dict(pp=6,s1p=4,s2p=4,s3p=2),s=0.58,lift=0.10,bob=0.010,roll='toe',lean=4,gun=0.5,heelrise=30,reach=0.95,hipyaw=4,hiplist=3,body=0.8,notes='Sneaking on tiptoe: weight on the balls of the feet, heels never touch, soft knees. 0.7 m/s.')
+walkcycle('tiptoe_walk',1.2,0.7,(0,-1),'ready',dict(pp=6,s1p=4,s2p=4,s3p=2),s=0.58,lift=0.10,bob=0.010,roll='toe',lean=4,gun=0.5,heelrise=22,reach=0.95,hipyaw=4,hiplist=3,body=0.8,notes='Sneaking on tiptoe: weight on the balls of the feet, heels never touch, soft knees. 0.7 m/s.')
 walkcycle('aim_strafe_r',0.86,1.2,(-1,0),'aim',s=0.45,lift=0.08,bob=0.010,roll='side',lean=2,gun=0.45,width=0.09,notes='Strafe right while aiming. 1.2 m/s.')
 runcycle('run',0.70,4.2,0.30,'port',dict(curlR=0.9),bias=0.12,heel=0.30,bob=0.035,lean=10,strike='mid',yawamp=8,listamp=4,gun=1.0,cape=9,notes='Combat jog, rifle at port: midfoot landing, heel recovery, flight phase. 4.2 m/s.')
 runcycle('sprint',0.62,6.2,0.24,'sprint',{},bias=0.06,heel=0.44,bob=0.04,lean=18,strike='fore',yawamp=10,listamp=5,gun=1.2,cape=12,notes='Sprint, rifle across chest: forefoot landing, high heel recovery and knee drive. 6.2 m/s.')
@@ -905,7 +905,7 @@ signal('beckon',[(0.15,2.85,hand_orient('l',(-0.10,-1,0.30),(0.1,0.15,1),(0.26,-
        body=lambda t: dict(np_=-4*ss((t-0.2)/0.4)*(1-ss((t-2.6)/0.4)),ny=5*ss((t-0.2)/0.4)*(1-ss((t-2.6)/0.4))))
 # ---- tiptoe: rise onto the toes to see over a wall, hold, come down ----
 def tip_feet(t):
-    k=ss((t-0.3)/0.5)*(1-ss((t-2.6)/0.5)); pt=48*k
+    k=ss((t-0.3)/0.5)*(1-ss((t-2.6)/0.5)); pt=26*k   # a booted foot: the sole flexes ~25 deg at the ball, not 48
     return {s:foot_mat(s,FE_RDY_OFF[s],pitch=pt,yaw=FE_RDY_YAW[s],pivot='ball') for s in 'lr'},{s:-pt for s in 'lr'}
 FE_RDY_OFF={'l':(0.0,-0.05,0),'r':(-0.02,0.06,0)}; FE_RDY_YAW={'l':4,'r':-12}
 new('tiptoe_peek'); NT=round(3.4*FPS)
@@ -1543,6 +1543,10 @@ getup_clips(); cover_clips(); prone_clips(); move_clips(); reaction_clips()
 if ROLE=='jedi':
     JEDI_PHASE=True
     exec(open(os.path.join(sys.argv[-2],'jedi_clips.py')).read())
+# motion capture: the user's animation library replaces walk/run/jump/... and adds the performance takes (retarget.py)
+if os.path.exists(os.path.join(sys.argv[-2],'..','..','assets','animations','source','library.json')) and not os.environ.get('NO_MOCAP'):
+    JEDI_PHASE=True
+    exec(open(os.path.join(sys.argv[-2],'retarget.py')).read())
 json.dump(CUTS,open(f'{w}/cuts.json','w'),indent=1)
 bpy.context.scene.frame_set(0)
 for o in bpy.context.scene.objects: o.select_set(False)

@@ -1,0 +1,15 @@
+{
+ "note": "Animation sources supplied by the user (uploaded 2026-11-09). Retargeted onto the Duke skeleton by tools/rigging/retarget.py.",
+ "ual/UAL1_Standard.glb": {
+  "provider": "Quaternius, Universal Animation Library [Standard]",
+  "license": "CC0 1.0 (ual/License.txt)"
+ },
+ "mixamo/": {
+  "provider": "user upload, Mixamo-rig takes (files named *_mixamo.fbx)",
+  "license": "not stated by the user; Mixamo animations are licensed by Adobe for use in projects (not verified here)"
+ },
+ "humanik/": {
+  "provider": "user upload, HumanIK-rig motion capture (files named *_HUMANIK_*.fbx)",
+  "license": "not stated by the user"
+ }
+}

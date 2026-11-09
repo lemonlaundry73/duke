@@ -107,7 +107,9 @@ if CV:
 for img in bpy.data.images:
     if img.name.startswith('T_') and img.size[0]>2048:
         img.scale(2048 if 'BaseColor' in img.name or ('Normal' in img.name and 'Trooper' in img.name) else 1024, 2048 if 'BaseColor' in img.name or ('Normal' in img.name and 'Trooper' in img.name) else 1024)
-# NLA-free: export each action as a glTF animation
+# NLA-free: export each action as a glTF animation. The long motion-capture library takes stay out of the web preview
+# (they are in Unreal/Animations); keeping them would make the preview GLB ~90 MB.
+for act in [a for a in bpy.data.actions if a.get('library')]: bpy.data.actions.remove(act)
 for act in bpy.data.actions: act.use_fake_user=True
 web=[ao,t,g]
 # variants for the web preview are decimated copies (the Unreal FBXs above stay full resolution)

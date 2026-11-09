@@ -25,7 +25,7 @@ ADukeJedi::ADukeJedi()
 {
 	Faction = EDukeFaction::Alliance;
 	AssetPath = TEXT("/Game/DukeForge/Characters/Jedi");
-	MaxHealth = 250.f; PatrolSpeed = 130.f; CombatMoveSpeed = 260.f; PreferredRange = FVector2D(120.f, 170.f);
+	MaxHealth = 250.f; PatrolSpeed = 100.f; CombatMoveSpeed = 260.f; PreferredRange = FVector2D(120.f, 170.f);
 	WoundChance = 0.f; RollChance = 0.f;
 	HumAudio = CreateDefaultSubobject<UAudioComponent>(TEXT("SaberHum"));
 	HumAudio->SetupAttachment(GetMesh()); HumAudio->bAutoActivate = false;

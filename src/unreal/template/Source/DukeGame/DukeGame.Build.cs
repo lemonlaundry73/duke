@@ -7,7 +7,7 @@ public class DukeGame : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		PublicDependencyModuleNames.AddRange(new string[] {
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
-			"Json", "JsonUtilities", "AIModule", "PhysicsCore"
+			"Json", "JsonUtilities", "AIModule", "PhysicsCore", "AssetRegistry"
 		});
 	}
 }

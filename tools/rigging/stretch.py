@@ -9,7 +9,7 @@ def posed(act,f):
     em=t.evaluated_get(bpy.context.evaluated_depsgraph_get()).to_mesh(); p=np.empty(n*3); em.vertices.foreach_get('co',p); return p.reshape(n,3)
 ref=posed('idle',0); l0=np.linalg.norm(ref[ev[:,0]]-ref[ev[:,1]],axis=1)
 out={}
-for act in [a.name for a in bpy.data.actions]:
+for act in [a.name for a in bpy.data.actions if not a.get('library') and not a.name.endswith('__proc')]:
     a=bpy.data.actions[act]; worst=0;cnt=0
     for f in range(0,int(a.frame_range[1])+1,3):
         p=posed(act,f); l1=np.linalg.norm(p[ev[:,0]]-p[ev[:,1]],axis=1); bad=(l1>np.maximum(l0*3,0.025)); cnt=max(cnt,int(bad.sum())); worst=max(worst,float((l1-l0).max()))

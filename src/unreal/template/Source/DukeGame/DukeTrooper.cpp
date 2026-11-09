@@ -18,6 +18,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "EngineUtils.h"
+#include "DukeGalaxySystems.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 
 const TCHAR* ADukeTrooper::AssetRoot = TEXT("/Game/DukeForge/Characters/CloneTrooper");
 
@@ -42,6 +44,9 @@ const TArray<FName>& ADukeTrooper::ClipNames()
 		TEXT("draw_saber"), TEXT("holster_saber"), TEXT("saber_attack_1"), TEXT("saber_attack_2"), TEXT("saber_attack_3"), TEXT("saber_thrust"),
 		TEXT("saber_block_high"), TEXT("saber_block_l"), TEXT("saber_block_r"), TEXT("saber_deflect_l"), TEXT("saber_deflect_r"), TEXT("saber_deflect_high"),
 		TEXT("force_push"), TEXT("force_pull"), TEXT("saber_run"),
+		// motion-capture library (shared)
+		TEXT("crouch_idle"), TEXT("walk_formal"), TEXT("roll"), TEXT("hit_chest"), TEXT("hit_head"), TEXT("idle_talking"), TEXT("interact"), TEXT("push"), TEXT("repair_kneeling"),
+		TEXT("sit_down"), TEXT("sit_idle"), TEXT("sit_up"), TEXT("turn_l180"), TEXT("turn_r180"),
 		TEXT("roll_to_kneel"), TEXT("kneel_aim"), TEXT("kneel_shoot"), TEXT("climb_ladder"), TEXT("mantle"),
 		TEXT("saber_hit_1"), TEXT("saber_hit_2"), TEXT("saber_death_arm"), TEXT("saber_death_leg"), TEXT("saber_death_head"), TEXT("saber_death_half"), TEXT("saber_death_diagonal"),
 		TEXT("death_explosion"), TEXT("death_explosion_arm"), TEXT("death_explosion_leg"), TEXT("death_explosion_armleg") };
@@ -113,12 +118,21 @@ void ADukeTrooper::LoadAssets()
 		}
 	GetMesh()->SetAnimInstanceClass(UDukeTrooperAnimInstance::StaticClass());
 	if (UDukeTrooperAnimInstance* A = Anim())
-		for (const FName& N : ClipNames())
+	{
+		// every clip in the pack (procedural set + the retargeted motion-capture library): A_Trooper_<clip>
+		IAssetRegistry& AR = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry")).Get();
+		TArray<FAssetData> Found; AR.GetAssetsByPath(FName(*(AssetPath + TEXT("/Anims"))), Found, true);
+		for (const FAssetData& D : Found)
 		{
-			const FString Path = FString::Printf(TEXT("%s/Anims/A_Trooper_%s.A_Trooper_%s"), *AssetPath, *N.ToString(), *N.ToString());
-			if (UAnimSequence* Seq = LoadObject<UAnimSequence>(nullptr, *Path)) A->Clips.Add(N, Seq);
-			else UE_LOG(LogTemp, Warning, TEXT("DukeTrooper: missing clip %s"), *Path);
+			FString N = D.AssetName.ToString();
+			if (!N.RemoveFromStart(TEXT("A_Trooper_"))) continue;
+			if (UAnimSequence* Seq = Cast<UAnimSequence>(D.GetAsset())) A->Clips.Add(FName(*N), Seq);
 		}
+		for (const FName& N : ClipNames())   // the registry is not ready in some cooked/early cases: fall back to direct loads
+			if (!A->Clips.Contains(N))
+				if (UAnimSequence* Seq = LoadObject<UAnimSequence>(nullptr, *FString::Printf(TEXT("%s/Anims/A_Trooper_%s.A_Trooper_%s"), *AssetPath, *N.ToString(), *N.ToString()))) A->Clips.Add(N, Seq);
+		UE_LOG(LogTemp, Log, TEXT("DukeTrooper %s: %d clips from %s"), *GetName(), A->Clips.Num(), *AssetPath);
+	}
 	for (const FName& N : ClipNames())
 		if (CutTime(N) > 0.f)
 			if (USkeletalMesh* CM = LoadObject<USkeletalMesh>(nullptr, *FString::Printf(TEXT("%s/Cuts/SK_Trooper_Cut_%s.SK_Trooper_Cut_%s"), *AssetPath, *N.ToString(), *N.ToString())))
@@ -439,6 +453,7 @@ void ADukeTrooper::Die(FName DeathClip)
 	DeathClipName = DeathClip; DeathAt = GetWorld()->GetTimeSeconds(); bCutApplied = false;
 	if (DragPartner.IsValid()) { if (bBeingDragged) DragPartner->EndDrag(); else EndDrag(); }
 	if (Squad.IsValid()) Squad->ReportDown(this);
+	if (Faction == EDukeFaction::Empire) if (ADukeTerritoryZone* Z = ADukeTerritoryZone::ZoneAt(GetWorld(), GetActorLocation())) Z->ProcessEnemyCasualty(8.f);   // occupation weakens
 	bClimbing = false; RollStart = -1.f; MantleStart = -1.f;
 	State = EDukeTrooperState::Dead;
 	GetCharacterMovement()->DisableMovement();
@@ -633,7 +648,7 @@ void ADukeTrooper::TickOrder(float Dt, float Now)
 	LastSpeed = Speed2D;
 	if (TurnStart >= 0.f)
 	{
-		const float K = FMath::Clamp((Now - TurnStart) / 0.8f, 0.f, 1.f);
+		const float K = FMath::Clamp((Now - TurnStart) / TurnLen, 0.f, 1.f);   // the actor turns over the clip's length
 		SetActorRotation(FRotator(0.f, TurnFrom + FMath::FindDeltaAngleDegrees(TurnFrom, TurnTo) * (K * K * (3.f - 2.f * K)), 0.f));
 		if (K >= 1.f) TurnStart = -1.f;
 	}
@@ -736,8 +751,11 @@ void ADukeTrooper::FaceTarget(const FVector& P, float Dt, float Now)
 	if (FMath::Abs(Delta) > 70.f && GetVelocity().Size2D() < 20.f && Now >= BusyUntil)
 	{
 		// stepping turn: 90 deg with the feet moving, instead of spinning on the spot
-		PlayGesture(Delta > 0.f ? TEXT("turn_r90") : TEXT("turn_l90"));   // Unreal yaw + = right turn
-		TurnFrom = GetActorRotation().Yaw; TurnTo = TurnFrom + FMath::Sign(Delta) * 90.f; TurnStart = Now;
+		// Unreal yaw + = right turn; past 135 deg the captured 180-degree turn
+		const bool b180 = FMath::Abs(Delta) > 135.f && Anim() && Anim()->ClipLength(Delta > 0.f ? TEXT("turn_r180") : TEXT("turn_l180")) > 0.f;
+		const FName TurnClip = b180 ? (Delta > 0.f ? FName(TEXT("turn_r180")) : FName(TEXT("turn_l180"))) : (Delta > 0.f ? FName(TEXT("turn_r90")) : FName(TEXT("turn_l90")));
+		PlayGesture(TurnClip); TurnLen = FMath::Max(0.5f, Anim() ? Anim()->ClipLength(TurnClip) : 0.8f);
+		TurnFrom = GetActorRotation().Yaw; TurnTo = TurnFrom + FMath::Sign(Delta) * (b180 ? 180.f : 90.f); TurnStart = Now;
 		return;
 	}
 	SetActorRotation(FMath::RInterpTo(GetActorRotation(), FRotator(0.f, Want, 0.f), Dt, 7.f));

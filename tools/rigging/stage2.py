@@ -252,6 +252,19 @@ if SL:
         co[m]=q2
     t.data.vertices.foreach_set('co',co.astype(np.float32).ravel()); t.data.update()
     print('slim sleeves: vertices taken in',moved)
+# boots: rigid toe box and heel, flexing only at the crease across the ball of the foot (a wide distance-based blend
+# makes the whole boot curl like a banana when the toes bend)
+BT=CFG.get('boot_toes',{'band':0.015})
+if BT:
+    band=BT.get('band',0.015); fixed=0
+    for sd in 'lr':
+        fi,bi=idx[f'foot_{sd}'],idx[f'ball_{sd}']
+        bh=np.array(J[f'ball_{sd}'][0]); fw=np.array(J[f'ball_{sd}'][1])-bh; fw[2]=0; fw/=np.linalg.norm(fw)
+        share=Wt[:,fi]+Wt[:,bi]; m=(share>0.05)&~cape
+        sproj=(co[m]-bh)@fw
+        k=np.clip((sproj+band)/(2*band),0,1); k=k*k*(3-2*k)
+        Wt[m,bi]=share[m]*k; Wt[m,fi]=share[m]*(1-k); fixed+=int(m.sum())
+    print('boot toes: foot/ball weights split at the ball crease (+-%.1f cm) for %d verts'%(band*100,fixed))
 # keep top 4
 o4=np.argsort(-Wt,1)[:,4:]; np.put_along_axis(Wt,o4,0,1); Wt[Wt<0.01]=0; Wt/=np.maximum(Wt.sum(1,keepdims=True),1e-12)
 print('unweighted verts',(Wt.sum(1)<0.5).sum())

@@ -10,9 +10,9 @@
 static float ClipSpeed(FName N)
 {
 	static const TMap<FName, float> Speeds = {
-		{ TEXT("walk"), 130.f }, { TEXT("walk_limp"), 90.f }, { TEXT("drag_rescuer"), 90.f }, { TEXT("carry_crate"), 100.f }, { TEXT("wounded_crawl"), 30.f }, { TEXT("prone_crawl"), 40.f }, { TEXT("run"), 420.f }, { TEXT("sprint"), 620.f },
+		{ TEXT("walk"), 96.f }, { TEXT("walk_limp"), 90.f }, { TEXT("drag_rescuer"), 90.f }, { TEXT("carry_crate"), 100.f }, { TEXT("wounded_crawl"), 30.f }, { TEXT("prone_crawl"), 40.f }, { TEXT("run"), 529.f }, { TEXT("sprint"), 814.f }, { TEXT("walk_formal"), 96.f },
 		{ TEXT("aim_walk_fwd"), 130.f }, { TEXT("aim_walk_bwd"), 110.f }, { TEXT("aim_strafe_l"), 120.f }, { TEXT("aim_strafe_r"), 120.f },
-		{ TEXT("crouch_walk"), 100.f }, { TEXT("tiptoe_walk"), 70.f }, { TEXT("saber_run"), 420.f } };
+		{ TEXT("crouch_walk"), 74.f }, { TEXT("tiptoe_walk"), 70.f }, { TEXT("saber_run"), 420.f } };
 	const float* V = Speeds.Find(N);
 	return V ? *V : 0.f;
 }
@@ -156,7 +156,7 @@ void FDukeTrooperAnimProxy::BuildBase(TArray<FDukeClipRef>& Out, FName& OutKey)
 	OutKey = TEXT("move");
 	// walk -> run -> sprint by speed, all phase-locked
 	const float W2R = FMath::Clamp((Speed - 200.f) / 150.f, 0.f, 1.f);
-	const float R2S = FMath::Clamp((Speed - 450.f) / 150.f, 0.f, 1.f);
+	const float R2S = FMath::Clamp((Speed - 600.f) / 150.f, 0.f, 1.f);   // captured run 5.3 m/s, sprint 8.1 m/s
 	const float Ramp = FMath::Clamp((Speed - 25.f) / 60.f, 0.f, 1.f);
 	Add(TEXT("idle"), 1.f - Ramp, IdleTime);
 	const FName WalkClip = (S.bSneak && Clip(TEXT("tiptoe_walk"))) ? FName(TEXT("tiptoe_walk")) : FName(TEXT("walk"));

@@ -20,7 +20,7 @@ def lowest():
 REPORT = {}
 LYING = {'wounded_down', 'wounded_crawl', 'drag_wounded', 'prone_aim', 'prone_shoot', 'prone_crawl'}
 for act in bpy.data.actions:
-    if act.name in RD: continue
+    if act.name in RD or act.get('library'): continue
     ao.animation_data.action = act; N = int(act.frame_range[1]); worst = 0.0
     for f in range(0, N + 1):
         for it in range(8):
