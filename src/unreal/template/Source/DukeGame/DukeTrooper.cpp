@@ -120,17 +120,7 @@ void ADukeTrooper::LoadAssets()
 	if (UDukeTrooperAnimInstance* A = Anim())
 	{
 		// every clip in the pack (procedural set + the retargeted motion-capture library): A_Trooper_<clip>
-		IAssetRegistry& AR = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry")).Get();
-		TArray<FAssetData> Found; AR.GetAssetsByPath(FName(*(AssetPath + TEXT("/Anims"))), Found, true);
-		for (const FAssetData& D : Found)
-		{
-			FString N = D.AssetName.ToString();
-			if (!N.RemoveFromStart(TEXT("A_Trooper_"))) continue;
-			if (UAnimSequence* Seq = Cast<UAnimSequence>(D.GetAsset())) A->Clips.Add(FName(*N), Seq);
-		}
-		for (const FName& N : ClipNames())   // the registry is not ready in some cooked/early cases: fall back to direct loads
-			if (!A->Clips.Contains(N))
-				if (UAnimSequence* Seq = LoadObject<UAnimSequence>(nullptr, *FString::Printf(TEXT("%s/Anims/A_Trooper_%s.A_Trooper_%s"), *AssetPath, *N.ToString(), *N.ToString()))) A->Clips.Add(N, Seq);
+		UDukeTrooperAnimInstance::LoadClipSet(A, AssetPath, ClipNames());
 		UE_LOG(LogTemp, Log, TEXT("DukeTrooper %s: %d clips from %s"), *GetName(), A->Clips.Num(), *AssetPath);
 	}
 	for (const FName& N : ClipNames())

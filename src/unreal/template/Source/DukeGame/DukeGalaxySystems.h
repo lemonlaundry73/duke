@@ -262,9 +262,9 @@ public:
 	// Force sense: find Force-sensitive NPCs nearby and invite the nearest to join; returns the recruit or null
 	UFUNCTION(BlueprintCallable, Category = "Force") ADukeSmartNPC* SenseAndRecruitForceSensitive();
 	UFUNCTION(BlueprintCallable, Category = "Economy") bool BuyPropertyOn(ADukeSovereignPlanet* Planet, int32 DeedIndex);
-	void OnStrike();
+	virtual void OnStrike();
 	void OnInteract();
 	void OnHolster();
-private:
+protected:
 	int32 ComboIndex = 0;
 };

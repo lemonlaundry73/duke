@@ -252,7 +252,8 @@ def main():
     EAL.save_loaded_asset(sk)
     log('SK_Trooper imported')
 
-    ROOT_MOTION_CLIPS = {'A_Trooper_' + c for c in ('roll_to_kneel', 'mantle', 'vault', 'turn_l90', 'turn_r90', 'turn_l180', 'turn_r180', 'run_stop', 'dive_left', 'dive_right', 'breach_clear')}
+    ROOT_MOTION_CLIPS = {'A_Trooper_' + c for c in ('roll_to_kneel', 'mantle', 'vault', 'turn_l90', 'turn_r90', 'turn_l180', 'turn_r180', 'run_stop', 'dive_left', 'dive_right', 'breach_clear',
+                                                 'saber_attack_1', 'saber_attack_2', 'saber_attack_3', 'saber_thrust')}  # saber strikes: root-motion montages for motion warping
     anim_dir = os.path.join(SRC, 'Unreal', 'Animations')
     n = 0
     for f in sorted(os.listdir(anim_dir)):

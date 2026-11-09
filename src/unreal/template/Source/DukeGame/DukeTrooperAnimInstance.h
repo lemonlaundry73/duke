@@ -38,6 +38,16 @@ struct FDukeTrooperAnimState
 	FName Action = NAME_None;                     // shoot, shoot_burst, reload, hit_front, ...
 	int32 ActionSerial = 0;                       // bump to restart the same action
 	float ActionRate = 1.f;
+	TArray<FDukeBoneOffset> ProceduralBones;      // upper-body compensation (lean, swing twist, clavicles, neck)
+	FQuat MeshToActor = FQuat::Identity;          // the mesh component's rotation relative to the actor
+};
+
+// A procedural rotation for one bone, expressed in ACTOR space (X forward, Y right, Z up). Applied after the clips,
+// montage and look layers, parents first, so a delta on spine_01 carries spine_02/03, the arms and the head with it.
+struct FDukeBoneOffset
+{
+	FName Bone;
+	FQuat Rotation = FQuat::Identity;
 };
 
 struct FDukeClipRef
@@ -59,7 +69,15 @@ struct DUKEGAME_API FDukeTrooperAnimProxy : public FAnimInstanceProxy
 	virtual void Update(float DeltaSeconds) override;
 	virtual bool Evaluate(FPoseContext& Output) override;
 
+protected:
+	virtual void Initialize(UAnimInstance* InAnimInstance) override;
+
 private:
+	// montages: the graph-free equivalent of a "DefaultSlot" slot node, so PlayAnimMontage (and its root motion,
+	// notifies and motion warping) works without an Animation Blueprint
+	float SlotNodeWeight = 0.f, SlotSourceWeight = 1.f, SlotTotalWeight = 0.f;
+	void ApplyProcedural(FPoseContext& Out) const;
+
 	TMap<FName, const UAnimSequence*> Clips;
 	FDukeTrooperAnimState S;
 	float Dt = 0.f;
@@ -96,6 +114,9 @@ public:
 
 	void PlayAction(FName Action, float Rate = 1.f) { State.Action = Action; State.ActionRate = Rate; ++State.ActionSerial; }
 	float ClipLength(FName Name) const;
+	static const FName MontageSlot;   // DefaultSlot
+	// Fills Clips from <AssetPath>/Anims (A_Trooper_<clip>), with direct loads of Fallback names if the registry is not ready.
+	static int32 LoadClipSet(UDukeTrooperAnimInstance* Anim, const FString& AssetPath, const TArray<FName>& Fallback);
 
 protected:
 	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override { return new FDukeTrooperAnimProxy(this); }
