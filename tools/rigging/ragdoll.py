@@ -90,6 +90,19 @@ def sphere_mesh(name, r):
 BODY = {}   # name -> dict(obj, bone, rest(O_rest), offset(inv(O_rest)@B_rest))
 for name, bone, parent, shape, mass, merge in BODIES:
     B = BREST[bone]; pts = verts_for(merge)
+    if len(pts) < 12:   # the bone dominates too few vertices (twist bones, cloth weighting): size it from its share, else from the bone
+        W_ = np.zeros(n)
+        for g_ in T.vertex_groups:
+            if g_.name in merge or any(g_.name.startswith(b_ + '_') for b_ in merge if b_ in ('thumb', 'index', 'middle', 'ring', 'pinky')):
+                gi_ = g_.index
+                for v_ in T.data.vertices:
+                    for e_ in v_.groups:
+                        if e_.group == gi_: W_[v_.index] = max(W_[v_.index], e_.weight)
+        pts = co[W_ > 0.2]
+        if len(pts) < 12:
+            bb_ = ao.data.bones[bone]; hh, tt_ = np.array(bb_.head_local), np.array(bb_.tail_local)
+            pts = np.array([hh + (tt_ - hh) * u_ + np.array(o_) for u_ in np.linspace(0, 1, 6) for o_ in ((0.06, 0, 0), (-0.06, 0, 0), (0, 0.06, 0), (0, -0.06, 0))])
+        print('ragdoll body', name, 'sized from', len(pts), 'points (few dominant vertices)')
     if name.startswith('foot'):   # feet: a level box with its sole on the floor (a box along the sloping foot bone pokes into the ground)
         B = M.Translation(B.translation)
     loc = in_frame(pts, B)

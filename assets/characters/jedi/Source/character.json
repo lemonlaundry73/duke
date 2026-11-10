@@ -1,17 +1,15 @@
 {
- "name": "Jamie (Jedi)",
+ "name": "Jedi (from the character sheet)",
  "role": "jedi",
  "cape": false,
  "joints": "source",
- "source_pose": "T",
- "source_facing": "+X",
  "faction": "alliance",
  "unreal_root": "/Game/DukeForge/Characters/Jedi",
  "skirt": {
-  "top": 1.02,
-  "hem": 0.64
+  "top": 1.065,
+  "hem": 0.571
  },
- "note": "Unrigged Tripo T-pose source: tools/rigging/tpose_prep.py detects the joints and re-poses the arms into the Duke A-pose. rigid_helmet off (bare head). saber_hands 1: one-handed lightsaber form (saber in the right hand, left hand free for balance and the Force); with his arm length and bulky tunic a two-handed waist-height grip drives the sleeves through the tunic. bridge_cuts off: his tunic is continuous cloth (cutting it opened the collar and the flank). twist_bones: UE-style upperarm/lowerarm twist bones for fluid wrist rolls.",
+ "note": "Built from scratch with tools/characters/mpfb_jedi.py from the character sheet (Source/reference): MakeHuman/MPFB CC0 body, face projected from the sheet, curly hair and beard, tunic, leather tabard, belt, boots, gloves and bracers modelled on the body, one 4K PBR set. Pre-rigged source with the exact MakeHuman joints in the Duke A-pose. saber_hands 1: one-handed form. bridge_cuts off (continuous cloth). twist_bones: UE-style twist bones. skirt: the tabard and tunic panels follow the pelvis with a growing share of the thighs toward the hem.",
  "rigid_helmet": false,
  "saber_hands": 1,
  "saber_guard": {
@@ -30,6 +28,5 @@
  ],
  "finger_skin_below_knuckles": true,
  "bridge_cuts": false,
- "twist_bones": true,
- "collar_follows_chest": true
+ "twist_bones": true
 }

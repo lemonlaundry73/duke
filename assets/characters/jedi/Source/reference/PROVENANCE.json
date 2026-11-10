@@ -1,0 +1,2 @@
+{"character_sheet.png": {"provider": "user upload 2026-11-10 (Jedi character sheet: uniform, head, hilt, layers)", "use": "reference for tools/characters/mpfb_jedi.py; face_front.png (crop of the front close-up) is projected onto the head"},
+ "trooper_armor_source.glb (Jedi)": {"tool": "tools/characters/mpfb_jedi.py", "base_human": "MakeHuman / MPFB2 CC0 data (base mesh, macro targets, joint cubes, weights)", "face": "projected from face_front.png", "clothing": "modelled by the script"}}

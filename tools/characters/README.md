@@ -18,3 +18,18 @@ Only MPFB's CC0 *data* files are read (base mesh, targets, joint cubes, weights)
 git clone --depth 1 https://github.com/makehumancommunity/mpfb2 <dir>
 python -I tools/characters/mpfb_trooper.py <dir>/src/mpfb/data out.glb [recipe.json]
 ```
+
+## Jedi (`mpfb_jedi.py`)
+
+Built from the user's character sheet (`assets/characters/jedi/Source/reference/`): the same CC0 base human (athletic,
+mostly African macro mix), his face projected from the sheet's front close-up (fitted to the eyes, isotropic scale) with
+a skin tone sampled from the photo, curly hair and a full beard as displaced shells (the beard takes the photo's colours
+in front and the hair colour where the jaw turns away), and the outfit modelled on the body: dark-brown wrap tunic with
+long sleeves, black leather tabard (sleeveless, open front, long panels), tunic skirt, sash and wide belt with buckle
+and pouches, pants, knee-high boots with straps and buckles, gloves and strapped bracers. Skin and cloth that are
+always covered are removed (game-asset practice: a hidden layer otherwise pokes through in motion). One 4K set
+(BaseColor, ORM, Normal baked from procedural leather grain, creases and fabric).
+
+```
+python -I tools/characters/mpfb_jedi.py <dir>/src/mpfb/data assets/characters/jedi/Source/reference/face_front.png out.glb
+```

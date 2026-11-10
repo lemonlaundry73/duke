@@ -253,6 +253,18 @@ for it in range(16):
     s_=np.zeros_like(Wt); np.add.at(s_,ev[:,0],Wt[ev[:,1]]); np.add.at(s_,ev[:,1],Wt[ev[:,0]])
     nw=0.5*Wt+0.5*s_/np.maximum(deg,1); nw*=allowed; nw/=np.maximum(nw.sum(1,keepdims=True),1e-12)
     Wt=np.where(soft[:,None]|(it<4),nw,Wt)
+# skirts and tabard panels (cloth characters): fabric hanging clear of the legs follows the pelvis, with a growing share of
+# both thighs toward the hem (split by side), so a panel that spans both legs swings with the stride instead of tearing
+SK=CFG.get('skirt')
+if SK and 'pelvis' in idx:
+    top,hem=SK['top'],SK['hem']
+    dl,_=segdist(co,*segs['thigh_l']); dr,_=segdist(co,*segs['thigh_r']); dleg=np.minimum(dl,dr)
+    k=np.clip((dleg-(rad('thigh')+0.01))/0.04,0,1)*np.clip((top-z)/0.04,0,1)*np.clip((z-(hem-0.06))/0.04,0,1)*(~cape)
+    k=k*k*(3-2*k); u=np.clip((top-z)/max(top-hem,1e-3),0,1)
+    sl=np.clip((x+0.05)/0.10,0,1); sl=sl*sl*(3-2*sl); pel=1-0.8*u
+    W2=np.zeros_like(Wt); W2[:,idx['pelvis']]=pel; W2[:,idx['thigh_l']]=(1-pel)*sl; W2[:,idx['thigh_r']]=(1-pel)*(1-sl)
+    Wt=Wt*(1-k[:,None])+W2*k[:,None]
+    print('skirt cloth verts',int((k>0.5).sum()),'top',top,'hem',hem)
 # helmet: a rigid shell. On fused meshes the faceplate/cheeks/chin sit in the body island below the head-bone
 # cut-off and would follow the chest, tearing the helmet along the visor when the head turns. Everything outside the
 # neck above the helmet rim (tilted: low at the chin, high at the nape) goes 100% to head; the neck seal between the
