@@ -312,10 +312,12 @@ torso_f = (fz > P[2] - 0.02) & (fz < NK[2] + 0.01) & (np.abs(fx) < SHX + 0.03) &
 V_f = (FN[:, 1] < -0.2) & (np.abs(fx) < 0.006 + 0.2 * np.clip(fz - (S2[2] - 0.02), 0, 1)) & (fz > S2[2] - 0.02)
 _open_w = 0.045 + 0.2 * np.clip(fz - belt_z, 0, 1)
 _tab_core = (fz > belt_z + 0.02) & (fz < NK[2] - 0.02) & (np.abs(fx) < SHX - 0.08) & ~arm_f & ~hand_f & ~((FN[:, 1] < -0.05) & (np.abs(fx) < _open_w + 0.07))
+_tab_core &= (FN[:, 1] > 0.2) | (np.abs(FN[:, 0]) > 0.75)   # only the back and the sides: the front keeps its tunic under the tabard edges
 tun = shell((torso_f | arm_f) & ~V_f & ~_tab_core, 'tunic', 'tunic', 0.009, 0.004, smooth=6, bevel=0)
-shell(V_f & (fz < NK[2] - 0.005), 'undershirt', 'under', 0.006, 0.002, smooth=4, bevel=0)
+V_wide = ((FN[:, 1] < -0.15) | ((fz > S3[2] - 0.02) & (FN[:, 1] < 0.25))) & (np.abs(fx) < 0.006 + 0.2 * np.clip(fz - (S2[2] - 0.02), 0, 1) + 0.03) & (fz > S2[2] - 0.05)
+shell(V_wide & (fz < NK[2] + 0.012), 'undershirt', 'under', 0.006, 0.002, smooth=4, bevel=0, edge_smooth=0)   # runs under the lapels: no gap
 # wrap lapels: a raised band along both edges of the V
-Vband = (FN[:, 1] < -0.2) & ~V_f & (np.abs(fx) < 0.006 + 0.2 * np.clip(fz - (S2[2] - 0.02), 0, 1) + 0.028) & (fz > S2[2] - 0.05) & (fz < NK[2] + 0.005)
+Vband = ((FN[:, 1] < -0.2) | ((fz > S3[2] - 0.02) & (FN[:, 1] < 0.25))) & ~V_f & (np.abs(fx) < 0.006 + 0.2 * np.clip(fz - (S2[2] - 0.02), 0, 1) + 0.034) & (fz > S2[2] - 0.05) & (fz < NK[2] + 0.015)
 shell(Vband, 'lapels', 'tunic', 0.014, 0.004, smooth=4, bevel=0.002)
 # tabard: black leather over the shoulders, sleeveless, open front (wider at the chest), long front and back panels
 open_front = (FN[:, 1] < -0.1) & (np.abs(fx) < 0.045 + 0.2 * np.clip(fz - belt_z, 0, 1))
