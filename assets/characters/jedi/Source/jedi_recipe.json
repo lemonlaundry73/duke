@@ -1,0 +1,158 @@
+{
+ "recipe": {
+  "gender": 1.0,
+  "age": 0.52,
+  "muscle": 0.62,
+  "weight": 0.48,
+  "height": 0.62,
+  "proportions": 1.0,
+  "race": {
+   "african": 0.8,
+   "caucasian": 0.1,
+   "asian": 0.1
+  },
+  "height_m": 1.83,
+  "tex": 4096,
+  "face_px": {
+   "eye_r": [
+    51,
+    82
+   ],
+   "eye_l": [
+    102,
+    82
+   ],
+   "mouth": [
+    77,
+    150
+   ]
+  }
+ },
+ "targets": [
+  [
+   "macrodetails/african-male-young.target.gz",
+   0.768
+  ],
+  [
+   "macrodetails/caucasian-male-young.target.gz",
+   0.096
+  ],
+  [
+   "macrodetails/asian-male-young.target.gz",
+   0.096
+  ],
+  [
+   "macrodetails/universal-male-young-averagemuscle-minweight.target.gz",
+   0.029
+  ],
+  [
+   "macrodetails/height/male-young-averagemuscle-minweight-maxheight.target.gz",
+   0.007
+  ],
+  [
+   "macrodetails/proportions/male-young-averagemuscle-minweight-idealproportions.target.gz",
+   0.029
+  ],
+  [
+   "macrodetails/universal-male-young-averagemuscle-averageweight.target.gz",
+   0.7
+  ],
+  [
+   "macrodetails/height/male-young-averagemuscle-averageweight-maxheight.target.gz",
+   0.168
+  ],
+  [
+   "macrodetails/proportions/male-young-averagemuscle-averageweight-idealproportions.target.gz",
+   0.7
+  ],
+  [
+   "macrodetails/universal-male-young-maxmuscle-minweight.target.gz",
+   0.009
+  ],
+  [
+   "macrodetails/height/male-young-maxmuscle-minweight-maxheight.target.gz",
+   0.002
+  ],
+  [
+   "macrodetails/proportions/male-young-maxmuscle-minweight-idealproportions.target.gz",
+   0.009
+  ],
+  [
+   "macrodetails/universal-male-young-maxmuscle-averageweight.target.gz",
+   0.221
+  ],
+  [
+   "macrodetails/height/male-young-maxmuscle-averageweight-maxheight.target.gz",
+   0.053
+  ],
+  [
+   "macrodetails/proportions/male-young-maxmuscle-averageweight-idealproportions.target.gz",
+   0.221
+  ],
+  [
+   "macrodetails/african-male-old.target.gz",
+   0.032
+  ],
+  [
+   "macrodetails/caucasian-male-old.target.gz",
+   0.004
+  ],
+  [
+   "macrodetails/asian-male-old.target.gz",
+   0.004
+  ],
+  [
+   "macrodetails/universal-male-old-averagemuscle-minweight.target.gz",
+   0.001
+  ],
+  [
+   "macrodetails/height/male-old-averagemuscle-minweight-maxheight.target.gz",
+   0.0
+  ],
+  [
+   "macrodetails/proportions/male-old-averagemuscle-minweight-idealproportions.target.gz",
+   0.001
+  ],
+  [
+   "macrodetails/universal-male-old-averagemuscle-averageweight.target.gz",
+   0.029
+  ],
+  [
+   "macrodetails/height/male-old-averagemuscle-averageweight-maxheight.target.gz",
+   0.007
+  ],
+  [
+   "macrodetails/proportions/male-old-averagemuscle-averageweight-idealproportions.target.gz",
+   0.029
+  ],
+  [
+   "macrodetails/universal-male-old-maxmuscle-minweight.target.gz",
+   0.0
+  ],
+  [
+   "macrodetails/proportions/male-old-maxmuscle-minweight-idealproportions.target.gz",
+   0.0
+  ],
+  [
+   "macrodetails/universal-male-old-maxmuscle-averageweight.target.gz",
+   0.009
+  ],
+  [
+   "macrodetails/height/male-old-maxmuscle-averageweight-maxheight.target.gz",
+   0.002
+  ],
+  [
+   "macrodetails/proportions/male-old-maxmuscle-averageweight-idealproportions.target.gz",
+   0.009
+  ]
+ ],
+ "joints": 52,
+ "verts": 54513,
+ "faces": 54020,
+ "heights": {
+  "belt": 1.0746521061525434,
+  "knee": 0.5411870660669958,
+  "tabard_hem": 0.5711870660669959,
+  "skirt_hem": 0.6311870660669958
+ }
+}
