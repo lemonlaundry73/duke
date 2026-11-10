@@ -371,3 +371,110 @@ for t in LIBJ['takes']:
     src.close()
 bpy.context.view_layer.objects.active = ao; ao.select_set(True)
 print('RETARGET', len(made), made)
+
+# 3) Jedi finishing pass on the lightsaber captures (Jedi only):
+#    - the right hand closes on the hilt (the captures have open fingers; the hilt is bound to the hand)
+#    - the ignite take lights the blade only once the hilt leaves the belt
+#    - single strikes are cut from the long fight takes (blade-tip speed peaks) as game clips saber_strike_NN:
+#      strike frame at 0.45 s, root travel kept (Motion Warping in Unreal), turned so each strike goes forward (-Y)
+#    - takes flagged "game" in library.json stop being library-only (QA passes + web export + Unreal combat)
+if not TROOPER:
+    def _fist(side='r', amt=1.0, idx_amt=1.0, thumb=0.6):
+        sg = 1 if side == 'r' else -1; out = {}
+        for f in ('index', 'middle', 'ring', 'pinky'):
+            a_ = idx_amt if f == 'index' else amt
+            for i, base in ((1, 55), (2, 70), (3, 45)): out[f'{f}_0{i}_{side}'] = Q(V((0, 0, 1)), math.radians(sg * base * a_))
+        for i, base in ((1, 15), (2, 25), (3, 25)): out[f'thumb_0{i}_{side}'] = Q(V((0, 0, 1)), math.radians(base * thumb))
+        return out
+    FIST = _fist()
+    def set_const_rot(act, bone, q):
+        for k in range(4):
+            fc = act.fcurves.find(f'pose.bones["{bone}"].rotation_quaternion', index=k)
+            if fc is None: fc = act.fcurves.new(f'pose.bones["{bone}"].rotation_quaternion', index=k, action_group=bone)
+            n_ = max(2, int(act.frame_range[1]) + 1)
+            fc.keyframe_points.clear(); fc.keyframe_points.add(n_)
+            co_ = np.empty(2 * n_); co_[0::2] = np.arange(n_); co_[1::2] = q[k]; fc.keyframe_points.foreach_set('co', co_); fc.update()
+    def evaluate(act, fn):
+        ao.animation_data.action = act; out = []
+        for f in range(int(act.frame_range[0]), int(act.frame_range[1]) + 1):
+            bpy.context.scene.frame_set(f); bpy.context.view_layer.update(); out.append(fn())
+        return out
+    TAKES = {t['name']: t for t in LIBJ['takes']}
+    def take_of(name):
+        base = name.rsplit('_', 1)[0] if name.rsplit('_', 1)[-1].isdigit() else name
+        return TAKES.get(name) or TAKES.get(base)
+    UAL_HAND = {c['name'] for c in LIBJ['ual']['clips'] if c.get('weapon_jedi') == 'hand'}
+    armed = [a for a in bpy.data.actions if a.get('mocap') and ((take_of(a.name) or {}).get('armed') and (take_of(a.name) or {}).get('jedi_only') or a.name in UAL_HAND)]
+    for a in armed:
+        for b, q in FIST.items(): set_const_rot(a, b, q)
+    print('saber grip on', len(armed), 'captures')
+    # ignition: dark until the right hand first rises 18 cm above the hips, then on over 3 frames
+    for a in [a for a in bpy.data.actions if (take_of(a.name) or {}).get('ignite') == 'raise']:
+        rel = evaluate(a, lambda: (ao.matrix_world @ P['hand_r'].head).z - (ao.matrix_world @ P['pelvis'].head).z)
+        on = next((i for i, r in enumerate(rel) if r > 0.18), None)
+        fc = a.fcurves.find('pose.bones["blade"].scale', index=1)
+        if fc and on is not None:
+            for kp in fc.keyframe_points:
+                i = int(kp.co.x); kp.co.y = max(0.001, min(1.0, (i - on + 1) / 3.0))
+            for k in (0, 2):
+                fx_ = a.fcurves.find('pose.bones["blade"].scale', index=k)
+                if fx_:
+                    for kp in fx_.keyframe_points:
+                        i = int(kp.co.x); s_ = max(0.001, min(1.0, (i - on + 1) / 3.0)); kp.co.y = 0.25 + 0.75 * min(1.0, s_ * 5)
+        print('ignite', a.name, 'blade on at frame', on)
+    # strikes
+    def tip_world():
+        wb = P['weapon_r']; m = ao.matrix_world @ wb.matrix
+        return np.array((m @ V((0, 0, 0)))[:]), np.array((ao.matrix_world @ P['blade'].tail)[:]) if 'blade' in P else None
+    def facing_yaw():
+        m = ao.matrix_world @ P['pelvis'].matrix; d = m.to_3x3() @ (DR['pelvis'].to_3x3().inverted() @ V((0, -1, 0)))
+        return math.atan2(d.x, -d.y)
+    strikes = []
+    for a in [a for a in bpy.data.actions if (take_of(a.name) or {}).get('strikes')]:
+        tips = evaluate(a, lambda: np.array((ao.matrix_world @ P['blade'].tail)[:]))
+        tips = np.array(tips); sp = np.r_[0, np.linalg.norm(np.diff(tips, axis=0), axis=1) * FPS]
+        sp = np.convolve(sp, np.ones(3) / 3, 'same'); n_ = len(sp)
+        peaks = [i for i in range(2, n_ - 2) if sp[i] > 5.0 and sp[i] == sp[max(0, i - 9):i + 10].max()]
+        keep = []
+        for pk in sorted(peaks, key=lambda i: -sp[i]):
+            if all(abs(pk - q) > 18 for q in keep): keep.append(pk)
+        for pk in sorted(keep):
+            f0, f1 = pk - 14, pk + 16
+            if f0 < 0 or f1 > n_ - 1: continue
+            strikes.append((a, f0, f1, pk, float(sp[pk])))
+    strikes = sorted(strikes, key=lambda s: -s[4])[:14]
+    strikes.sort(key=lambda s: (s[0].name, s[1]))
+    for k_, (a, f0, f1, pk, spd) in enumerate(strikes, start=1):
+        nm = f'saber_strike_{k_:02d}'
+        ao.animation_data.action = a; bpy.context.scene.frame_set(pk); bpy.context.view_layer.update(); yaw = facing_yaw()
+        Ry = Q(V((0, 0, 1)), -yaw)
+        bpy.context.scene.frame_set(f0); bpy.context.view_layer.update()
+        new = a.copy(); new.name = nm; new.use_fake_user = True
+        for fc in new.fcurves:
+            pts = [(kp.co.x, kp.co.y) for kp in fc.keyframe_points if f0 <= kp.co.x <= f1]
+            fc.keyframe_points.clear(); fc.keyframe_points.add(len(pts))
+            co_ = np.empty(2 * len(pts)); co_[0::2] = [p[0] - f0 for p in pts]; co_[1::2] = [p[1] for p in pts]
+            fc.keyframe_points.foreach_set('co', co_); fc.update()
+        # root: travel from the start of the strike, turned so the strike points forward (in world space, then back to the bone's basis)
+        L = [new.fcurves.find('pose.bones["root"].location', index=i) for i in range(3)]
+        Rq = [new.fcurves.find('pose.bones["root"].rotation_quaternion', index=i) for i in range(4)]
+        if all(L) and all(Rq):
+            nk = min(len(L[0].keyframe_points), len(Rq[0].keyframe_points)); Dr = DR['root']; Dri = Dr.inverted(); Rz = M.Rotation(-yaw, 4, 'Z')
+            def basis_at(j): return M.Translation(V([L[i].keyframe_points[j].co.y for i in range(3)])) @ Q([Rq[i].keyframe_points[j].co.y for i in range(4)]).to_matrix().to_4x4()
+            w0 = (Dr @ basis_at(0)).translation.copy(); w0.z = 0
+            for j in range(nk):
+                wm = Rz @ M.Translation(-w0) @ Dr @ basis_at(j); bm_ = Dri @ wm
+                t_, q_ = bm_.to_translation(), bm_.to_quaternion()
+                for i in range(3): L[i].keyframe_points[j].co.y = t_[i]
+                for i in range(4): Rq[i].keyframe_points[j].co.y = q_[i]
+        for fc in new.fcurves: fc.update()
+        new.frame_range = (0, f1 - f0); new.use_frame_range = True
+        new['library'] = False; new['loop'] = False; new['strike_time'] = (pk - f0) / FPS; new['mocap'] = True
+        new['notes'] = f'Lightsaber strike from your capture {a.name} (frames {f0}-{f1}), blade-tip peak {spd:.1f} m/s at {(pk - f0) / FPS:.2f} s'
+        STATS[nm] = dict(frames=f1 - f0, seconds=round((f1 - f0) / FPS, 3), loop=False, speed_m_s=0, max_hand_gap_cm=0.0, max_foot_gap_cm=0.0,
+                         planted_foot_slip_cm_s=0, notes=new['notes'])
+    print('STRIKES', len(strikes), [(f'saber_strike_{k:02d}', s[0].name, s[1], round(s[4], 1)) for k, s in enumerate(strikes, start=1)])
+    for a in bpy.data.actions:
+        t_ = take_of(a.name)
+        if t_ and t_.get('game') and a.get('library'): a['library'] = False
+    ao.animation_data.action = None

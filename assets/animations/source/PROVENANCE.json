@@ -11,5 +11,8 @@
  "humanik/": {
   "provider": "user upload, HumanIK-rig motion capture (files named *_HUMANIK_*.fbx)",
   "license": "not stated by the user"
+ },
+ "uploads": {
+  "2026-11-10": "StarWars_LightsaberFightForceSlam_HUMANIK_769.fbx added (the other nine files of that upload were already in humanik/, byte-identical)"
  }
 }

@@ -11,7 +11,7 @@
   "top": 1.02,
   "hem": 0.64
  },
- "note": "Unrigged Tripo T-pose source: tools/rigging/tpose_prep.py detects the joints and re-poses the arms into the Duke A-pose. rigid_helmet off (bare head). saber_hands 1: one-handed lightsaber form (saber in the right hand, left hand free for balance and the Force); with his arm length and bulky tunic a two-handed waist-height grip drives the sleeves through the tunic.",
+ "note": "Unrigged Tripo T-pose source: tools/rigging/tpose_prep.py detects the joints and re-poses the arms into the Duke A-pose. rigid_helmet off (bare head). saber_hands 1: one-handed lightsaber form (saber in the right hand, left hand free for balance and the Force); with his arm length and bulky tunic a two-handed waist-height grip drives the sleeves through the tunic. bridge_cuts off: his tunic is continuous cloth (cutting it opened the collar and the flank). twist_bones: UE-style upperarm/lowerarm twist bones for fluid wrist rolls.",
  "rigid_helmet": false,
  "saber_hands": 1,
  "saber_guard": {
@@ -28,5 +28,8 @@
   -0.08,
   -0.04
  ],
- "finger_skin_below_knuckles": true
+ "finger_skin_below_knuckles": true,
+ "bridge_cuts": false,
+ "twist_bones": true,
+ "collar_follows_chest": true
 }

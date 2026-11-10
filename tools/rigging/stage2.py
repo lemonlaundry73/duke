@@ -76,6 +76,8 @@ for s in 'lr':
         f'thigh_{s}':'pelvis',f'calf_{s}':f'thigh_{s}',f'foot_{s}':f'calf_{s}',f'ball_{s}':f'foot_{s}'})
     for f in list(FING)+['thumb']:
         PARENT[f'{f}_01_{s}']=f'hand_{s}'; PARENT[f'{f}_02_{s}']=f'{f}_01_{s}'; PARENT[f'{f}_03_{s}']=f'{f}_02_{s}'
+if CFG.get('twist_bones',False):
+    for s in 'lr': PARENT[f'upperarm_twist_01_{s}']=f'upperarm_{s}'; PARENT[f'lowerarm_twist_01_{s}']=f'lowerarm_{s}'
 for nm in 'clr':
     for i in range(1,5):
         k=f'cape_0{i}_{nm}'
@@ -121,7 +123,20 @@ if BL.get('kind')=='saber':
 for k,h,tl,p in (('ik_foot_root',(0,0,0),(0,0,0.1),'root'),('ik_foot_l',J['foot_l'][0],None,'ik_foot_root'),('ik_foot_r',J['foot_r'][0],None,'ik_foot_root'),
                  ('ik_hand_root',(0,0,0),(0,0,0.1),'root'),('ik_hand_gun',J['hand_r'][0],None,'ik_hand_root'),('ik_hand_r',J['hand_r'][0],None,'ik_hand_gun'),('ik_hand_l',J['hand_l'][0],None,'ik_hand_gun')):
     b=eb.new(k); b.head=V(h); b.tail=V(tl) if tl else V(h)+V((0,0,0.08)); b.parent=eb[p]
+TWIST=bool(CFG.get('twist_bones',False))
+if TWIST:
+    # UE-mannequin twist bones: the forearm twist carries half the wrist roll, the upper-arm twist cancels half the
+    # shoulder roll, so saber wrist rolls spread along the arm instead of wringing the skin at one joint
+    for s_ in 'lr':
+        for nm,par,a0,a1 in ((f'upperarm_twist_01_{s_}',f'upperarm_{s_}',0.20,0.60),(f'lowerarm_twist_01_{s_}',f'lowerarm_{s_}',0.55,1.0)):
+            pb_=eb[par]; h0=pb_.head+(pb_.tail-pb_.head)*a0; t0=pb_.head+(pb_.tail-pb_.head)*a1
+            b=eb.new(nm); b.head=h0; b.tail=t0; b.roll=pb_.roll; b.parent=pb_
 bpy.ops.object.mode_set(mode='OBJECT')
+if TWIST:
+    for s_ in 'lr':
+        for nm,src,inv in ((f'lowerarm_twist_01_{s_}',f'hand_{s_}',False),(f'upperarm_twist_01_{s_}',f'upperarm_{s_}',True)):
+            c=ao.pose.bones[nm].constraints.new('COPY_ROTATION'); c.name='twist'; c.target=ao; c.subtarget=src
+            c.use_x=False; c.use_z=False; c.use_y=True; c.invert_y=inv; c.owner_space='LOCAL'; c.target_space='LOCAL'; c.mix_mode='REPLACE'; c.influence=0.5
 json.dump({'gun_world':[list(r) for r in gun_world],'GS':GS,'grip_src':list(grip_src),'fore_src':list(fore_src),'muzzle_src':list(muzzle_src),'hold_src':list(hold_src),'lat':list(lat)},open(f'{w}/gun.json','w'))
 # ---------- weights ----------
 deform=[k for k in order]
@@ -173,6 +188,11 @@ for i,k in enumerate(names):
         kz=np.mean([J[f'{f}_01_{k[-1]}'][0][2] for f in FING])
         D[(z<kz-0.008)&(np.abs(x)>abs(J[f'hand_{k[-1]}'][0][0])-0.01),i]=big
     if k in('head',): D[z<1.50,i]=big
+    if k in ('head','neck_01') and CFG.get('collar_follows_chest',False):
+        # a cloth collar around the neck rides on the chest: only the neck/head skin inside it follows the head
+        nh=np.array(J['neck_01'][0]); hh=np.array(J['head'][0]); radial=np.hypot(x-nh[0],y-nh[1])
+        if k=='head': D[(radial>0.085)&(z<hh[2]+0.03),i]=big
+        else: D[radial>0.10,i]=big
     if k.split('_')[0] in ('spine','pelvis','neck','head','clavicle') and False: pass
 # cape verts: only cape chains + upper torso
 for i,k in enumerate(names):
@@ -200,7 +220,7 @@ if CFG.get('finger_skin_below_knuckles',False):
         if fix_.any():
             D[np.ix_(fix_,_body)]=big; prim[fix_]=D[fix_].argmin(1)
         print('hand skin reclaimed',s_,int(fix_.sum()))
-children={k:[c for c,p in PARENT.items() if p==k] for k in names}
+children={k:[c for c,p in PARENT.items() if p==k and c in idx] for k in names}
 allowed=np.zeros((n,len(names)),bool)
 for i,k in enumerate(names):
     m=prim==i; allowed[m,i]=True
@@ -292,6 +312,16 @@ if BT:
         k=np.clip((sproj+band)/(2*band),0,1); k=k*k*(3-2*k)
         Wt[m,bi]=share[m]*k; Wt[m,fi]=share[m]*(1-k); fixed+=int(m.sum())
     print('boot toes: foot/ball weights split at the ball crease (+-%.1f cm) for %d verts'%(band*100,fixed))
+if TWIST:
+    add=[]
+    for s_ in 'lr':
+        for nm,par,lo,hi,near_head in ((f'upperarm_twist_01_{s_}',f'upperarm_{s_}',0.10,0.60,True),(f'lowerarm_twist_01_{s_}',f'lowerarm_{s_}',0.25,0.85,False)):
+            t_=TT[:,idx[par]]; k_=np.clip((t_-lo)/(hi-lo),0,1); k_=k_*k_*(3-2*k_)
+            share=(1-k_)*0.8 if near_head else k_
+            col=Wt[:,idx[par]]*share; Wt[:,idx[par]]-=col; add.append((nm,col))
+    Wt=np.concatenate([Wt,np.stack([c for _,c in add],1)],1)
+    for nm,_ in add: idx[nm]=len(names); names.append(nm)
+    print('twist bones',[nm for nm,_ in add],'verts',[int((c>0.05).sum()) for _,c in add])
 # keep top 4
 o4=np.argsort(-Wt,1)[:,4:]; np.put_along_axis(Wt,o4,0,1); Wt[Wt<0.01]=0; Wt/=np.maximum(Wt.sum(1,keepdims=True),1e-12)
 print('unweighted verts',(Wt.sum(1)<0.5).sum())
@@ -362,17 +392,17 @@ if BL.get('kind')=='saber':
     import bmesh as _bm
     BLADE_LEN=BL.get('blade_len',0.95); col=BL.get('blade_color',[0.1,0.45,1.0])
     bm_=_bm.new()
-    for r_,seg in ((0.0105,16),(0.0185,16)):
+    for r_,seg in ((0.0065,16),(0.0245,20)):   # thin hot core, wide soft glow
         _bm.ops.create_cone(bm_,cap_ends=True,cap_tris=False,segments=seg,radius1=r_,radius2=r_*0.92,depth=BLADE_LEN,matrix=M.Translation((0,0,BLADE_LEN/2)))
     bd=bpy.data.meshes.new('blade'); bm_.to_mesh(bd); bm_.free()
     bo=bpy.data.objects.new('blade',bd); bpy.context.scene.collection.objects.link(bo)
     bd.transform(M.Translation(palm)@Rg.to_4x4()@M.Translation(-grip_src)@M.Translation(muzzle_src)); bd.update()
     nb=len(bd.vertices); core=[i for i,v in enumerate(bd.vertices) if i<nb//2]
     m1=bpy.data.materials.new('M_SaberBlade_Core'); m1.use_nodes=True; p1=m1.node_tree.nodes['Principled BSDF']
-    p1.inputs['Base Color'].default_value=(0.85,0.93,1.0,1); p1.inputs['Emission Color'].default_value=(0.75,0.88,1.0,1); p1.inputs['Emission Strength'].default_value=12.0
+    p1.inputs['Base Color'].default_value=(0.55,0.75,1.0,1); p1.inputs['Emission Color'].default_value=(0.45,0.7,1.0,1); p1.inputs['Emission Strength'].default_value=4.0
     m2=bpy.data.materials.new('M_SaberBlade_Glow'); m2.use_nodes=True; p2=m2.node_tree.nodes['Principled BSDF']
-    p2.inputs['Base Color'].default_value=(*col,1); p2.inputs['Emission Color'].default_value=(*col,1); p2.inputs['Emission Strength'].default_value=8.0
-    p2.inputs['Alpha'].default_value=0.45; m2.blend_method='BLEND' if hasattr(m2,'blend_method') else None
+    p2.inputs['Base Color'].default_value=(*col,1); p2.inputs['Emission Color'].default_value=(*col,1); p2.inputs['Emission Strength'].default_value=3.5
+    p2.inputs['Alpha'].default_value=0.78; m2.blend_method='BLEND' if hasattr(m2,'blend_method') else None
     bd.materials.append(m1); bd.materials.append(m2)
     for pl in bd.polygons: pl.material_index=0 if all(v<nb//2 for v in pl.vertices) else 1
     vgb=bo.vertex_groups.new(name='blade'); vgb.add(list(range(nb)),1.0,'REPLACE')

@@ -71,11 +71,13 @@ AJediCombatCharacter::AJediCombatCharacter()
 
 	// the Duke Jedi combo (strike frames from tools/rigging/jedi_clips.py); swap in authored montages per step
 	auto Step = [](const TCHAR* Clip, float Strike, FVector2D Dir) { FJediComboStep S; S.Clip = Clip; S.StrikeTime = Strike; S.SwingDirection = Dir; return S; };
+	// the user's lightsaber captures, cut into single strikes by tools/rigging/retarget.py (blade-tip peak at 14/30 s,
+	// root travel kept so the skew warp can close the distance). The swing directions drive the procedural torso twist.
+	const float T = 14.f / 30.f;
 	ComboSteps = {
-		Step(TEXT("saber_attack_1"), 0.42f, FVector2D(-1.f, -0.4f)),   // backhand, left to right, slightly down
-		Step(TEXT("saber_attack_2"), 0.40f, FVector2D(1.f, 0.8f)),     // rising slash from the sword side
-		Step(TEXT("saber_attack_3"), 0.50f, FVector2D(0.3f, -1.f)),    // overhead
-		Step(TEXT("saber_thrust"), 0.38f, FVector2D::ZeroVector) };    // thrust: forward lean only
+		Step(TEXT("saber_strike_01"), T, FVector2D(1.f, -0.3f)), Step(TEXT("saber_strike_02"), T, FVector2D(-1.f, 0.3f)),
+		Step(TEXT("saber_strike_03"), T, FVector2D(1.f, 0.5f)), Step(TEXT("saber_strike_04"), T, FVector2D(-1.f, -0.5f)),
+		Step(TEXT("saber_strike_05"), T, FVector2D(0.3f, -1.f)), Step(TEXT("saber_strike_06"), T, FVector2D(0.f, 0.f)) };
 }
 
 UDukeTrooperAnimInstance* AJediCombatCharacter::DukeAnim() const
@@ -361,6 +363,11 @@ bool AJediCombatCharacter::PerformSaberStrike()
 	if (Now - StrikeBusyUntil > ComboResetSeconds) ComboIndex = 0;   // paused too long: the combo starts over
 	const FJediComboStep& Step = ComboSteps[ComboIndex % ComboSteps.Num()];
 	UAnimMontage* M = MontageForStep(Step);
+	if (!M)   // pack without the capture strikes: the procedural combo
+	{
+		static const TCHAR* Fallback[] = { TEXT("saber_attack_1"), TEXT("saber_attack_2"), TEXT("saber_attack_3"), TEXT("saber_thrust") };
+		FJediComboStep F = Step; F.Clip = Fallback[ComboIndex % 4]; F.StrikeTime = 0.42f; M = MontageForStep(F);
+	}
 	if (!M) return false;
 	++ComboIndex;
 

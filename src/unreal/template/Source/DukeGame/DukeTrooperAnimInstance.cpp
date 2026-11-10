@@ -24,6 +24,9 @@ static void CopyPose(FPoseContext& Out, FPoseContext& Src)
 }
 static bool IsFullBodyAction(FName N)
 {
+	// motion-capture performances (lightsaber strikes, Force moves, ignite) are whole-body by nature
+	const FString S = N.ToString();
+	if (S.StartsWith(TEXT("saber_strike_")) || S.StartsWith(TEXT("sw_")) || S.StartsWith(TEXT("sword_"))) return true;
 	return N == TEXT("hit_front") || N == TEXT("hit_back") || N == TEXT("melee") || N == TEXT("jump") ||
 		N == TEXT("roll_to_kneel") || N == TEXT("mantle") || N == TEXT("saber_hit_1") || N == TEXT("saber_hit_2") ||
 		N == TEXT("getup_back") || N == TEXT("getup_front") || N == TEXT("go_prone") || N == TEXT("dive_left") || N == TEXT("dive_right") ||
@@ -339,6 +342,10 @@ bool FDukeTrooperAnimProxy::Evaluate(FPoseContext& Output)
 		{
 			FPoseContext P(Output);
 			Sample(Q, ActionTime, false, P);
+			if (Name.ToString().StartsWith(TEXT("saber_strike_")))   // capture strikes carry travel on the root: on the action layer (no root
+			{                                                          // motion) keep it under the capsule instead of drifting and snapping back
+				FTransform& R0 = P.Pose[FCompactPoseBoneIndex(0)]; const FVector L = R0.GetTranslation(); R0.SetTranslation(FVector(0.f, 0.f, L.Z));
+			}
 			const bool bStill = S.LocalVelocity.Size2D() < 25.f && !S.bFalling;
 			if (bStill || IsFullBodyAction(Name))
 			{

@@ -60,14 +60,14 @@ if os.path.exists(A + '/jedi/QA/anim_stats.json'):
     h = h.replace('<button id="bRoll">Roll &amp; fire</button>', '<button id="bDraw">Draw saber</button><button id="bCombo">Attack combo</button><button id="bBlock">Block</button>')
     h = h.replace('<button id="bCombat" class="fire" aria-pressed="false">Combat</button>', '<button id="bCombat" class="fire" aria-pressed="false">Deflect bolts</button>')
     h = h.replace('<button id="bSneak">Tiptoe sneak</button>', '<button id="bSneak">Tiptoe sneak</button><button id="bPush">Force push</button><button id="bPull">Force pull</button>')
-    h = re.sub(r'<p class="note">.*?</p>', '<p class="note"><b>Draw saber</b> takes the hilt from his belt and ignites the blade (press again to switch it off and hang it back). <b>Attack combo</b> chains the forehand slash, backhand slash, overhead strike and thrust. <b>Deflect bolts</b> sends a drone that fires at him: he bats the bolts away, some straight back. <b>Force push</b> throws the crates, <b>Force pull</b> yanks one to him. <b>Shoot him</b>, <b>Thermal detonator</b> and <b>Lightsaber</b> use the same deaths and ragdoll as the troopers. Drag to orbit, scroll to zoom. Turn sound on first.</p>', h, count=1, flags=re.S)
+    h = re.sub(r'<p class="note">.*?</p>', '<p class="note"><b>Draw saber</b> takes the hilt from his belt and ignites the blade (press again to switch it off and hang it back). <b>Attack combo</b> chains six strikes cut from your lightsaber motion capture. <b>Deflect bolts</b> sends a drone that fires at him: he bats the bolts away, some straight back. <b>Force push</b> (your Force Slam capture) throws the crates, <b>Force pull</b> (your Force Raise capture) yanks one to him. <b>Shoot him</b>, <b>Thermal detonator</b> and <b>Lightsaber</b> use the same deaths and ragdoll as the troopers. Drag to orbit, scroll to zoom. Turn sound on first.</p>', h, count=1, flags=re.S)
     j = js0.replace('__STATS__', json.dumps(st)).replace('__CUTS__', json.dumps(cv)).replace("fetch('trooper.glb.b64.txt')", "fetch('jedi.glb.b64.txt')")
     j = j.replace("'Unpacking trooper…'", "'Unpacking Jedi…'")
     j = j.replace("`${gltf.animations.length}: patrol, walks, run, sprint, roll, kneel, climb, mantle, combat, saber hits, 5 saber endings, 4 blasts, 4 deaths, melee, signals, head looks, neck roll, counting, beckon, tiptoe`",
                   "`${gltf.animations.length}: draw/holster, guard, 4 attacks, 3 blocks, 3 deflects, Force push and pull, walk and run with arm swing, deaths, saber hits, blasts, climb, gestures`")
     # blade glow light on the blade bone
     j = j.replace("muzzle = T.getObjectByName('muzzle'); rootBone = T.getObjectByName('root');",
-                  "muzzle = T.getObjectByName('muzzle'); rootBone = T.getObjectByName('root'); bladeBone = T.getObjectByName('blade');\n  if (bladeBone) { bladeLight = new THREE.PointLight(0x4aa3ff, 0, 3.5, 2); bladeLight.position.y = 0.45; bladeBone.add(bladeLight); }")
+                  "muzzle = T.getObjectByName('muzzle'); rootBone = T.getObjectByName('root'); bladeBone = T.getObjectByName('blade');\n  for (const [n, a] of Object.entries(actions)) if (n.startsWith('saber_strike_') || n.startsWith('sw_')) for (const tr of a.getClip().tracks) if (tr.name === 'root.position') { const v = tr.values; for (let k = 0; k < v.length; k += 3) { v[k] = v[0]; v[k + 1] = v[1]; } }\n  if (bladeBone) { bladeLight = new THREE.PointLight(0x2a6bff, 0, 3.5, 2); bladeLight.position.y = 0.45; bladeBone.add(bladeLight); }\n  T.traverse(o => { if (o.isMesh) for (const m of [].concat(o.material)) if (m && m.name && m.name.startsWith('M_SaberBlade_Glow')) { m.blending = THREE.AdditiveBlending; m.depthWrite = false; m.transparent = true; m.toneMapped = false; } else if (m && m.name && m.name.startsWith('M_SaberBlade_Core')) { m.toneMapped = false; } });")
     j = j.replace("let T = null, mixer, actions = {}, current = null, muzzle, rootBone;", "let T = null, mixer, actions = {}, current = null, muzzle, rootBone, bladeBone = null, bladeLight = null, drawn = false;")
     j = j.replace("  if (mixer) { mixer.update(dt); updateCut(); }", "  if (mixer) { mixer.update(dt); updateCut(); }\n  if (bladeBone && bladeLight) { const s = bladeBone.scale.y; bladeLight.intensity = s > 0.05 ? 3.5 * s * (0.9 + 0.1 * Math.sin(now * 40)) : 0; humOn(s > 0.5 && !dead); }\n  jediTick(dt, now);")
     j = j.replace("$('ammo').textContent = `power cell ${Math.max(0, ammo)}/24`;", "$('ammo').textContent = drawn ? 'saber: lit' : 'saber: on the belt';")
@@ -128,9 +128,10 @@ function jediTick(dt, now) {
 };
 $('bCombo').onclick = () => {
   if (!T || dead) return; resetAll(true); mode = 'scripted'; drone.visible = false; const my = seq; setState('ATTACK');
-  const seqc = ['saber_attack_1', 'saber_attack_2', 'saber_attack_3', 'saber_thrust']; let i = 0;
+  const MOC = ['saber_strike_01', 'saber_strike_02', 'saber_strike_03', 'saber_strike_04', 'saber_strike_05', 'saber_strike_06'].filter(n => actions[n]);
+  const seqc = MOC.length >= 3 ? MOC : ['saber_attack_1', 'saber_attack_2', 'saber_attack_3', 'saber_thrust']; let i = 0;
   const next = () => { if (my !== seq) return; if (i >= seqc.length) { current = null; play_('aim', { fade: 0.2 }); setState('GUARD'); return; }
-    const c = seqc[i++]; current = null; play_(c, { loop: false, fade: 0.08 }); const strike = { saber_attack_1: 0.42, saber_attack_2: 0.40, saber_attack_3: 0.50, saber_thrust: 0.38 }[c];
+    const c = seqc[i++]; current = null; play_(c, { loop: false, fade: 0.08 }); const strike = c.startsWith('saber_strike_') ? 14 / 30 : { saber_attack_1: 0.42, saber_attack_2: 0.40, saber_attack_3: 0.50, saber_thrust: 0.38 }[c];
     const mys = seq; setTimeout(() => { if (mys === seq) play('S_Saber_Swing_0' + (1 + Math.floor(Math.random() * 3)), 0.6); }, Math.max(0, strike - 0.16) * 1000); onFinish = next; };
   ensureDrawn(next);
 };
@@ -145,12 +146,14 @@ function forceMove(kind) {
   if (!T || dead) return; resetAll(true); mode = 'scripted'; drone.visible = false; const my = seq; setState(kind === 'force_push' ? 'PUSH' : 'PULL');
   addCrates(kind === 'force_push' ? 3 : 1, kind === 'force_push' ? 2.2 : 5.5);
   ensureDrawn(() => {
-    current = null; play_(kind, { loop: false, fade: 0.1 });
+    const cap = kind === 'force_push' ? 'sw_force_slam_01' : 'sw_force_raise_01'; const clip = actions[cap] ? cap : kind;
+    current = null; play_(clip, { loop: false, fade: 0.1 });
+    const rel = clip === kind ? (kind === 'force_push' ? 400 : 450) : actions[clip].getClip().duration * 450;   // the capture's release, ~45% in
     setTimeout(() => { if (my !== seq) return; play('S_Explosion', 0.25, 1.8);
       for (const c of crates) { if (kind === 'force_push') { const d = c.m.position.clone().sub(trooper.position).setY(0).normalize(); c.v.copy(d.multiplyScalar(9)).add(new THREE.Vector3(0, 3.5, 0)); c.spin.set(Math.random() * 8, 0, Math.random() * 8); c.fly = true; } else c.pull = true; }
       const rp = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.36, 40), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.5, 0.8, 1.6), transparent: true, opacity: 0.5, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
       rp.position.copy(trooper.position).add(new THREE.Vector3(Math.sin(yaw) * 0.8, 1.35, Math.cos(yaw) * 0.8)); rp.rotation.y = yaw; scene.add(rp); fx.push({ kind: 'ring', obj: rp, t: 0, ttl: 0.5 });
-    }, kind === 'force_push' ? 400 : 450);
+    }, rel);
     onFinish = () => { if (my === seq) { current = null; play_('aim', { fade: 0.2 }); setState('GUARD'); } };
   });
 }

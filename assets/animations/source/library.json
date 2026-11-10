@@ -528,7 +528,8 @@
    "split": false,
    "armed": true,
    "weapon_jedi": "hand",
-   "saber_lit": true
+   "saber_lit": true,
+   "strikes": true
   },
   {
    "file": "humanik/StarWars_LightsaberIgnite_HUMANIK_769.fbx",
@@ -538,7 +539,9 @@
    "split": true,
    "armed": true,
    "weapon_jedi": "hand",
-   "saber_lit": true
+   "saber_lit": true,
+   "ignite": "raise",
+   "game": true
   },
   {
    "file": "humanik/StarWars_LightsaberandForce_HUMANIK_769.fbx",
@@ -548,7 +551,8 @@
    "split": true,
    "armed": true,
    "weapon_jedi": "hand",
-   "saber_lit": true
+   "saber_lit": true,
+   "strikes": true
   },
   {
    "file": "humanik/StarWars_LightsaberAccident01_HUMANIK_769.fbx",
@@ -578,7 +582,8 @@
    "split": false,
    "armed": true,
    "weapon_jedi": "hand",
-   "saber_lit": true
+   "saber_lit": true,
+   "strikes": true
   },
   {
    "file": "humanik/StarWars_LightSaberFightForceSlam02_HUMANIK_769.fbx",
@@ -588,21 +593,24 @@
    "split": true,
    "armed": true,
    "weapon_jedi": "hand",
-   "saber_lit": true
+   "saber_lit": true,
+   "strikes": true
   },
   {
    "file": "humanik/StarWars_ForceSlam_HUMANIK_769.fbx",
    "name": "sw_force_slam",
    "notes": "The Force: slam",
    "jedi_only": true,
-   "split": true
+   "split": true,
+   "game": true
   },
   {
    "file": "humanik/StarWars_ForceRaise_HUMANIK_769.fbx",
    "name": "sw_force_raise",
    "notes": "The Force: raise",
    "jedi_only": true,
-   "split": true
+   "split": true,
+   "game": true
   },
   {
    "file": "humanik/StarWars_ForceLightning_HUMANIK_769.fbx",
@@ -617,6 +625,17 @@
    "notes": "The Force: choke",
    "jedi_only": true,
    "split": true
+  },
+  {
+   "file": "humanik/StarWars_LightsaberFightForceSlam_HUMANIK_769.fbx",
+   "name": "sw_saber_fight_force_slam_b",
+   "notes": "Lightsaber fight with a Force slam (second take)",
+   "jedi_only": true,
+   "split": false,
+   "armed": true,
+   "weapon_jedi": "hand",
+   "saber_lit": true,
+   "strikes": true
   }
  ]
 }

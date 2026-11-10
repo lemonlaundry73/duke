@@ -200,7 +200,7 @@ def saber_materials():
     # lightsaber blade: unlit emissive core (near white) and a coloured glow shell (translucent, additive)
     col = PACK.get('blade_color') or [0.1, 0.45, 1.0]
     out = {}
-    for key, c, k, blend in (('Core', [0.8, 0.9, 1.0], 18.0, unreal.BlendMode.BLEND_OPAQUE), ('Glow', col, 9.0, unreal.BlendMode.BLEND_ADDITIVE)):
+    for key, c, k, blend in (('Core', [0.5, 0.72, 1.0], 9.0, unreal.BlendMode.BLEND_OPAQUE), ('Glow', col, 6.0, unreal.BlendMode.BLEND_ADDITIVE)):   # blue-tinted core, saturated glow
         m = fresh(ROOT + '/Materials', 'M_SaberBlade_' + key, unreal.Material, unreal.MaterialFactoryNew())
         m.set_editor_property('shading_model', unreal.MaterialShadingModel.MSM_UNLIT)
         m.set_editor_property('blend_mode', blend)
@@ -263,7 +263,7 @@ def main():
         if not seq: err('animation failed: ' + f); continue
         # clips that travel or turn the root: the root is locked in the pose so the mesh stays on the capsule
         # (DukeTrooper moves/turns the capsule itself for roll, mantle, vault and the 90-degree turns)
-        seq.set_editor_property('enable_root_motion', name in ROOT_MOTION_CLIPS)
+        seq.set_editor_property('enable_root_motion', name in ROOT_MOTION_CLIPS or name.startswith('A_Trooper_saber_strike_'))   # capture strikes carry their lunge
         EAL.save_loaded_asset(seq); n += 1
     log('%d animations imported' % n)
 

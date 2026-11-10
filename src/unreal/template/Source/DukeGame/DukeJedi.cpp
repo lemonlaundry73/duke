@@ -13,6 +13,7 @@
 // strike frames of the authored attack clips (seconds), see tools/rigging/jedi_clips.py
 static float StrikeTime(FName N)
 {
+	if (N.ToString().StartsWith(TEXT("saber_strike_"))) return 14.f / 30.f;   // strikes cut from the captures: blade-tip peak at frame 14
 	if (N == TEXT("saber_attack_1")) return 0.42f;
 	if (N == TEXT("saber_attack_2")) return 0.40f;
 	if (N == TEXT("saber_attack_3")) return 0.50f;
@@ -20,6 +21,14 @@ static float StrikeTime(FName N)
 	return 0.4f;
 }
 static const FName GCombo[] = { TEXT("saber_attack_1"), TEXT("saber_attack_2"), TEXT("saber_attack_3"), TEXT("saber_thrust") };
+// the user's lightsaber captures (tools/rigging/retarget.py cuts single strikes from them); used whenever the pack has them
+static const FName GMocapCombo[] = { TEXT("saber_strike_01"), TEXT("saber_strike_02"), TEXT("saber_strike_03"), TEXT("saber_strike_04"), TEXT("saber_strike_05"), TEXT("saber_strike_06") };
+// Force moves: the captures when present, else the procedural clips
+static FName ForceClip(const UDukeTrooperAnimInstance* A, FName Kind)
+{
+	const FName M = Kind == TEXT("force_push") ? FName(TEXT("sw_force_slam_01")) : FName(TEXT("sw_force_raise_01"));
+	return A && A->Clips.Contains(M) ? M : Kind;
+}
 
 ADukeJedi::ADukeJedi()
 {
@@ -110,8 +119,10 @@ void ADukeJedi::TickCombat(float Dt, float Now)
 		if (Kind != NAME_None)
 			if (UDukeTrooperAnimInstance* A = Anim())
 			{
-				A->PlayAction(Kind); ForceKind = Kind; ForceAt = Now + (Kind == TEXT("force_push") ? 0.40f : 0.45f);
-				BusyUntil = Now + A->ClipLength(Kind) * 0.85f; NextForce = Now + ForceCooldown; return;
+				const FName Clip = ForceClip(A, Kind); const bool bMocap = Clip != Kind;
+				A->PlayAction(Clip); ForceKind = Kind;
+				ForceAt = Now + (bMocap ? A->ClipLength(Clip) * 0.45f : (Kind == TEXT("force_push") ? 0.40f : 0.45f));   // release near the capture's peak
+				BusyUntil = Now + A->ClipLength(Clip) * 0.85f; NextForce = Now + ForceCooldown; return;
 			}
 	}
 	// close in (guard walk / run), then attack in a chained combo
@@ -121,11 +132,13 @@ void ADukeJedi::TickCombat(float Dt, float Now)
 	if (Now >= NextAttack)
 		if (UDukeTrooperAnimInstance* A = Anim())
 		{
-			const FName Clip = GCombo[Combo % 4]; ++Combo;
+			const bool bMocap = A->Clips.Contains(GMocapCombo[0]);
+			const int32 N = bMocap ? 6 : 4;
+			const FName Clip = bMocap ? GMocapCombo[Combo % N] : GCombo[Combo % N]; ++Combo;
 			A->PlayAction(Clip); StrikeAt = Now + StrikeTime(Clip); SwingAt = Now + FMath::Max(0.f, StrikeTime(Clip) - 0.16f);   // whoosh leads the hit
 			const float Len = A->ClipLength(Clip);
 			BusyUntil = Now + Len * 0.8f;                           // chains into the next swing from the recovery
-			NextAttack = Now + Len * (Combo % 4 == 0 ? 1.4f : 0.85f); // a short pause after the full combo
+			NextAttack = Now + Len * (Combo % N == 0 ? 1.4f : 0.85f); // a short pause after the full combo
 		}
 }
 
