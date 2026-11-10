@@ -16,7 +16,7 @@
  ],
  "fbx_meshes": {
   "SK_Trooper": {
-   "tris": 84956,
+   "tris": 54648,
    "groups": 52,
    "mats": [
     "MI_Trooper"
@@ -41,13 +41,6 @@
   ],
   [
    "T_Trooper_BaseColor",
-   [
-    4096,
-    4096
-   ]
-  ],
-  [
-   "T_Trooper_Normal_OpenGL",
    [
     0,
     0

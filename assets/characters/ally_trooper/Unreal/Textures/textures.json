@@ -1,7 +1,6 @@
 {
  "T_Blaster_BaseColor": "T_Blaster_BaseColor.jpg",
- "T_Trooper_BaseColor": "T_Trooper_BaseColor.jpg",
- "T_Trooper_Normal_OpenGL": "T_Trooper_Normal_OpenGL.png",
+ "T_Trooper_BaseColor": "T_Trooper_BaseColor.png",
  "T_Trooper_ORM": "T_Trooper_ORM.png",
  "T_Blaster_ORM": "T_Blaster_ORM.png"
 }
