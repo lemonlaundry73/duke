@@ -6,7 +6,8 @@ w=sys.argv[-1]
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.gltf(filepath=f'{w}/trooper_dq.glb')
 arm=next(o for o in bpy.context.scene.objects if o.type=='ARMATURE')
-me=next(o for o in bpy.context.scene.objects if o.type=='MESH')
+me=max((o for o in bpy.context.scene.objects if o.type=='MESH'),key=lambda o:len(o.data.vertices))   # the character, not an importer bone-shape mesh
+for o in [o for o in bpy.context.scene.objects if o.type=='MESH' and o is not me]: bpy.data.objects.remove(o)
 joints={b.name:[list(arm.matrix_world@b.head_local),list(arm.matrix_world@b.tail_local)] for b in arm.data.bones}
 mw=me.matrix_world.copy()
 me.modifiers.clear(); me.vertex_groups.clear(); me.parent=None

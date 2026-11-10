@@ -1,0 +1,95 @@
+{
+ "recipe": {
+  "gender": 1.0,
+  "age": 0.5,
+  "muscle": 0.7,
+  "weight": 0.5,
+  "height": 0.75,
+  "proportions": 1.0,
+  "race": {
+   "caucasian": 0.3333333333333333,
+   "african": 0.3333333333333333,
+   "asian": 0.3333333333333333
+  },
+  "height_m": 1.83,
+  "tex": 2048
+ },
+ "colors": {
+  "armor": [
+   0.6,
+   0.53,
+   0.4
+  ],
+  "suit": [
+   0.16,
+   0.18,
+   0.13
+  ],
+  "black": [
+   0.035,
+   0.035,
+   0.035
+  ],
+  "leather": [
+   0.22,
+   0.15,
+   0.09
+  ],
+  "visor": [
+   0.015,
+   0.02,
+   0.025
+  ],
+  "metal": [
+   0.35,
+   0.36,
+   0.37
+  ],
+  "skin": [
+   0.55,
+   0.38,
+   0.3
+  ]
+ },
+ "targets": [
+  [
+   "macrodetails/caucasian-male-young.target.gz",
+   0.333
+  ],
+  [
+   "macrodetails/african-male-young.target.gz",
+   0.333
+  ],
+  [
+   "macrodetails/asian-male-young.target.gz",
+   0.333
+  ],
+  [
+   "macrodetails/universal-male-young-averagemuscle-averageweight.target.gz",
+   0.6
+  ],
+  [
+   "macrodetails/height/male-young-averagemuscle-averageweight-maxheight.target.gz",
+   0.3
+  ],
+  [
+   "macrodetails/proportions/male-young-averagemuscle-averageweight-idealproportions.target.gz",
+   0.6
+  ],
+  [
+   "macrodetails/universal-male-young-maxmuscle-averageweight.target.gz",
+   0.4
+  ],
+  [
+   "macrodetails/height/male-young-maxmuscle-averageweight-maxheight.target.gz",
+   0.2
+  ],
+  [
+   "macrodetails/proportions/male-young-maxmuscle-averageweight-idealproportions.target.gz",
+   0.4
+  ]
+ ],
+ "joints": 52,
+ "verts": 28148,
+ "faces": 28264
+}

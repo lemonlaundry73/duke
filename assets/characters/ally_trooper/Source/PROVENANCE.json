@@ -1,0 +1,12 @@
+{
+ "trooper_armor_source.glb": {
+  "tool": "tools/characters/mpfb_trooper.py (Duke Forger character creator, Blender 4.5)",
+  "base_human": "MakeHuman / MPFB2 data: base mesh hm08, macro targets, joint cubes, default-rig skin weights (github.com/makehumancommunity/mpfb2, src/mpfb/data)",
+  "license": "CC0 1.0 (MakeHuman assets released as CC0 in 2020; see LICENSE.ASSETS.md in that repository). Only data files were read; no MPFB code was run.",
+  "armour": "original, modelled by the script on the body (offset shells, helmet ellipsoid, toe caps, pouches, pack)",
+  "recipe": "trooper_recipe.json",
+  "date": "2026-11-10",
+  "replaces": "the earlier Alliance trooper source (Tripo Phase II armour, same file as the Empire trooper), kept in git history"
+ },
+ "blaster_source.fbx": {"provider": "user upload (modern_assault_rifle_3d_model.fbx)"}
+}
